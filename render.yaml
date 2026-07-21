@@ -1,0 +1,16 @@
+# Render Blueprint — deploys the Lucid Mage site as a free Static Site.
+# In Render: New +  ->  Blueprint  ->  point at this repo. That's it.
+services:
+  - type: web
+    name: lucid-mage
+    runtime: static
+    buildCommand: ""          # nothing to build — it's a single HTML file
+    staticPublishPath: .      # serve the repo root (index.html)
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

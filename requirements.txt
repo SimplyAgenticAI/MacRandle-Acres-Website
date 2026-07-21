@@ -1,6 +1,2 @@
-flask
-gunicorn
-openai
-google-auth
-google-auth-oauthlib
-google-api-python-client
+flask==3.0.3
+gunicorn==22.0.0
