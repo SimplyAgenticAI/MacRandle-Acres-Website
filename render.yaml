@@ -1,16 +1,15 @@
-# Render Blueprint — deploys the Lucid Mage site as a free Static Site.
-# In Render: New +  ->  Blueprint  ->  point at this repo. That's it.
+# Render Blueprint — deploys the MacRandle Acres site as a Flask web service,
+# which is what powers the admin edit mode. In Render: New +  ->  Blueprint
+# -> point at this repo -> Apply.
 services:
   - type: web
-    name: lucid-mage
-    runtime: static
-    buildCommand: ""          # nothing to build — it's a single HTML file
-    staticPublishPath: .      # serve the repo root (index.html)
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: SAMEORIGIN
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    name: macrandle-acres
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY        # signs the admin session cookie
+        generateValue: true    # Render creates a stable random value
+      - key: ADMIN_PASSWORD    # the password to reach edit mode
+        sync: false            # set this yourself in the Render dashboard (kept secret)

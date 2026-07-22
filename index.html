@@ -15,13 +15,11 @@
 
 <!--
   ┌────────────────────────────────────────────────────────────────┐
-  │  TO DO before go-live:                                          │
-  │  1. Save the MacRandle Acres logo as  logo.png  in this folder  │
-  │     (it appears in the hero automatically; hidden if missing).  │
-  │  2. Fill the 3 links — search this file for  [[LINK]] :         │
-  │       [[LINK]]-schedule → Calendly / booking link              │
-  │       [[LINK]]-email    → business email (mailto)              │
-  │       [[LINK]]-phone    → phone number (tel)                   │
+  │  ADMIN EDITING: run via Flask (app.py). Sign in at /admin/login │
+  │  with the ADMIN_PASSWORD env var, then an "Edit page" bar       │
+  │  appears — click any text to type. Save writes to content.json. │
+  │  Visitors see the saved content, read-only.                     │
+  │  Fill the 3 links: search this file for  [[LINK]]               │
   └────────────────────────────────────────────────────────────────┘
 -->
 
@@ -264,6 +262,26 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 .reveal.in{opacity:1;transform:none}
 .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
 
+/* ---- Admin editor ---- */
+#adminBar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:200;display:none;
+  align-items:center;gap:9px;background:rgba(26,59,45,.97);color:var(--cream);padding:10px 14px;border-radius:14px;
+  box-shadow:0 16px 40px rgba(0,0,0,.42);border:1px solid rgba(224,184,98,.35);font-family:'Inter',sans-serif;font-size:13px}
+#adminBar.show{display:flex}
+#adminBar .ab-dot{width:8px;height:8px;border-radius:50%;background:#e0b862;box-shadow:0 0 8px #e0b862}
+#adminBar .ab-lbl{font-weight:700;letter-spacing:.04em;margin-right:4px}
+#adminBar button,.ab-logout{font-family:inherit;font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;
+  border:1px solid transparent;cursor:pointer;text-decoration:none}
+.ab-edit{background:#e0b862;color:#2a2005}
+.ab-save{background:#3a6b54;color:#fff;display:none}
+.ab-cancel{background:transparent;border:1px solid rgba(246,244,236,.3);color:var(--cream);display:none}
+.ab-logout{background:transparent;border:1px solid rgba(246,244,236,.3);color:var(--cream)}
+body.editing [data-edit]{outline:1.5px dashed rgba(199,154,59,.6);outline-offset:3px;border-radius:3px;cursor:text}
+body.editing [data-edit]:hover{outline-color:var(--gold);background:rgba(199,154,59,.06)}
+body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199,154,59,.09)}
+#adminToast{position:fixed;right:20px;bottom:24px;z-index:210;background:#234F3D;color:#fff;padding:11px 16px;border-radius:10px;
+  font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;box-shadow:var(--shadow)}
+#adminToast.show{opacity:1;transform:none}
+
 @media(max-width:900px){
   .g3{grid-template-columns:1fr 1fr}
   .score-grid{grid-template-columns:1fr;gap:30px}
@@ -296,7 +314,7 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
       <a href="#outcomes">What you get</a>
       <a href="#scorecard">Growth Scorecard</a>
       <a href="#pricing">Pricing</a>
-      <a class="btn btn-primary nav-cta" href="[[LINK]]-schedule">Book a Growth Audit</a>
+      <a class="btn btn-primary nav-cta" href="[[LINK]]-schedule"><span data-edit="nav_cta">Book a Growth Audit</span></a>
     </div>
     <button class="hamb" id="hamb" aria-label="Menu">☰</button>
   </div>
@@ -310,21 +328,21 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
       <span class="logo-glow"></span>
       <img class="hero-logo" src="logo.jpg" alt="MacRandle Acres — Cultivating Better Businesses" onerror="this.parentNode.style.display='none'">
     </div>
-    <span class="eyebrow reveal in">Fractional Growth Advisor · For Real Estate Teams</span>
-    <h1 class="reveal in"><span class="accent-text shimmer">Remove Friction.</span><br>Accelerate Growth.</h1>
-    <p class="promise reveal in">Every month I find hidden opportunities to make your real estate business <b>more profitable</b> — then I implement the systems to capture them.</p>
+    <span class="eyebrow reveal in" data-edit="hero_eyebrow">Fractional Growth Advisor · For Real Estate Teams</span>
+    <h1 class="reveal in"><span class="accent-text shimmer" data-edit="hero_h1a">Remove Friction.</span><br><span data-edit="hero_h1b">Accelerate Growth.</span></h1>
+    <p class="promise reveal in" data-edit="hero_promise">Every month I find hidden opportunities to make your real estate business <b>more profitable</b> — then I implement the systems to capture them.</p>
     <div class="hero-cta reveal in">
-      <a class="btn btn-primary" href="[[LINK]]-schedule">Book a Growth Audit</a>
-      <a class="btn btn-ghost" href="#scorecard">See how it works</a>
+      <a class="btn btn-primary" href="[[LINK]]-schedule"><span data-edit="hero_cta1">Book a Growth Audit</span></a>
+      <a class="btn btn-ghost" href="#scorecard"><span data-edit="hero_cta2">See how it works</span></a>
     </div>
     <div class="reveal in" style="display:flex;justify-content:center">
-      <div class="guarantee-ribbon"><span class="g-ico">✓</span> If I can't find ways to improve your business every month, I'm not doing my job.</div>
+      <div class="guarantee-ribbon"><span class="g-ico">✓</span> <span data-edit="hero_guarantee">If I can't find ways to improve your business every month, I'm not doing my job.</span></div>
     </div>
     <div class="values reveal">
-      <div class="val-item"><span class="vi">🌱</span><span class="vl">Growth</span></div>
-      <div class="val-item"><span class="vi">🌳</span><span class="vl">Foundation</span></div>
-      <div class="val-item"><span class="vi">🌅</span><span class="vl">Freedom</span></div>
-      <div class="val-item"><span class="vi">💚</span><span class="vl">Trust</span></div>
+      <div class="val-item"><span class="vi">🌱</span><span class="vl" data-edit="val1">Growth</span></div>
+      <div class="val-item"><span class="vi">🌳</span><span class="vl" data-edit="val2">Foundation</span></div>
+      <div class="val-item"><span class="vi">🌅</span><span class="vl" data-edit="val3">Freedom</span></div>
+      <div class="val-item"><span class="vi">💚</span><span class="vl" data-edit="val4">Trust</span></div>
     </div>
   </div>
 </header>
@@ -333,16 +351,16 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 <section id="voice">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal">Why it matters</span>
-      <h2 class="reveal">Nobody wakes up wanting <span class="accent-text">"CRM optimization"</span></h2>
+      <span class="eyebrow reveal" data-edit="voice_eyebrow">Why it matters</span>
+      <h2 class="reveal">Nobody wakes up wanting <span class="accent-text" data-edit="voice_h2hi">"CRM optimization"</span></h2>
     </div>
-    <p class="voice-lead reveal">You wake up thinking about the things that actually keep growth stuck. <b>That's</b> what I fix.</p>
+    <p class="voice-lead reveal" data-edit="voice_lead">You wake up thinking about the things that actually keep growth stuck. <b>That's</b> what I fix.</p>
     <div class="chips">
-      <div class="chip reveal d1"><span class="q">&ldquo;</span>I don't want opportunities slipping.</div>
-      <div class="chip reveal d1"><span class="q">&ldquo;</span>I don't want to babysit technology.</div>
-      <div class="chip reveal d2"><span class="q">&ldquo;</span>I want to beat the team down the street.</div>
-      <div class="chip reveal d2"><span class="q">&ldquo;</span>I want someone who notices problems before I do.</div>
-      <div class="chip reveal d3"><span class="q">&ldquo;</span>I don't want another employee.</div>
+      <div class="chip reveal d1"><span class="q">&ldquo;</span><span data-edit="chip1">I don't want opportunities slipping.</span></div>
+      <div class="chip reveal d1"><span class="q">&ldquo;</span><span data-edit="chip2">I don't want to babysit technology.</span></div>
+      <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip3">I want to beat the team down the street.</span></div>
+      <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip4">I want someone who notices problems before I do.</span></div>
+      <div class="chip reveal d3"><span class="q">&ldquo;</span><span data-edit="chip5">I don't want another employee.</span></div>
     </div>
   </div>
 </section>
@@ -351,14 +369,14 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 <section id="promise">
   <div class="wrap">
     <div class="band-green promise-band reveal">
-      <span class="eyebrow">I'm not another vendor</span>
-      <p class="big">I don't sell you AI, ads, or software. I sell you <span style="color:var(--gold-l)">measurable growth</span> — and I use marketing, AI, automation, and proven systems to deliver it.</p>
+      <span class="eyebrow" data-edit="promise_eyebrow">I'm not another vendor</span>
+      <p class="big" data-edit="promise_big">I don't sell you AI, ads, or software. I sell you <span style="color:var(--gold-l)">measurable growth</span> — and I use marketing, AI, automation, and proven systems to deliver it.</p>
       <div class="buy-row">
-        <div class="buy"><span class="bd"></span>Clarity</div>
-        <div class="buy"><span class="bd"></span>Growth</div>
-        <div class="buy"><span class="bd"></span>Confidence</div>
-        <div class="buy"><span class="bd"></span>Time</div>
-        <div class="buy"><span class="bd"></span>Profit</div>
+        <div class="buy"><span class="bd"></span><span data-edit="buy1">Clarity</span></div>
+        <div class="buy"><span class="bd"></span><span data-edit="buy2">Growth</span></div>
+        <div class="buy"><span class="bd"></span><span data-edit="buy3">Confidence</span></div>
+        <div class="buy"><span class="bd"></span><span data-edit="buy4">Time</span></div>
+        <div class="buy"><span class="bd"></span><span data-edit="buy5">Profit</span></div>
       </div>
     </div>
   </div>
@@ -368,46 +386,46 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 <section id="outcomes">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal">What you get</span>
-      <h2 class="reveal">You buy <span class="accent-text">results</span>, not tasks</h2>
-      <p class="reveal">The same work every agency lists — reframed around the outcome you actually care about.</p>
+      <span class="eyebrow reveal" data-edit="outcomes_eyebrow">What you get</span>
+      <h2 class="reveal">You buy <span class="accent-text" data-edit="outcomes_h2hi">results</span>, not tasks</h2>
+      <p class="reveal" data-edit="outcomes_p">The same work every agency lists — reframed around the outcome you actually care about.</p>
     </div>
     <div class="grid g3">
       <div class="card reveal d1">
         <div class="ico">⚡</div>
-        <h3>Faster lead response</h3>
-        <p>Leads get answered in seconds, not hours — so the deal is yours before a competitor even sees it.</p>
-        <span class="was"><s>Monthly CRM optimization</s></span>
+        <h3 data-edit="card1_h3">Faster lead response</h3>
+        <p data-edit="card1_p">Leads get answered in seconds, not hours — so the deal is yours before a competitor even sees it.</p>
+        <span class="was"><s data-edit="card1_was">Monthly CRM optimization</s></span>
       </div>
       <div class="card reveal d2">
         <div class="ico">🔁</div>
-        <h3>Recover more opportunities — automatically</h3>
-        <p>AI follow-up and automation catch the leads that used to go cold and quietly slip away.</p>
-        <span class="was"><s>AI workflow improvement</s></span>
+        <h3 data-edit="card2_h3">Recover more opportunities — automatically</h3>
+        <p data-edit="card2_p">AI follow-up and automation catch the leads that used to go cold and quietly slip away.</p>
+        <span class="was"><s data-edit="card2_was">AI workflow improvement</s></span>
       </div>
       <div class="card reveal d3">
         <div class="ico">💸</div>
-        <h3>Stop wasting ad dollars</h3>
-        <p>Every month I find the spend that isn't working and move it to what actually closes.</p>
-        <span class="was"><s>Facebook ad audit</s></span>
+        <h3 data-edit="card3_h3">Stop wasting ad dollars</h3>
+        <p data-edit="card3_p">Every month I find the spend that isn't working and move it to what actually closes.</p>
+        <span class="was"><s data-edit="card3_was">Facebook ad audit</s></span>
       </div>
       <div class="card reveal d1">
         <div class="ico">🌱</div>
-        <h3>Never let a lead go cold</h3>
-        <p>Consistent nurturing keeps every prospect warm until they're ready to move.</p>
-        <span class="was"><s>Weekly nurturing sequences</s></span>
+        <h3 data-edit="card4_h3">Never let a lead go cold</h3>
+        <p data-edit="card4_p">Consistent nurturing keeps every prospect warm until they're ready to move.</p>
+        <span class="was"><s data-edit="card4_was">Weekly nurturing sequences</s></span>
       </div>
       <div class="card reveal d2">
         <div class="ico">📅</div>
-        <h3>More appointments booked</h3>
-        <p>Conversations turn into calendar slots without you chasing anyone down.</p>
-        <span class="was"><s>Lead follow-up management</s></span>
+        <h3 data-edit="card5_h3">More appointments booked</h3>
+        <p data-edit="card5_p">Conversations turn into calendar slots without you chasing anyone down.</p>
+        <span class="was"><s data-edit="card5_was">Lead follow-up management</s></span>
       </div>
       <div class="card reveal d3">
         <div class="ico">🧭</div>
-        <h3>Always know your next move</h3>
-        <p>A clear monthly plan of the highest-ROI improvements — so you're never guessing what's next.</p>
-        <span class="was"><s>Monthly strategy call</s></span>
+        <h3 data-edit="card6_h3">Always know your next move</h3>
+        <p data-edit="card6_p">A clear monthly plan of the highest-ROI improvements — so you're never guessing what's next.</p>
+        <span class="was"><s data-edit="card6_was">Monthly strategy call</s></span>
       </div>
     </div>
   </div>
@@ -419,10 +437,10 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
     <div class="band-green score reveal">
       <div class="score-grid">
         <div>
-          <span class="kicker">The signature deliverable</span>
-          <h2 style="margin-top:10px">Your monthly <span style="color:var(--gold-l)">Growth Scorecard</span></h2>
-          <p class="sub">You're not paying for Facebook posts. You're paying for measurable business growth — and every month you see exactly what that growth looks like, in plain numbers.</p>
-          <a class="btn btn-gold" href="[[LINK]]-schedule">Get your first Scorecard</a>
+          <span class="kicker" data-edit="score_kicker">The signature deliverable</span>
+          <h2 style="margin-top:10px">Your monthly <span style="color:var(--gold-l)" data-edit="score_h2hi">Growth Scorecard</span></h2>
+          <p class="sub" data-edit="score_sub">You're not paying for Facebook posts. You're paying for measurable business growth — and every month you see exactly what that growth looks like, in plain numbers.</p>
+          <a class="btn btn-gold" href="[[LINK]]-schedule"><span data-edit="score_cta">Get your first Scorecard</span></a>
         </div>
         <div class="report" aria-label="Example Growth Scorecard">
           <div class="report-top">
@@ -431,14 +449,14 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
           </div>
           <div class="rt-sub">MacRandle Acres · prepared for your team</div>
           <ul>
-            <li><span class="lbl"><span class="dot2">🔎</span>Opportunities found</span><span class="val gold count" data-to="14">0</span></li>
-            <li><span class="lbl"><span class="dot2">💰</span>Money saved</span><span class="val g count" data-prefix="$" data-to="3200">$0</span></li>
-            <li><span class="lbl"><span class="dot2">🎯</span>Leads recovered</span><span class="val g count" data-to="27">0</span></li>
-            <li><span class="lbl"><span class="dot2">📉</span>Ad spend optimized</span><span class="val g count" data-prefix="$" data-to="1850">$0</span></li>
-            <li><span class="lbl"><span class="dot2">🤖</span>AI conversations handled</span><span class="val count" data-to="431">0</span></li>
-            <li><span class="lbl"><span class="dot2">📅</span>Appointments booked</span><span class="val g count" data-to="19">0</span></li>
-            <li><span class="lbl"><span class="dot2">⚙️</span>Systems improved</span><span class="val count" data-to="6">0</span></li>
-            <li><span class="lbl"><span class="dot2">➡️</span>Next month's priorities</span><span class="val gold">Set</span></li>
+            <li><span class="lbl"><span class="dot2">🔎</span><span data-edit="rl1">Opportunities found</span></span><span class="val gold count" data-to="14">0</span></li>
+            <li><span class="lbl"><span class="dot2">💰</span><span data-edit="rl2">Money saved</span></span><span class="val g count" data-prefix="$" data-to="3200">$0</span></li>
+            <li><span class="lbl"><span class="dot2">🎯</span><span data-edit="rl3">Leads recovered</span></span><span class="val g count" data-to="27">0</span></li>
+            <li><span class="lbl"><span class="dot2">📉</span><span data-edit="rl4">Ad spend optimized</span></span><span class="val g count" data-prefix="$" data-to="1850">$0</span></li>
+            <li><span class="lbl"><span class="dot2">🤖</span><span data-edit="rl5">AI conversations handled</span></span><span class="val count" data-to="431">0</span></li>
+            <li><span class="lbl"><span class="dot2">📅</span><span data-edit="rl6">Appointments booked</span></span><span class="val g count" data-to="19">0</span></li>
+            <li><span class="lbl"><span class="dot2">⚙️</span><span data-edit="rl7">Systems improved</span></span><span class="val count" data-to="6">0</span></li>
+            <li><span class="lbl"><span class="dot2">➡️</span><span data-edit="rl8">Next month's priorities</span></span><span class="val gold">Set</span></li>
           </ul>
         </div>
       </div>
@@ -450,48 +468,48 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 <section id="pricing">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow reveal">Simple, outcome-based plans</span>
-      <h2 class="reveal">Pick your <span class="accent-text">level of growth</span></h2>
-      <p class="reveal">Every plan starts with finding where you're leaking money, time, and opportunities — then fixing it.</p>
+      <span class="eyebrow reveal" data-edit="pricing_eyebrow">Simple, outcome-based plans</span>
+      <h2 class="reveal">Pick your <span class="accent-text" data-edit="pricing_h2hi">level of growth</span></h2>
+      <p class="reveal" data-edit="pricing_p">Every plan starts with finding where you're leaking money, time, and opportunities — then fixing it.</p>
     </div>
     <div class="price-grid">
       <div class="tier reveal d1">
-        <div class="tname">Growth Audit</div>
-        <div class="tdesc">Find the leaks and fix the highest-ROI ones — every month.</div>
-        <div class="price"><span class="amt">$997–1,250</span> <span class="per">/mo</span></div>
+        <div class="tname" data-edit="t1_name">Growth Audit</div>
+        <div class="tdesc" data-edit="t1_desc">Find the leaks and fix the highest-ROI ones — every month.</div>
+        <div class="price" data-edit="t1_price"><span class="amt">$997–1,250</span> <span class="per">/mo</span></div>
         <ul>
-          <li><span class="ck">✓</span>Monthly business review</li>
-          <li><span class="ck">✓</span>Find the leaks costing you money</li>
-          <li><span class="ck">✓</span>Clear, prioritized recommendations</li>
-          <li><span class="ck">✓</span>I implement the highest-ROI fixes</li>
+          <li><span class="ck">✓</span><span data-edit="t1_li1">Monthly business review</span></li>
+          <li><span class="ck">✓</span><span data-edit="t1_li2">Find the leaks costing you money</span></li>
+          <li><span class="ck">✓</span><span data-edit="t1_li3">Clear, prioritized recommendations</span></li>
+          <li><span class="ck">✓</span><span data-edit="t1_li4">I implement the highest-ROI fixes</span></li>
         </ul>
-        <a class="btn btn-ghost" href="[[LINK]]-schedule">Start here</a>
+        <a class="btn btn-ghost" href="[[LINK]]-schedule"><span data-edit="t1_btn">Start here</span></a>
       </div>
       <div class="tier feature reveal d2">
-        <span class="tag">Most popular</span>
-        <div class="tname">Growth Partner</div>
-        <div class="tdesc">Done-with-you growth — I build and optimize alongside your team.</div>
-        <div class="price"><span class="amt">$1,997–2,500</span> <span class="per">/mo</span></div>
+        <span class="tag" data-edit="t2_tag">Most popular</span>
+        <div class="tname" data-edit="t2_name">Growth Partner</div>
+        <div class="tdesc" data-edit="t2_desc">Done-with-you growth — I build and optimize alongside your team.</div>
+        <div class="price" data-edit="t2_price"><span class="amt">$1,997–2,500</span> <span class="per">/mo</span></div>
         <ul>
-          <li><span class="ck">✓</span>Everything in Growth Audit</li>
-          <li><span class="ck">✓</span>Done-with-you implementation</li>
-          <li><span class="ck">✓</span>Continuous monthly optimization</li>
-          <li><span class="ck">✓</span>Priority support</li>
+          <li><span class="ck">✓</span><span data-edit="t2_li1">Everything in Growth Audit</span></li>
+          <li><span class="ck">✓</span><span data-edit="t2_li2">Done-with-you implementation</span></li>
+          <li><span class="ck">✓</span><span data-edit="t2_li3">Continuous monthly optimization</span></li>
+          <li><span class="ck">✓</span><span data-edit="t2_li4">Priority support</span></li>
         </ul>
-        <a class="btn btn-gold" href="[[LINK]]-schedule">Become a partner</a>
+        <a class="btn btn-gold" href="[[LINK]]-schedule"><span data-edit="t2_btn">Become a partner</span></a>
       </div>
       <div class="tier reveal d3">
-        <div class="tname">Rainmaker Elite</div>
-        <div class="tdesc">Your Fractional Growth Advisor — all-in on scaling the business.</div>
-        <div class="price"><span class="amt">$3,500–5,000</span> <span class="per">/mo</span></div>
+        <div class="tname" data-edit="t3_name">Rainmaker Elite</div>
+        <div class="tdesc" data-edit="t3_desc">Your Fractional Growth Advisor — all-in on scaling the business.</div>
+        <div class="price" data-edit="t3_price"><span class="amt">$3,500–5,000</span> <span class="per">/mo</span></div>
         <ul>
-          <li><span class="ck">✓</span>Dedicated Fractional Growth Advisor</li>
-          <li><span class="ck">✓</span>Unlimited strategic guidance (within reason)</li>
-          <li><span class="ck">✓</span>Custom AI built for your business</li>
-          <li><span class="ck">✓</span>Recruiting & expansion systems</li>
-          <li><span class="ck">✓</span>Quarterly planning</li>
+          <li><span class="ck">✓</span><span data-edit="t3_li1">Dedicated Fractional Growth Advisor</span></li>
+          <li><span class="ck">✓</span><span data-edit="t3_li2">Unlimited strategic guidance (within reason)</span></li>
+          <li><span class="ck">✓</span><span data-edit="t3_li3">Custom AI built for your business</span></li>
+          <li><span class="ck">✓</span><span data-edit="t3_li4">Recruiting & expansion systems</span></li>
+          <li><span class="ck">✓</span><span data-edit="t3_li5">Quarterly planning</span></li>
         </ul>
-        <a class="btn btn-ghost" href="[[LINK]]-schedule">Apply for Elite</a>
+        <a class="btn btn-ghost" href="[[LINK]]-schedule"><span data-edit="t3_btn">Apply for Elite</span></a>
       </div>
     </div>
   </div>
@@ -501,9 +519,9 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 <section class="promise2">
   <div class="wrap">
     <div class="pbox reveal">
-      <span class="pbadge">The promise</span>
-      <h2>Every month, I'll help you <span class="gold-text">make more money, save more money, or save more time</span> — ideally all three.</h2>
-      <p>If I can't find ways to improve your business every month, I'm not doing my job. That's the standard the whole relationship is held to.</p>
+      <span class="pbadge" data-edit="guar_badge">The promise</span>
+      <h2 data-edit="guar_h2">Every month, I'll help you <span class="gold-text">make more money, save more money, or save more time</span> — ideally all three.</h2>
+      <p data-edit="guar_p">If I can't find ways to improve your business every month, I'm not doing my job. That's the standard the whole relationship is held to.</p>
     </div>
   </div>
 </section>
@@ -512,12 +530,12 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 <section class="final">
   <div class="wrap">
     <div class="band-green final-box reveal">
-      <h2>Where are you <span style="color:var(--gold-l)">leaking growth?</span></h2>
-      <p>Let's find out. Book a Growth Audit and I'll show you the opportunities hiding in your business right now.</p>
+      <h2>Where are you <span style="color:var(--gold-l)" data-edit="final_h2hi">leaking growth?</span></h2>
+      <p data-edit="final_p">Let's find out. Book a Growth Audit and I'll show you the opportunities hiding in your business right now.</p>
       <div class="hero-cta" style="justify-content:center">
-        <a class="btn btn-gold" href="[[LINK]]-schedule">Book a Growth Audit</a>
-        <a class="btn btn-ghost-l" href="mailto:[[LINK]]-email">Email Jeff</a>
-        <a class="btn btn-cream" href="tel:[[LINK]]-phone">Call Now</a>
+        <a class="btn btn-gold" href="[[LINK]]-schedule"><span data-edit="final_cta1">Book a Growth Audit</span></a>
+        <a class="btn btn-ghost-l" href="mailto:[[LINK]]-email"><span data-edit="final_cta2">Email Jeff</span></a>
+        <a class="btn btn-cream" href="tel:[[LINK]]-phone"><span data-edit="final_cta3">Call Now</span></a>
       </div>
     </div>
   </div>
@@ -525,13 +543,23 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 
 <footer>
   <div class="wrap">
-    <div class="fbrand"><span class="mark"><span>M</span></span> MacRandle Acres</div>
-    <div class="ftag">Cultivating better businesses</div>
-    <div class="fvals">Growth · Foundation · Freedom · Trust</div>
-    <div class="loc">📍 Salisbury, MD</div>
-    <small>© <span id="yr"></span> MacRandle Acres · Jeff Randle, Fractional Growth Advisor. We help ambitious real estate teams remove friction from growth.</small>
+    <div class="fbrand"><span class="mark"><span>M</span></span> <span data-edit="foot_brand">MacRandle Acres</span></div>
+    <div class="ftag" data-edit="foot_tag">Cultivating better businesses</div>
+    <div class="fvals" data-edit="foot_vals">Growth · Foundation · Freedom · Trust</div>
+    <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
+    <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. We help ambitious real estate teams remove friction from growth.</span></small>
   </div>
 </footer>
+
+<!-- ADMIN EDIT BAR (only shown to signed-in admin) -->
+<div id="adminBar" aria-hidden="true">
+  <span class="ab-dot"></span><span class="ab-lbl">Admin</span>
+  <button class="ab-edit" type="button">✎ Edit page</button>
+  <button class="ab-save" type="button">Save changes</button>
+  <button class="ab-cancel" type="button">Cancel</button>
+  <a class="ab-logout" href="/admin/logout">Log out</a>
+</div>
+<div id="adminToast"></div>
 
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
@@ -544,6 +572,15 @@ document.getElementById('hamb').addEventListener('click',function(){
     nl.style.background='rgba(248,247,243,.98)';nl.style.padding='16px 20px';nl.style.borderRadius='14px';
     nl.style.border='1px solid var(--bd)';nl.style.gap='14px';nl.style.boxShadow='var(--shadow)';}
 });
+
+/* ---- Content hydration: apply saved edits for ALL visitors ---- */
+(function(){
+  var C = window.__CONTENT__ || {};
+  document.querySelectorAll('[data-edit]').forEach(function(el){
+    var k = el.getAttribute('data-edit');
+    if(Object.prototype.hasOwnProperty.call(C,k) && C[k]!=null) el.innerHTML = C[k];
+  });
+})();
 
 var io=new IntersectionObserver(function(entries){
   entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
@@ -592,6 +629,43 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
       x.fillStyle='rgba('+l.col+','+l.a+')';x.fill();x.restore();}
     requestAnimationFrame(draw);}
   init();draw();addEventListener('resize',init);
+})();
+
+/* ---- Admin inline editor (only active when signed in) ---- */
+(function(){
+  if(!window.__ADMIN__) return;
+  var bar=document.getElementById('adminBar'); if(!bar) return;
+  bar.classList.add('show');
+  var eEdit=bar.querySelector('.ab-edit'), eSave=bar.querySelector('.ab-save'), eCancel=bar.querySelector('.ab-cancel');
+  var snapshot={};
+  function nodes(){return document.querySelectorAll('[data-edit]');}
+  function blockNav(e){var a=e.target.closest('a');if(a)e.preventDefault();}
+  function setEditing(on){
+    document.body.classList.toggle('editing',on);
+    nodes().forEach(function(el){ if(on){el.setAttribute('contenteditable','true');} else {el.removeAttribute('contenteditable');} });
+    eEdit.style.display=on?'none':''; eSave.style.display=on?'':'none'; eCancel.style.display=on?'':'none';
+    if(on) document.addEventListener('click',blockNav,true); else document.removeEventListener('click',blockNav,true);
+  }
+  function toast(m){var t=document.getElementById('adminToast');t.textContent=m;t.classList.add('show');
+    clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},2800);}
+  eEdit.addEventListener('click',function(){
+    snapshot={}; nodes().forEach(function(el){snapshot[el.getAttribute('data-edit')]=el.innerHTML;});
+    setEditing(true); toast('Editing — click any text to change it');
+  });
+  eCancel.addEventListener('click',function(){
+    nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(snapshot[k]!=null)el.innerHTML=snapshot[k];});
+    setEditing(false);
+  });
+  eSave.addEventListener('click',function(){
+    var data={}; nodes().forEach(function(el){data[el.getAttribute('data-edit')]=el.innerHTML;});
+    eSave.textContent='Saving…';
+    fetch('/api/content',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)})
+      .then(function(r){return r.json();})
+      .then(function(j){ eSave.textContent='Save changes';
+        if(j&&j.ok){ toast('Saved — changes are live for everyone'); setEditing(false); }
+        else { toast('Save failed'+(j&&j.error?': '+j.error:'')); } })
+      .catch(function(){ eSave.textContent='Save changes'; toast('Save failed — try signing in again'); });
+  });
 })();
 </script>
 </body>

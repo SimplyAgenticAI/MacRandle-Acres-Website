@@ -1,49 +1,61 @@
 # MacRandle Acres — Fractional Growth Advisor for Real Estate Teams
 
-A hand-built, single-page site positioning Jeff Randle / MacRandle Acres as a
-**Monthly Revenue Growth Advisor** for real estate teams — outcome-focused, not
-service-focused. Botanical, premium brand system matching the MacRandle Acres
-logo: warm-white background, forest-green primary, charcoal text, antique-gold
-accents, plum used sparingly; Fraunces serif display + Inter body; tagline
+A hand-built site positioning Jeff Randle / MacRandle Acres as a **Monthly
+Revenue Growth Advisor** for real estate teams. Botanical, premium brand system
+matching the logo: warm-white background, forest-green primary, charcoal text,
+antique-gold accents, plum used sparingly. Fraunces serif + Inter. Tagline
 "Cultivating better businesses" and the four values (Growth · Foundation ·
-Freedom · Trust). No frameworks, no build step — one self-contained `index.html`.
+Freedom · Trust).
 
 Palette: green `#234F3D` · charcoal `#2D2D2D` · warm white `#F8F7F3` ·
 gold `#c79a3b` · plum `#5B2C6F`.
 
+## Two views: admin (editable) vs visitor (read-only)
+The site runs as a small **Flask app** (`app.py`).
+
+- **Visitors** see the public page, read-only, with the latest saved content.
+- **Admin** signs in at **`/admin/login`**, then a floating **"✎ Edit page"**
+  bar appears. Click *Edit page* → every headline, paragraph, card, price, and
+  button becomes click-to-type editable. Click **Save changes** and the edits
+  are written to `content.json` and go live for everyone. *Cancel* reverts,
+  *Log out* leaves admin mode.
+
+Edits are stored as content overrides in `content.json`, keyed by the
+`data-edit="..."` attributes in `index.html`.
+
+## Run locally
+```
+pip install -r requirements.txt
+python app.py            # http://localhost:5000
+```
+To try editing locally, set a password first:
+`ADMIN_PASSWORD=test python app.py` (PowerShell: `$env:ADMIN_PASSWORD='test'; python app.py`).
+
+## Deploy on Render (Web Service)
+1. Render → **New +** → **Blueprint** → pick this repo → **Apply**
+   (reads `render.yaml`). Or **New + → Web Service** with
+   Build `pip install -r requirements.txt`, Start `gunicorn app:app`.
+2. In the service's **Environment** tab, set:
+   - `ADMIN_PASSWORD` — your edit-mode password (keep it private).
+   - `SECRET_KEY` — the Blueprint auto-generates this; otherwise add any long
+     random string.
+3. Deploy. Your site is the Render URL; sign in to edit at `<url>/admin/login`.
+
+### ⚠️ Note on saved edits + the free tier
+`content.json` is written to the server's disk. On Render's **free** tier the
+disk resets on every redeploy/restart, so edits made through the UI can be lost
+when the service restarts. To make edits durable, either:
+- commit the updated `content.json` to the repo periodically, **or**
+- add a small Render **persistent disk** (paid) mounted where `content.json`
+  lives, **or** move the store to a database.
+Tell me which you'd prefer and I'll wire it up.
+
+## Fill in the 3 links
+Search `index.html` for `[[LINK]]` and replace `-schedule` (booking),
+`-email` (mailto), `-phone` (tel).
+
 ## Logo & animation
-The MacRandle Acres logo ships as **`logo.jpg`** — shown in the hero (with a
-pulsing moonlight glow + gentle float) and used as the favicon / social image.
-Animated touches: headline gold shimmer, drifting-leaf ambience canvas, the
-Growth Scorecard numbers counting up on scroll, a glowing nav mark, and hover
-micro-interactions. All motion respects `prefers-reduced-motion`.
-
-Positioning: sell **measurable growth** (clarity, growth, confidence, time,
-profit), not tasks. Signature deliverable is the monthly **Growth Scorecard**.
-Three plans: Growth Audit ($997–1,250), Growth Partner ($1,997–2,500),
-Rainmaker Elite ($3,500–5,000).
-
-## Preview locally
-Open `index.html` in a browser. (Or `python app.py` → http://localhost:5000).
-
-## Deploy on Render — two options
-
-**A) Static Site (recommended — free & fast)**
-1. Push this folder to the GitHub repo.
-2. Render → **New +** → **Static Site** → pick the repo.
-3. Build Command: *(blank)*  ·  Publish Directory: `.`  → Deploy.
-   (Or **Blueprint** → it reads `render.yaml` automatically.)
-
-**B) Web Service (same pattern as SimplyAgenticAI)**
-1. Render → **New +** → **Web Service** → pick the repo.
-2. Build Command: `pip install -r requirements.txt`
-3. Start Command: `gunicorn app:app`
-
-## Before you go live — fill in the links
-Only three placeholders remain. Search `index.html` for `[[LINK]]` and replace:
-
-| Placeholder | Points to |
-|---|---|
-| `[[LINK]]-schedule` | Your Calendly / Growth Audit booking link |
-| `[[LINK]]-email` | Business email (used as `mailto:`) |
-| `[[LINK]]-phone` | Phone number (used as `tel:`) |
+Logo ships as `logo.jpg` (hero showcase + favicon + social image). Animated
+touches: pulsing moonlight glow + float on the logo, headline gold shimmer,
+drifting-leaf canvas, Growth Scorecard count-up on scroll, glowing nav mark,
+hover micro-interactions — all respect `prefers-reduced-motion`.
