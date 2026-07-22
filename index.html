@@ -267,31 +267,62 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
   align-items:center;gap:9px;background:rgba(26,59,45,.97);color:var(--cream);padding:10px 14px;border-radius:14px;
   box-shadow:0 16px 40px rgba(0,0,0,.42);border:1px solid rgba(224,184,98,.35);font-family:'Inter',sans-serif;font-size:13px}
 #adminBar.show{display:flex}
+body.editing #adminBar{display:none}
 #adminBar .ab-dot{width:8px;height:8px;border-radius:50%;background:#e0b862;box-shadow:0 0 8px #e0b862}
-#adminBar .ab-lbl{font-weight:700;letter-spacing:.04em;margin-right:4px}
+#adminBar .ab-lbl{font-weight:700;letter-spacing:.04em;margin-right:4px;white-space:nowrap}
 #adminBar button,.ab-logout{font-family:inherit;font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;
   border:1px solid transparent;cursor:pointer;text-decoration:none}
 .ab-edit{background:#e0b862;color:#2a2005}
-.ab-save{background:#3a6b54;color:#fff;display:none}
-.ab-cancel{background:transparent;border:1px solid rgba(246,244,236,.3);color:var(--cream);display:none}
 .ab-logout{background:transparent;border:1px solid rgba(246,244,236,.3);color:var(--cream)}
+
+/* Editing banner (top) — the clear Save / Discard controls */
+#editBanner{position:fixed;left:0;right:0;top:0;z-index:220;display:none;align-items:center;justify-content:space-between;
+  gap:14px;padding:9px 18px;background:linear-gradient(90deg,#234F3D,#1a3b2d);color:var(--cream);
+  border-bottom:2px solid var(--gold);box-shadow:0 6px 22px rgba(0,0,0,.3);font-family:'Inter',sans-serif}
+body.editing #editBanner{display:flex}
+body.editing{padding-top:54px}
+body.editing .nav{top:54px}
+#editBanner .eb-msg{display:flex;align-items:center;gap:9px;font-size:13.5px;min-width:0}
+#editBanner .eb-msg b{color:#fff}
+#editBanner .eb-pen{color:var(--gold-l);font-size:16px;flex:0 0 auto}
+#editBanner .eb-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#editBanner .eb-actions{display:flex;gap:9px;align-items:center;flex:0 0 auto}
+#editBanner button{font-family:inherit;font-weight:700;font-size:13.5px;border-radius:9px;padding:10px 18px;
+  border:1px solid transparent;cursor:pointer}
+.eb-save{background:var(--gold-l);color:#2a2005;box-shadow:0 4px 14px rgba(224,184,98,.4);animation:savePulse 2s ease-in-out infinite}
+.eb-save:hover{background:#fff}
+@keyframes savePulse{0%,100%{box-shadow:0 4px 14px rgba(224,184,98,.35)}50%{box-shadow:0 0 20px 3px rgba(224,184,98,.62)}}
+.eb-cancel{background:transparent;border:1px solid rgba(246,244,236,.35);color:var(--cream)}
+.eb-cancel:hover{background:rgba(255,255,255,.1)}
+.eb-export{background:rgba(255,255,255,.1);border:1px solid rgba(246,244,236,.25);color:var(--cream);display:none}
+
 body.editing [data-edit]{outline:1.5px dashed rgba(199,154,59,.6);outline-offset:3px;border-radius:3px;cursor:text}
 body.editing [data-edit]:hover{outline-color:var(--gold);background:rgba(199,154,59,.06)}
 body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199,154,59,.09)}
-#adminToast{position:fixed;right:20px;bottom:24px;z-index:210;background:#234F3D;color:#fff;padding:11px 16px;border-radius:10px;
-  font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;box-shadow:var(--shadow)}
+#adminToast{position:fixed;right:20px;bottom:88px;z-index:230;background:#234F3D;color:#fff;padding:11px 16px;border-radius:10px;
+  font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;box-shadow:var(--shadow);max-width:min(360px,86vw)}
 #adminToast.show{opacity:1;transform:none}
-.ab-export{background:#e0b862;color:#2a2005;display:none}
-#adminBar .ab-lbl{white-space:nowrap}
-#localBanner{position:fixed;left:0;right:0;top:0;z-index:190;display:none;text-align:center;font-weight:600;
-  font-size:13px;padding:9px 16px;background:linear-gradient(90deg,#e0b862,#c79a3b);color:#2a2005;box-shadow:0 3px 12px rgba(0,0,0,.2)}
-#localBanner.show{display:block}
-#localBanner b{font-weight:800}
 .foot-admin{margin-top:18px}
 .foot-admin a{display:inline-flex;align-items:center;gap:7px;color:rgba(246,244,236,.45);font-size:11.5px;font-weight:700;
   letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);
   padding:7px 15px;border-radius:9px;transition:.2s}
 .foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
+
+/* Visitor polish: scroll progress, nav shadow, active nav, back-to-top */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
+  background:linear-gradient(90deg,var(--gold),var(--green-l));transition:width .12s ease}
+body.editing #progress{display:none}
+.nav{transition:box-shadow .25s ease,background .25s ease}
+.nav.scrolled{box-shadow:0 6px 22px rgba(35,49,40,.1);background:rgba(248,247,243,.94)}
+.nav-links a{position:relative}
+.nav-links a.active{color:var(--green)}
+.nav-links a.active::after{content:'';position:absolute;left:0;right:0;bottom:-7px;height:2px;border-radius:2px;background:var(--grad-gold)}
+#toTop{position:fixed;right:22px;bottom:24px;z-index:55;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--grad-green);color:var(--cream);font-size:19px;line-height:1;box-shadow:var(--shadow-sm);
+  opacity:0;transform:translateY(14px) scale(.9);pointer-events:none;transition:opacity .3s,transform .3s,box-shadow .2s}
+#toTop.show{opacity:1;transform:none;pointer-events:auto}
+#toTop:hover{box-shadow:0 12px 30px rgba(35,79,61,.4);transform:translateY(-2px)}
+body.editing #toTop{display:none}
 
 /* Button FX */
 .fx-start::after{content:'→';display:inline-block;margin-left:8px;transition:transform .25s ease}
@@ -585,15 +616,23 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
   </div>
 </footer>
 
-<!-- ADMIN EDIT BAR (shown when signed in, or in local preview) -->
-<div id="localBanner">✎ Local preview — edits save to <b>this browser only</b>. Deploy the server to publish live, or use <b>Export</b>.</div>
+<!-- Visitor polish -->
+<div id="progress"></div>
+<button id="toTop" type="button" aria-label="Back to top">↑</button>
+
+<!-- ADMIN: entry bar (bottom) + editing banner (top) -->
 <div id="adminBar" aria-hidden="true">
   <span class="ab-dot"></span><span class="ab-lbl">Admin</span>
   <button class="ab-edit" type="button">✎ Edit page</button>
-  <button class="ab-save" type="button">Save changes</button>
-  <button class="ab-export" type="button">⬇ Export</button>
-  <button class="ab-cancel" type="button">Cancel</button>
   <a class="ab-logout" href="/admin/logout">Log out</a>
+</div>
+<div id="editBanner">
+  <div class="eb-msg"><span class="eb-pen">✎</span><span class="eb-txt"><b>Editing mode</b> — click any text to change it. Not live until you save.</span></div>
+  <div class="eb-actions">
+    <button class="eb-export" type="button" title="Download content.json">⬇ Export</button>
+    <button class="eb-cancel" type="button">Discard &amp; exit</button>
+    <button class="eb-save" type="button">✓ Save changes</button>
+  </div>
 </div>
 <div id="adminToast"></div>
 
@@ -673,16 +712,17 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
   var SERVER_ADMIN = (window.__ADMIN__ === true);             // signed in via /admin/login
   var LKEY = 'macra_content_v1';
   var bar=document.getElementById('adminBar'); if(!bar) return;
-  var link=document.getElementById('adminLink'), banner=document.getElementById('localBanner');
-  var eEdit=bar.querySelector('.ab-edit'), eSave=bar.querySelector('.ab-save'),
-      eCancel=bar.querySelector('.ab-cancel'), eExport=bar.querySelector('.ab-export'),
-      eLogout=bar.querySelector('.ab-logout'), eLbl=bar.querySelector('.ab-lbl');
-  var snapshot={}, mode=null;
+  var link=document.getElementById('adminLink');
+  var eEdit=bar.querySelector('.ab-edit'), eLogout=bar.querySelector('.ab-logout'), eLbl=bar.querySelector('.ab-lbl');
+  var eSave=document.querySelector('.eb-save'), eCancel=document.querySelector('.eb-cancel'),
+      eExport=document.querySelector('.eb-export'), eTxt=document.querySelector('#editBanner .eb-txt');
+  var snapshot={}, mode=null, dirty=false;
 
+  function editing(){return document.body.classList.contains('editing');}
   function nodes(){return document.querySelectorAll('[data-edit]');}
   function collect(){var d={};nodes().forEach(function(el){d[el.getAttribute('data-edit')]=el.innerHTML;});return d;}
   function toast(m){var t=document.getElementById('adminToast');t.textContent=m;t.classList.add('show');
-    clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3000);}
+    clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3400);}
 
   /* Apply a locally-saved draft when there is no server backing the page */
   if(!SERVED){
@@ -694,46 +734,57 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
     mode=m; bar.classList.add('show');
     eLbl.textContent = (m==='server') ? 'Admin' : 'Admin · local preview';
     eLogout.style.display = (m==='server') ? '' : 'none';
-    eExport.style.display = (m==='local') ? '' : 'none';
-    if(m==='local' && banner) banner.classList.add('show');
+    if(eExport) eExport.style.display = (m==='local') ? '' : 'none';
+    if(eTxt) eTxt.innerHTML = (m==='local')
+      ? '<b>Editing &middot; local preview</b> — saved to this browser. Use Export to publish.'
+      : '<b>Editing mode</b> — click any text to change it. Not live until you save.';
   }
   function blockNav(e){var a=e.target.closest('a');if(a && !a.classList.contains('ab-logout'))e.preventDefault();}
+  function markDirty(){dirty=true;}
   function setEditing(on){
     document.body.classList.toggle('editing',on);
     nodes().forEach(function(el){on?el.setAttribute('contenteditable','true'):el.removeAttribute('contenteditable');});
-    eEdit.style.display=on?'none':''; eSave.style.display=on?'':'none'; eCancel.style.display=on?'':'none';
-    if(on)document.addEventListener('click',blockNav,true); else document.removeEventListener('click',blockNav,true);
+    if(on){document.addEventListener('click',blockNav,true);document.addEventListener('input',markDirty,true);}
+    else {document.removeEventListener('click',blockNav,true);document.removeEventListener('input',markDirty,true);dirty=false;}
   }
 
-  eEdit.addEventListener('click',function(){
-    snapshot=collect(); setEditing(true);
-    toast(mode==='server' ? 'Editing — click any text, then Save' : 'Editing — click any text to change it');
-  });
-  eCancel.addEventListener('click',function(){
-    nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(snapshot[k]!=null)el.innerHTML=snapshot[k];});
-    setEditing(false);
-  });
-  eSave.addEventListener('click',function(){
+  function enterEdit(){ snapshot=collect(); dirty=false; setEditing(true);
+    toast('Editing — click any text, then hit "Save changes" up top (Ctrl/Cmd+S)'); }
+  function doSave(){
     var data=collect();
     if(mode==='local'){
-      try{localStorage.setItem(LKEY,JSON.stringify(data));toast('Saved to this browser — use Export to publish');}
+      try{localStorage.setItem(LKEY,JSON.stringify(data));dirty=false;setEditing(false);
+        toast('Saved to this browser — back to normal view. Export to publish live.');}
       catch(e){toast('Could not save in this browser');}
-      setEditing(false); return;
+      return;
     }
-    eSave.textContent='Saving…';
+    if(eSave) eSave.textContent='Saving…';
     fetch('/api/content',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)})
       .then(function(r){return r.json();})
-      .then(function(j){ eSave.textContent='Save changes';
-        if(j&&j.ok){ toast('Saved — changes are live for everyone'); setEditing(false); }
+      .then(function(j){ if(eSave) eSave.textContent='✓ Save changes';
+        if(j&&j.ok){ dirty=false; setEditing(false); toast('Saved! Changes are live — back to the normal view.'); }
         else { toast('Save failed'+(j&&j.error?': '+j.error:'')); } })
-      .catch(function(){ eSave.textContent='Save changes'; toast('Save failed — sign in again at /admin/login'); });
-  });
-  eExport.addEventListener('click',function(){
+      .catch(function(){ if(eSave) eSave.textContent='✓ Save changes'; toast('Save failed — sign in again at /admin/login'); });
+  }
+  function doCancel(){
+    nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(snapshot[k]!=null)el.innerHTML=snapshot[k];});
+    dirty=false; setEditing(false); toast('Changes discarded — back to the normal view.');
+  }
+
+  if(eEdit) eEdit.addEventListener('click',enterEdit);
+  if(eSave) eSave.addEventListener('click',doSave);
+  if(eCancel) eCancel.addEventListener('click',doCancel);
+  if(eExport) eExport.addEventListener('click',function(){
     var blob=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});
     var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='content.json';
     document.body.appendChild(a); a.click(); a.remove();
-    toast('content.json downloaded — commit it to publish for everyone');
+    toast('content.json downloaded — commit it to publish for everyone.');
   });
+  document.addEventListener('keydown',function(e){
+    if(editing() && (e.ctrlKey||e.metaKey) && (e.key==='s'||e.key==='S')){ e.preventDefault(); doSave(); }
+    else if(editing() && e.key==='Escape'){ doCancel(); }
+  });
+  window.addEventListener('beforeunload',function(e){ if(editing() && dirty){ e.preventDefault(); e.returnValue=''; } });
 
   function enter(){
     if(SERVER_ADMIN){ showBar('server'); return; }
@@ -746,6 +797,30 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
     if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='E'||e.key==='e')){ e.preventDefault(); enter(); }
   });
   if(location.hash==='#admin'||location.hash==='#edit'||/[?&]edit=1/.test(location.search)) enter();
+})();
+
+/* ---- Visitor polish: scroll progress, nav shadow, active-section nav, back-to-top ---- */
+(function(){
+  var nav=document.querySelector('.nav'), prog=document.getElementById('progress'), toTop=document.getElementById('toTop');
+  var links=[].slice.call(document.querySelectorAll('.nav-links a[href^="#"]')), secmap={};
+  links.forEach(function(a){var id=a.getAttribute('href').slice(1);if(document.getElementById(id))secmap[id]=a;});
+  function onScroll(){
+    var y=window.pageYOffset||document.documentElement.scrollTop;
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    if(prog) prog.style.width=(h>0?(y/h*100):0)+'%';
+    if(nav) nav.classList.toggle('scrolled', y>18);
+    if(toTop) toTop.classList.toggle('show', y>640);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  if(toTop) toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  var ids=Object.keys(secmap);
+  if(ids.length && 'IntersectionObserver' in window){
+    var spy=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){
+        ids.forEach(function(id){secmap[id].classList.toggle('active', id===e.target.id);}); } });
+    },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+    ids.forEach(function(id){spy.observe(document.getElementById(id));});
+  }
 })();
 
 /* ---- Champagne celebration on "Apply for Elite" ---- */
