@@ -11,9 +11,12 @@ Freedom · Trust). No frameworks, no build step — one self-contained `index.ht
 Palette: green `#234F3D` · charcoal `#2D2D2D` · warm white `#F8F7F3` ·
 gold `#c79a3b` · plum `#5B2C6F`.
 
-## Add the logo
-Save the MacRandle Acres logo as **`logo.png`** in this folder — it appears in
-the hero automatically (and is gracefully hidden if the file is missing).
+## Logo & animation
+The MacRandle Acres logo ships as **`logo.jpg`** — shown in the hero (with a
+pulsing moonlight glow + gentle float) and used as the favicon / social image.
+Animated touches: headline gold shimmer, drifting-leaf ambience canvas, the
+Growth Scorecard numbers counting up on scroll, a glowing nav mark, and hover
+micro-interactions. All motion respects `prefers-reduced-motion`.
 
 Positioning: sell **measurable growth** (clarity, growth, confidence, time,
 profit), not tasks. Signature deliverable is the monthly **Growth Scorecard**.

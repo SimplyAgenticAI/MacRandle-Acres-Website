@@ -10,6 +10,8 @@
 <meta property="og:title" content="MacRandle Acres — Remove Friction. Accelerate Growth.">
 <meta property="og:description" content="Cultivating better businesses. A Fractional Growth Advisor for real estate teams.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="logo.jpg">
+<link rel="icon" type="image/jpeg" href="logo.jpg">
 
 <!--
   ┌────────────────────────────────────────────────────────────────┐
@@ -51,6 +53,10 @@ a{color:inherit;text-decoration:none}
   color:var(--green);padding:6px 15px;border:1px solid var(--bd);border-radius:100px;background:rgba(35,79,61,.05);margin-bottom:18px}
 .accent-text{background:linear-gradient(120deg,var(--green) 20%,var(--gold) 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.shimmer{background:linear-gradient(100deg,var(--green) 0%,var(--green) 36%,var(--gold-l) 50%,var(--green) 64%,var(--green) 100%);
+  background-size:260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:sheen 5.5s ease-in-out infinite}
+@keyframes sheen{0%{background-position:135% 0}100%{background-position:-135% 0}}
 .gold-text{color:var(--gold-d)}
 .serif-i{font-family:'Fraunces',serif;font-style:italic;font-weight:500}
 
@@ -64,6 +70,16 @@ a{color:inherit;text-decoration:none}
 .leaf.l1{width:440px;height:440px;top:-120px;left:-100px;background:radial-gradient(circle,rgba(35,79,61,.14),transparent 68%);animation:drift 24s ease-in-out infinite}
 .leaf.l2{width:400px;height:400px;bottom:-120px;right:-80px;background:radial-gradient(circle,rgba(199,154,59,.13),transparent 68%);animation:drift 30s ease-in-out infinite reverse}
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-36px)}}
+#leaves{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.mark{animation:markGlow 3.8s ease-in-out infinite}
+@keyframes markGlow{
+  0%,100%{box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18),0 0 0 rgba(199,154,59,0)}
+  50%{box-shadow:0 0 0 1px rgba(199,154,59,.45),0 3px 10px rgba(35,49,40,.18),0 0 15px rgba(199,154,59,.4)}}
+.card .ico{transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.card:hover .ico{transform:scale(1.1) rotate(-4deg)}
+.val-item .vi{transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.val-item:hover .vi{transform:translateY(-4px) scale(1.14)}
+.report li .val{transition:color .3s}
 
 /* Brand mark (moon + M) */
 .mark{width:34px;height:34px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;position:relative;
@@ -99,8 +115,16 @@ a{color:inherit;text-decoration:none}
 .hero{position:relative;padding:96px 0 60px;text-align:center}
 .hero .halo{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:min(560px,88vw);height:360px;z-index:-1;
   background:radial-gradient(circle at 50% 30%,rgba(199,154,59,.16),transparent 62%)}
-.hero-logo{width:132px;height:auto;margin:0 auto 22px;display:block;filter:drop-shadow(0 12px 28px rgba(35,49,40,.22))}
-.hero .tag{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:clamp(16px,2vw,19px);color:var(--gold-d);margin-bottom:14px}
+.hero-logo-wrap{position:relative;width:max-content;margin:0 auto 24px;display:block}
+.logo-glow{position:absolute;inset:-16%;border-radius:50%;z-index:0;pointer-events:none;filter:blur(16px);
+  background:radial-gradient(circle,rgba(199,154,59,.4),rgba(199,154,59,.1) 45%,transparent 66%);
+  animation:glowPulse 4.2s ease-in-out infinite}
+.hero-logo{position:relative;z-index:1;width:clamp(168px,24vw,216px);height:auto;display:block;border-radius:24px;
+  box-shadow:0 20px 48px rgba(35,49,40,.32),0 0 0 1px rgba(255,255,255,.06) inset;
+  animation:logoIn 1s cubic-bezier(.2,.8,.2,1) both, floaty 6.5s ease-in-out 1.1s infinite}
+@keyframes glowPulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes logoIn{0%{opacity:0;transform:scale(.82) translateY(14px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 .hero h1{font-size:clamp(42px,7.6vw,86px);font-weight:600;margin-bottom:22px;letter-spacing:-.02em}
 .hero .promise{font-size:clamp(17px,2.2vw,21px);color:var(--ink2);max-width:660px;margin:0 auto 30px}
 .hero .promise b{color:var(--ink);font-weight:600}
@@ -261,6 +285,7 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 <div class="bgwash"></div>
 <div class="leaf l1"></div>
 <div class="leaf l2"></div>
+<canvas id="leaves"></canvas>
 
 <!-- NAV -->
 <nav class="nav">
@@ -281,10 +306,12 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 <header class="hero" id="top">
   <div class="halo"></div>
   <div class="wrap">
-    <img class="hero-logo" src="logo.png" alt="MacRandle Acres" onerror="this.style.display='none'">
-    <div class="reveal in tag">Cultivating better businesses</div>
+    <div class="hero-logo-wrap reveal in">
+      <span class="logo-glow"></span>
+      <img class="hero-logo" src="logo.jpg" alt="MacRandle Acres — Cultivating Better Businesses" onerror="this.parentNode.style.display='none'">
+    </div>
     <span class="eyebrow reveal in">Fractional Growth Advisor · For Real Estate Teams</span>
-    <h1 class="reveal in"><span class="accent-text">Remove Friction.</span><br>Accelerate Growth.</h1>
+    <h1 class="reveal in"><span class="accent-text shimmer">Remove Friction.</span><br>Accelerate Growth.</h1>
     <p class="promise reveal in">Every month I find hidden opportunities to make your real estate business <b>more profitable</b> — then I implement the systems to capture them.</p>
     <div class="hero-cta reveal in">
       <a class="btn btn-primary" href="[[LINK]]-schedule">Book a Growth Audit</a>
@@ -404,13 +431,13 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
           </div>
           <div class="rt-sub">MacRandle Acres · prepared for your team</div>
           <ul>
-            <li><span class="lbl"><span class="dot2">🔎</span>Opportunities found</span><span class="val gold">14</span></li>
-            <li><span class="lbl"><span class="dot2">💰</span>Money saved</span><span class="val g">$3,200</span></li>
-            <li><span class="lbl"><span class="dot2">🎯</span>Leads recovered</span><span class="val g">27</span></li>
-            <li><span class="lbl"><span class="dot2">📉</span>Ad spend optimized</span><span class="val g">$1,850</span></li>
-            <li><span class="lbl"><span class="dot2">🤖</span>AI conversations handled</span><span class="val">431</span></li>
-            <li><span class="lbl"><span class="dot2">📅</span>Appointments booked</span><span class="val g">19</span></li>
-            <li><span class="lbl"><span class="dot2">⚙️</span>Systems improved</span><span class="val">6</span></li>
+            <li><span class="lbl"><span class="dot2">🔎</span>Opportunities found</span><span class="val gold count" data-to="14">0</span></li>
+            <li><span class="lbl"><span class="dot2">💰</span>Money saved</span><span class="val g count" data-prefix="$" data-to="3200">$0</span></li>
+            <li><span class="lbl"><span class="dot2">🎯</span>Leads recovered</span><span class="val g count" data-to="27">0</span></li>
+            <li><span class="lbl"><span class="dot2">📉</span>Ad spend optimized</span><span class="val g count" data-prefix="$" data-to="1850">$0</span></li>
+            <li><span class="lbl"><span class="dot2">🤖</span>AI conversations handled</span><span class="val count" data-to="431">0</span></li>
+            <li><span class="lbl"><span class="dot2">📅</span>Appointments booked</span><span class="val g count" data-to="19">0</span></li>
+            <li><span class="lbl"><span class="dot2">⚙️</span>Systems improved</span><span class="val count" data-to="6">0</span></li>
             <li><span class="lbl"><span class="dot2">➡️</span>Next month's priorities</span><span class="val gold">Set</span></li>
           </ul>
         </div>
@@ -522,6 +549,50 @@ var io=new IntersectionObserver(function(entries){
   entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
 },{threshold:.14});
 document.querySelectorAll('.reveal:not(.in)').forEach(function(el){io.observe(el);});
+
+var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* Growth Scorecard — count up on scroll into view */
+(function(){
+  function fmt(el,n){var p=el.getAttribute('data-prefix')||'';el.textContent=p+Math.round(n).toLocaleString();}
+  function run(el){
+    var to=parseFloat(el.getAttribute('data-to'))||0;
+    if(REDUCE){fmt(el,to);return;}
+    var dur=1300,start=null;
+    function step(ts){start=start||ts;var p=Math.min((ts-start)/dur,1);
+      fmt(el,(1-Math.pow(1-p,3))*to);if(p<1)requestAnimationFrame(step);else fmt(el,to);}
+    requestAnimationFrame(step);
+  }
+  var done=false, rep=document.querySelector('#scorecard .report');
+  if(!rep)return;
+  var ob=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting&&!done){done=true;
+      document.querySelectorAll('#scorecard .count').forEach(run); ob.disconnect();} });
+  },{threshold:.45});
+  ob.observe(rep);
+})();
+
+/* Drifting leaves — subtle botanical ambience */
+(function(){
+  if(REDUCE)return;
+  var c=document.getElementById('leaves'); if(!c)return;
+  var x=c.getContext('2d'),W,H,leaves=[];
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function mk(top){return {x:rnd(0,W),y:top?rnd(-H,0):rnd(-40,-10),s:rnd(6,13),sp:rnd(.22,.6),
+    sway:rnd(.4,1.3),ph:rnd(0,6.28),rot:rnd(0,6.28),vr:rnd(-.012,.012),
+    col:Math.random()<.5?'199,154,59':'35,79,61',a:rnd(.05,.15)};}
+  function init(){W=c.width=innerWidth;H=c.height=innerHeight;leaves=[];
+    var n=Math.min(22,Math.floor(W/64));for(var i=0;i<n;i++)leaves.push(mk(true));}
+  function draw(){x.clearRect(0,0,W,H);
+    for(var i=0;i<leaves.length;i++){var l=leaves[i];
+      l.y+=l.sp; l.ph+=.01; l.x+=Math.sin(l.ph)*l.sway*.3; l.rot+=l.vr;
+      if(l.y>H+20){leaves[i]=mk(false);continue;}
+      x.save();x.translate(l.x,l.y);x.rotate(l.rot);x.beginPath();
+      x.moveTo(0,-l.s);x.quadraticCurveTo(l.s*.72,0,0,l.s);x.quadraticCurveTo(-l.s*.72,0,0,-l.s);
+      x.fillStyle='rgba('+l.col+','+l.a+')';x.fill();x.restore();}
+    requestAnimationFrame(draw);}
+  init();draw();addEventListener('resize',init);
+})();
 </script>
 </body>
 </html>
