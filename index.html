@@ -293,6 +293,28 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
   padding:7px 15px;border-radius:9px;transition:.2s}
 .foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
 
+/* Button FX */
+.fx-start::after{content:'→';display:inline-block;margin-left:8px;transition:transform .25s ease}
+.fx-start:hover::after{transform:translateX(6px)}
+.fx-gleam{position:relative;overflow:hidden}
+.fx-gleam::after{content:'';position:absolute;top:0;left:-130%;width:55%;height:100%;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);
+  animation:gleam 4s ease-in-out infinite}
+@keyframes gleam{0%{left:-130%}22%{left:165%}100%{left:165%}}
+.fx-elite{border-color:rgba(199,154,59,.6)!important;color:var(--gold-d)!important;
+  background:linear-gradient(135deg,rgba(199,154,59,.13),rgba(199,154,59,.03))!important;
+  animation:eliteAura 2.6s ease-in-out infinite}
+.fx-elite:hover{border-color:var(--gold)!important;
+  background:linear-gradient(135deg,rgba(199,154,59,.22),rgba(199,154,59,.07))!important}
+@keyframes eliteAura{0%,100%{box-shadow:0 6px 20px rgba(199,154,59,.2)}
+  50%{box-shadow:0 0 24px 3px rgba(199,154,59,.5),0 8px 28px rgba(199,154,59,.4)}}
+.fizz{position:fixed;z-index:300;pointer-events:none;will-change:transform,opacity;
+  animation:fizzpop var(--dur,1200ms) cubic-bezier(.15,.6,.3,1) forwards}
+@keyframes fizzpop{
+  0%{transform:translate(-50%,-50%) scale(.3);opacity:0}
+  12%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{transform:translate(calc(-50% + var(--dx,0)),calc(-50% + var(--dy,0))) rotate(var(--rot,0deg)) scale(.9);opacity:0}}
+
 @media(max-width:900px){
   .g3{grid-template-columns:1fr 1fr}
   .score-grid{grid-template-columns:1fr;gap:30px}
@@ -494,7 +516,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
           <li><span class="ck">✓</span><span data-edit="t1_li3">Clear, prioritized recommendations</span></li>
           <li><span class="ck">✓</span><span data-edit="t1_li4">I implement the highest-ROI fixes</span></li>
         </ul>
-        <a class="btn btn-ghost" href="[[LINK]]-schedule"><span data-edit="t1_btn">Start here</span></a>
+        <a class="btn btn-ghost fx-start" href="[[LINK]]-schedule"><span data-edit="t1_btn">Start here</span></a>
       </div>
       <div class="tier feature reveal d2">
         <span class="tag" data-edit="t2_tag">Most popular</span>
@@ -507,7 +529,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
           <li><span class="ck">✓</span><span data-edit="t2_li3">Continuous monthly optimization</span></li>
           <li><span class="ck">✓</span><span data-edit="t2_li4">Priority support</span></li>
         </ul>
-        <a class="btn btn-gold" href="[[LINK]]-schedule"><span data-edit="t2_btn">Become a partner</span></a>
+        <a class="btn btn-gold fx-gleam" href="[[LINK]]-schedule"><span data-edit="t2_btn">Become a partner</span></a>
       </div>
       <div class="tier reveal d3">
         <div class="tname" data-edit="t3_name">Rainmaker Elite</div>
@@ -520,7 +542,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
           <li><span class="ck">✓</span><span data-edit="t3_li4">Recruiting & expansion systems</span></li>
           <li><span class="ck">✓</span><span data-edit="t3_li5">Quarterly planning</span></li>
         </ul>
-        <a class="btn btn-ghost" href="[[LINK]]-schedule"><span data-edit="t3_btn">Apply for Elite</span></a>
+        <a class="btn btn-ghost fx-elite" href="[[LINK]]-schedule"><span data-edit="t3_btn">Apply for Elite</span></a>
       </div>
     </div>
   </div>
@@ -724,6 +746,52 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
     if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='E'||e.key==='e')){ e.preventDefault(); enter(); }
   });
   if(location.hash==='#admin'||location.hash==='#edit'||/[?&]edit=1/.test(location.search)) enter();
+})();
+
+/* ---- Champagne celebration on "Apply for Elite" ---- */
+(function(){
+  var el=document.querySelector('.fx-elite'); if(!el) return;
+  var BUBBLE=['#e0b862','#c79a3b','#f7d36a','#f6f4ec','#ffffff'];
+  var CONFETTI=['#c79a3b','#e0b862','#234F3D','#5B2C6F','#f6f4ec'];
+  function pop(cx,cy){
+    if(REDUCE) return;
+    for(var i=0;i<32;i++){
+      var bub=i<21, p=document.createElement('div'), a, dist, dx, dy, size, dur;
+      if(bub){                                   // champagne fizz rises in a fan
+        a=(-Math.PI/2)+(Math.random()-.5)*1.5; dist=45+Math.random()*135;
+        dx=Math.cos(a)*dist; dy=Math.sin(a)*dist-(30+Math.random()*70);
+        size=5+Math.random()*7;
+        p.style.background=BUBBLE[(Math.random()*BUBBLE.length)|0]; p.style.borderRadius='50%';
+        p.style.width=size+'px';
+      } else {                                   // confetti fans out and falls
+        a=(-Math.PI/2)+(Math.random()-.5)*2.6; dist=50+Math.random()*120;
+        dx=Math.cos(a)*dist; dy=Math.sin(a)*dist+(50+Math.random()*100);
+        size=6+Math.random()*5;
+        p.style.background=CONFETTI[(Math.random()*CONFETTI.length)|0]; p.style.borderRadius='2px';
+        p.style.width=(size*0.6)+'px';
+      }
+      p.className='fizz'; p.style.left=cx+'px'; p.style.top=cy+'px'; p.style.height=size+'px';
+      dur=1000+Math.random()*750;
+      p.style.setProperty('--dx',dx.toFixed(1)+'px');
+      p.style.setProperty('--dy',dy.toFixed(1)+'px');
+      p.style.setProperty('--rot',((Math.random()*720-360)|0)+'deg');
+      p.style.setProperty('--dur',dur+'ms');
+      document.body.appendChild(p);
+      (function(n){setTimeout(function(){n.remove();},dur+80);})(p);
+    }
+  }
+  el.addEventListener('click',function(e){
+    if(document.body.classList.contains('editing')) return;   // don't fire while editing
+    var r=el.getBoundingClientRect();
+    pop(r.left+r.width/2, r.top+r.height/2);
+    var href=el.getAttribute('href')||'';
+    if(href.indexOf('[[LINK]]')!==-1 || href.charAt(0)==='#'){
+      e.preventDefault();                                     // placeholder/anchor: just celebrate
+    } else if(href){
+      e.preventDefault();                                     // real link: celebrate, then go
+      setTimeout(function(){ window.location.href=href; }, 850);
+    }
+  });
 })();
 </script>
 </body>
