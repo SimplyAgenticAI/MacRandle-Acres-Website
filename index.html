@@ -281,6 +281,17 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 #adminToast{position:fixed;right:20px;bottom:24px;z-index:210;background:#234F3D;color:#fff;padding:11px 16px;border-radius:10px;
   font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;box-shadow:var(--shadow)}
 #adminToast.show{opacity:1;transform:none}
+.ab-export{background:#e0b862;color:#2a2005;display:none}
+#adminBar .ab-lbl{white-space:nowrap}
+#localBanner{position:fixed;left:0;right:0;top:0;z-index:190;display:none;text-align:center;font-weight:600;
+  font-size:13px;padding:9px 16px;background:linear-gradient(90deg,#e0b862,#c79a3b);color:#2a2005;box-shadow:0 3px 12px rgba(0,0,0,.2)}
+#localBanner.show{display:block}
+#localBanner b{font-weight:800}
+.foot-admin{margin-top:18px}
+.foot-admin a{display:inline-flex;align-items:center;gap:7px;color:rgba(246,244,236,.45);font-size:11.5px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);
+  padding:7px 15px;border-radius:9px;transition:.2s}
+.foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
 
 @media(max-width:900px){
   .g3{grid-template-columns:1fr 1fr}
@@ -548,14 +559,17 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
     <div class="fvals" data-edit="foot_vals">Growth · Foundation · Freedom · Trust</div>
     <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
     <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. We help ambitious real estate teams remove friction from growth.</span></small>
+    <div class="foot-admin"><a href="/admin/login" id="adminLink">🔒 Admin · Edit site</a></div>
   </div>
 </footer>
 
-<!-- ADMIN EDIT BAR (only shown to signed-in admin) -->
+<!-- ADMIN EDIT BAR (shown when signed in, or in local preview) -->
+<div id="localBanner">✎ Local preview — edits save to <b>this browser only</b>. Deploy the server to publish live, or use <b>Export</b>.</div>
 <div id="adminBar" aria-hidden="true">
   <span class="ab-dot"></span><span class="ab-lbl">Admin</span>
   <button class="ab-edit" type="button">✎ Edit page</button>
   <button class="ab-save" type="button">Save changes</button>
+  <button class="ab-export" type="button">⬇ Export</button>
   <button class="ab-cancel" type="button">Cancel</button>
   <a class="ab-logout" href="/admin/logout">Log out</a>
 </div>
@@ -631,41 +645,85 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
   init();draw();addEventListener('resize',init);
 })();
 
-/* ---- Admin inline editor (only active when signed in) ---- */
+/* ---- Unified inline editor: server-publish OR local-preview ---- */
 (function(){
-  if(!window.__ADMIN__) return;
+  var SERVED = (typeof window.__CONTENT__ !== 'undefined');   // true when Flask served the page
+  var SERVER_ADMIN = (window.__ADMIN__ === true);             // signed in via /admin/login
+  var LKEY = 'macra_content_v1';
   var bar=document.getElementById('adminBar'); if(!bar) return;
-  bar.classList.add('show');
-  var eEdit=bar.querySelector('.ab-edit'), eSave=bar.querySelector('.ab-save'), eCancel=bar.querySelector('.ab-cancel');
-  var snapshot={};
+  var link=document.getElementById('adminLink'), banner=document.getElementById('localBanner');
+  var eEdit=bar.querySelector('.ab-edit'), eSave=bar.querySelector('.ab-save'),
+      eCancel=bar.querySelector('.ab-cancel'), eExport=bar.querySelector('.ab-export'),
+      eLogout=bar.querySelector('.ab-logout'), eLbl=bar.querySelector('.ab-lbl');
+  var snapshot={}, mode=null;
+
   function nodes(){return document.querySelectorAll('[data-edit]');}
-  function blockNav(e){var a=e.target.closest('a');if(a)e.preventDefault();}
+  function collect(){var d={};nodes().forEach(function(el){d[el.getAttribute('data-edit')]=el.innerHTML;});return d;}
+  function toast(m){var t=document.getElementById('adminToast');t.textContent=m;t.classList.add('show');
+    clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3000);}
+
+  /* Apply a locally-saved draft when there is no server backing the page */
+  if(!SERVED){
+    try{var d=JSON.parse(localStorage.getItem(LKEY)||'{}');
+      nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(d[k]!=null)el.innerHTML=d[k];});}catch(e){}
+  }
+
+  function showBar(m){
+    mode=m; bar.classList.add('show');
+    eLbl.textContent = (m==='server') ? 'Admin' : 'Admin · local preview';
+    eLogout.style.display = (m==='server') ? '' : 'none';
+    eExport.style.display = (m==='local') ? '' : 'none';
+    if(m==='local' && banner) banner.classList.add('show');
+  }
+  function blockNav(e){var a=e.target.closest('a');if(a && !a.classList.contains('ab-logout'))e.preventDefault();}
   function setEditing(on){
     document.body.classList.toggle('editing',on);
-    nodes().forEach(function(el){ if(on){el.setAttribute('contenteditable','true');} else {el.removeAttribute('contenteditable');} });
+    nodes().forEach(function(el){on?el.setAttribute('contenteditable','true'):el.removeAttribute('contenteditable');});
     eEdit.style.display=on?'none':''; eSave.style.display=on?'':'none'; eCancel.style.display=on?'':'none';
-    if(on) document.addEventListener('click',blockNav,true); else document.removeEventListener('click',blockNav,true);
+    if(on)document.addEventListener('click',blockNav,true); else document.removeEventListener('click',blockNav,true);
   }
-  function toast(m){var t=document.getElementById('adminToast');t.textContent=m;t.classList.add('show');
-    clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},2800);}
+
   eEdit.addEventListener('click',function(){
-    snapshot={}; nodes().forEach(function(el){snapshot[el.getAttribute('data-edit')]=el.innerHTML;});
-    setEditing(true); toast('Editing — click any text to change it');
+    snapshot=collect(); setEditing(true);
+    toast(mode==='server' ? 'Editing — click any text, then Save' : 'Editing — click any text to change it');
   });
   eCancel.addEventListener('click',function(){
     nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(snapshot[k]!=null)el.innerHTML=snapshot[k];});
     setEditing(false);
   });
   eSave.addEventListener('click',function(){
-    var data={}; nodes().forEach(function(el){data[el.getAttribute('data-edit')]=el.innerHTML;});
+    var data=collect();
+    if(mode==='local'){
+      try{localStorage.setItem(LKEY,JSON.stringify(data));toast('Saved to this browser — use Export to publish');}
+      catch(e){toast('Could not save in this browser');}
+      setEditing(false); return;
+    }
     eSave.textContent='Saving…';
     fetch('/api/content',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)})
       .then(function(r){return r.json();})
       .then(function(j){ eSave.textContent='Save changes';
         if(j&&j.ok){ toast('Saved — changes are live for everyone'); setEditing(false); }
         else { toast('Save failed'+(j&&j.error?': '+j.error:'')); } })
-      .catch(function(){ eSave.textContent='Save changes'; toast('Save failed — try signing in again'); });
+      .catch(function(){ eSave.textContent='Save changes'; toast('Save failed — sign in again at /admin/login'); });
   });
+  eExport.addEventListener('click',function(){
+    var blob=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='content.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('content.json downloaded — commit it to publish for everyone');
+  });
+
+  function enter(){
+    if(SERVER_ADMIN){ showBar('server'); return; }
+    if(SERVED){ window.location.href='/admin/login'; return; }  // Flask running, not signed in
+    showBar('local');                                           // opened as a file / static host
+  }
+  if(SERVER_ADMIN) showBar('server');                           // already signed in → bar appears
+  if(link) link.addEventListener('click',function(e){ e.preventDefault(); enter(); });
+  document.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='E'||e.key==='e')){ e.preventDefault(); enter(); }
+  });
+  if(location.hash==='#admin'||location.hash==='#edit'||/[?&]edit=1/.test(location.search)) enter();
 })();
 </script>
 </body>

@@ -14,11 +14,18 @@ gold `#c79a3b` · plum `#5B2C6F`.
 The site runs as a small **Flask app** (`app.py`).
 
 - **Visitors** see the public page, read-only, with the latest saved content.
-- **Admin** signs in at **`/admin/login`**, then a floating **"✎ Edit page"**
-  bar appears. Click *Edit page* → every headline, paragraph, card, price, and
-  button becomes click-to-type editable. Click **Save changes** and the edits
-  are written to `content.json` and go live for everyone. *Cancel* reverts,
-  *Log out* leaves admin mode.
+- **Admin** signs in via the **🔒 Admin · Edit site** link in the footer (or
+  go straight to **`/admin/login`**, or press **Ctrl/⌘+Shift+E**). After signing
+  in, a floating **"✎ Edit page"** bar appears — click it and every headline,
+  paragraph, card, price, and button becomes click-to-type editable. Click
+  **Save changes** and the edits are written to `content.json` and go live for
+  everyone. *Cancel* reverts, *Log out* leaves admin mode.
+
+**Local preview (no server needed):** open `index.html` directly, or on a
+static host, click the same **Admin** link — you'll enter a *local preview*
+edit mode. Changes save to your browser and don't affect the live site until you
+click **⬇ Export** to download an updated `content.json` and commit it. This
+lets you try editing before deploying.
 
 Edits are stored as content overrides in `content.json`, keyed by the
 `data-edit="..."` attributes in `index.html`.
