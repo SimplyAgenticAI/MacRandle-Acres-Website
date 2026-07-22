@@ -2,8 +2,18 @@
 
 A hand-built, single-page site positioning Jeff Randle / MacRandle Acres as a
 **Monthly Revenue Growth Advisor** for real estate teams — outcome-focused, not
-service-focused. Cosmic-navy brand system, animated starfield/aurora, scroll
-reveals. No frameworks, no build step — one self-contained `index.html`.
+service-focused. Botanical, premium brand system matching the MacRandle Acres
+logo: warm-white background, forest-green primary, charcoal text, antique-gold
+accents, plum used sparingly; Fraunces serif display + Inter body; tagline
+"Cultivating better businesses" and the four values (Growth · Foundation ·
+Freedom · Trust). No frameworks, no build step — one self-contained `index.html`.
+
+Palette: green `#234F3D` · charcoal `#2D2D2D` · warm white `#F8F7F3` ·
+gold `#c79a3b` · plum `#5B2C6F`.
+
+## Add the logo
+Save the MacRandle Acres logo as **`logo.png`** in this folder — it appears in
+the hero automatically (and is gracefully hidden if the file is missing).
 
 Positioning: sell **measurable growth** (clarity, growth, confidence, time,
 profit), not tasks. Signature deliverable is the monthly **Growth Scorecard**.
