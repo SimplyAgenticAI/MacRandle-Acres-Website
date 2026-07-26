@@ -201,16 +201,7 @@ section{position:relative;padding:74px 0}
 .report-top .rt-title{font-family:'Fraunces',serif;font-weight:700;font-size:17px;color:var(--green)}
 .report-top .rt-mo{font-size:12px;color:var(--ink3)}
 .report .rt-sub{font-size:12px;color:var(--ink3);margin-bottom:18px}
-.report ul{list-style:none;display:grid;gap:11px}
-.report li{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;
-  padding-bottom:11px;border-bottom:1px solid rgba(35,79,61,.1)}
-.report li:last-child{border-bottom:none;padding-bottom:0}
-.report li .lbl{display:flex;align-items:center;gap:10px;color:var(--ink)}
-.report li .dot2{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12px;
-  background:linear-gradient(135deg,rgba(35,79,61,.12),rgba(199,154,59,.16));border:1px solid var(--bd-soft)}
-.report li .val{font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--green)}
-.report li .val.g{color:#2f7a56}
-.report li .val.gold{color:var(--gold-d)}
+/* (legacy Scorecard list styles removed — replaced by the .rp-* dashboard) */
 
 /* Pricing */
 .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
@@ -328,6 +319,58 @@ body.editing #progress{display:none}
 #toTop:hover{box-shadow:0 12px 30px rgba(35,79,61,.4);transform:translateY(-2px)}
 body.editing #toTop{display:none}
 
+/* ===== Phase 1 signature visuals ===== */
+/* #1 Root-growth spine */
+#rootSpineWrap{position:fixed;top:0;left:14px;width:36px;height:100vh;z-index:40;pointer-events:none}
+#rootSpine{width:100%;height:100%;overflow:visible;display:block}
+#rootPath{fill:none;stroke:url(#rootGrad);stroke-width:2.2;stroke-linecap:round;
+  stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 3px rgba(199,154,59,.35))}
+.root-leaf{position:absolute;width:12px;height:12px;border-radius:0 100% 0 100%;
+  transform:rotate(45deg) scale(0);opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s}
+.root-leaf.on{transform:rotate(45deg) scale(1);opacity:.92}
+.rl-gold{background:linear-gradient(135deg,#e0b862,#c79a3b);box-shadow:0 0 7px rgba(199,154,59,.5)}
+.rl-green{background:linear-gradient(135deg,#3a6b54,#234F3D);box-shadow:0 0 7px rgba(35,79,61,.4)}
+@media(max-width:1280px){#rootSpineWrap{display:none}}
+body.editing #rootSpineWrap{display:none}
+
+/* #2 Living Scorecard dashboard */
+.rp-chart{margin:16px 0 4px;padding:12px 12px 6px;border:1px solid rgba(35,79,61,.1);border-radius:12px;
+  background:linear-gradient(180deg,rgba(199,154,59,.07),rgba(255,255,255,0))}
+.rp-chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.rp-chart-lbl{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase}
+.rp-chart-up{font-size:11px;font-weight:700;color:#2f7a56}
+.rp-spark{width:100%;height:62px;display:block}
+.rp-area{opacity:0;transition:opacity 1s ease .5s}
+.report.in .rp-area{opacity:1}
+.rp-line{fill:none;stroke:var(--gold-d);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.7s cubic-bezier(.4,0,.2,1) .2s}
+.report.in .rp-line{stroke-dashoffset:0}
+.rp-dot{fill:var(--gold-d);opacity:0;transition:opacity .4s ease 1.7s}
+.report.in .rp-dot{opacity:1}
+.rp-metrics{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:11px 16px;margin:16px 0 0}
+.rp-metrics li{min-width:0}
+.rp-m-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.rp-m-lbl{font-size:11.5px;color:var(--ink3);line-height:1.25;overflow:hidden}
+.rp-m-lbl .dot2{width:auto;height:auto;background:none;border:none;margin-right:4px;font-size:12px}
+.rp-m-val{font-family:'Fraunces',serif;font-weight:700;font-size:16px;color:var(--green);flex:0 0 auto}
+.rp-m-val.g{color:#2f7a56}.rp-m-val.gold{color:var(--gold-d)}
+.rp-bar{display:block;height:4px;border-radius:3px;background:rgba(35,79,61,.1);margin-top:6px;overflow:hidden}
+.rp-bar i{display:block;height:100%;width:0;border-radius:3px;background:var(--grad-gold);
+  transition:width 1.1s cubic-bezier(.2,.8,.2,1) .35s}
+.report.in .rp-bar i{width:var(--w)}
+.rp-foot{display:flex;justify-content:space-between;align-items:center;margin-top:15px;padding-top:12px;
+  border-top:1px solid rgba(35,79,61,.1);font-size:13px}
+.rp-foot-l{display:flex;align-items:center;gap:8px;color:var(--ink)}
+.rp-foot-v{font-family:'Fraunces',serif;font-weight:700;color:var(--green)}
+.rp-next{margin-top:11px;font-size:12.5px;color:var(--ink3);display:flex;justify-content:space-between;align-items:center}
+.rp-next b{color:var(--gold-d);font-family:'Fraunces',serif}
+
+/* #4 Spotlight + 3D-tilt cards */
+.card,.tier{transform-style:preserve-3d;will-change:transform}
+.card::after,.tier::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  transition:opacity .3s;background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(199,154,59,.16),transparent 62%)}
+.card:hover::after,.tier:hover::after{opacity:1}
+
 /* Button FX */
 .fx-start::after{content:'→';display:inline-block;margin-left:8px;transition:transform .25s ease}
 .fx-start:hover::after{transform:translateX(6px)}
@@ -372,6 +415,22 @@ body.editing #toTop{display:none}
 <div class="leaf l1"></div>
 <div class="leaf l2"></div>
 <canvas id="leaves"></canvas>
+
+<!-- #1 Root-growth spine: draws in as you scroll -->
+<div id="rootSpineWrap" aria-hidden="true">
+  <svg id="rootSpine" viewBox="0 0 40 1000" preserveAspectRatio="none">
+    <defs><linearGradient id="rootGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e0b862"/><stop offset="0.5" stop-color="#c79a3b"/><stop offset="1" stop-color="#3a6b54"/>
+    </linearGradient></defs>
+    <path id="rootPath" pathLength="1" d="M20,2 C6,120 34,220 20,340 C6,460 34,560 20,680 C8,800 32,900 20,998"/>
+  </svg>
+  <span class="root-leaf rl-gold"  data-at="0.15" style="top:15%;left:5px"></span>
+  <span class="root-leaf rl-green" data-at="0.30" style="top:30%;left:23px"></span>
+  <span class="root-leaf rl-gold"  data-at="0.45" style="top:45%;left:6px"></span>
+  <span class="root-leaf rl-green" data-at="0.60" style="top:60%;left:22px"></span>
+  <span class="root-leaf rl-gold"  data-at="0.74" style="top:74%;left:7px"></span>
+  <span class="root-leaf rl-green" data-at="0.88" style="top:88%;left:21px"></span>
+</div>
 
 <!-- NAV -->
 <nav class="nav">
@@ -510,22 +569,37 @@ body.editing #toTop{display:none}
           <p class="sub" data-edit="score_sub">You're not paying for Facebook posts. You're paying for measurable business growth — and every month you see exactly what that growth looks like, in plain numbers.</p>
           <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="score_cta">Get your first Scorecard</span></a>
         </div>
-        <div class="report" aria-label="Example Growth Scorecard">
+        <div class="report" aria-label="Example Growth Scorecard (illustrative)">
           <div class="report-top">
             <span class="rt-title">📊 Growth Scorecard</span>
             <span class="rt-mo">Example month</span>
           </div>
           <div class="rt-sub">MacRandle Acres · prepared for your team</div>
-          <ul>
-            <li><span class="lbl"><span class="dot2">🔎</span><span data-edit="rl1">Opportunities found</span></span><span class="val gold count" data-to="14">0</span></li>
-            <li><span class="lbl"><span class="dot2">💰</span><span data-edit="rl2">Money saved</span></span><span class="val g count" data-prefix="$" data-to="3200">$0</span></li>
-            <li><span class="lbl"><span class="dot2">🎯</span><span data-edit="rl3">Leads recovered</span></span><span class="val g count" data-to="27">0</span></li>
-            <li><span class="lbl"><span class="dot2">📉</span><span data-edit="rl4">Ad spend optimized</span></span><span class="val g count" data-prefix="$" data-to="1850">$0</span></li>
-            <li><span class="lbl"><span class="dot2">🤖</span><span data-edit="rl5">AI conversations handled</span></span><span class="val count" data-to="431">0</span></li>
-            <li><span class="lbl"><span class="dot2">📅</span><span data-edit="rl6">Appointments booked</span></span><span class="val g count" data-to="19">0</span></li>
-            <li><span class="lbl"><span class="dot2">⚙️</span><span data-edit="rl7">Systems improved</span></span><span class="val count" data-to="6">0</span></li>
-            <li><span class="lbl"><span class="dot2">➡️</span><span data-edit="rl8">Next month's priorities</span></span><span class="val gold">Set</span></li>
+
+          <div class="rp-chart">
+            <div class="rp-chart-head"><span class="rp-chart-lbl">Growth momentum · last 6 months</span><span class="rp-chart-up">▲ trending up</span></div>
+            <svg class="rp-spark" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
+              <defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgba(224,184,98,.5)"/><stop offset="1" stop-color="rgba(224,184,98,0)"/></linearGradient></defs>
+              <path class="rp-area" d="M0,68 L60,58 L120,52 L180,36 L240,24 L300,10 L300,80 L0,80 Z" fill="url(#sparkFill)"/>
+              <path class="rp-line" pathLength="1" d="M0,68 L60,58 L120,52 L180,36 L240,24 L300,10"/>
+              <circle class="rp-dot" cx="300" cy="10" r="3.5"/>
+            </svg>
+          </div>
+
+          <ul class="rp-metrics">
+            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🔎</span><span data-edit="rl1">Opportunities found</span></span><span class="rp-m-val gold count" data-to="14">0</span></div><span class="rp-bar"><i style="--w:72%"></i></span></li>
+            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">💰</span><span data-edit="rl2">Money saved</span></span><span class="rp-m-val g count" data-prefix="$" data-to="3200">$0</span></div><span class="rp-bar"><i style="--w:64%"></i></span></li>
+            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🎯</span><span data-edit="rl3">Leads recovered</span></span><span class="rp-m-val g count" data-to="27">0</span></div><span class="rp-bar"><i style="--w:80%"></i></span></li>
+            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📉</span><span data-edit="rl4">Ad spend optimized</span></span><span class="rp-m-val g count" data-prefix="$" data-to="1850">$0</span></div><span class="rp-bar"><i style="--w:55%"></i></span></li>
+            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🤖</span><span data-edit="rl5">AI conversations handled</span></span><span class="rp-m-val count" data-to="431">0</span></div><span class="rp-bar"><i style="--w:90%"></i></span></li>
+            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📅</span><span data-edit="rl6">Appointments booked</span></span><span class="rp-m-val g count" data-to="19">0</span></div><span class="rp-bar"><i style="--w:60%"></i></span></li>
           </ul>
+          <div class="rp-foot">
+            <span class="rp-foot-l"><span class="dot2">⚙️</span><span data-edit="rl7">Systems improved</span></span>
+            <span class="rp-foot-v count" data-to="6">0</span>
+          </div>
+          <div class="rp-next"><span data-edit="rl8">Next month's priorities</span> <b>Set →</b></div>
         </div>
       </div>
     </div>
@@ -682,7 +756,11 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
   var done=false, rep=document.querySelector('#scorecard .report');
   if(!rep)return;
   var ob=new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting&&!done){done=true;
+    es.forEach(function(e){ if(e.isIntersecting&&!done){done=true; rep.classList.add('in');
+      rep.querySelectorAll('.rp-bar i').forEach(function(el){ el.style.width=el.style.getPropertyValue('--w')||'0'; });
+      var ln=rep.querySelector('.rp-line'); if(ln) ln.style.strokeDashoffset='0';
+      var ar=rep.querySelector('.rp-area'); if(ar) ar.style.opacity='1';
+      var dt=rep.querySelector('.rp-dot'); if(dt) dt.style.opacity='1';
       document.querySelectorAll('#scorecard .count').forEach(run); ob.disconnect();} });
   },{threshold:.45});
   ob.observe(rep);
@@ -806,12 +884,16 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
 /* ---- Visitor polish: scroll progress, nav shadow, active-section nav, back-to-top ---- */
 (function(){
   var nav=document.querySelector('.nav'), prog=document.getElementById('progress'), toTop=document.getElementById('toTop');
+  var spine=document.getElementById('rootPath'), leaves=[].slice.call(document.querySelectorAll('.root-leaf'));
   var links=[].slice.call(document.querySelectorAll('.nav-links a[href^="#"]')), secmap={};
   links.forEach(function(a){var id=a.getAttribute('href').slice(1);if(document.getElementById(id))secmap[id]=a;});
   function onScroll(){
     var y=window.pageYOffset||document.documentElement.scrollTop;
     var h=document.documentElement.scrollHeight-window.innerHeight;
-    if(prog) prog.style.width=(h>0?(y/h*100):0)+'%';
+    var p=h>0?(y/h):0;
+    if(prog) prog.style.width=(p*100)+'%';
+    if(spine) spine.style.strokeDashoffset=(1-p);
+    for(var i=0;i<leaves.length;i++){var f=parseFloat(leaves[i].getAttribute('data-at'))||0;leaves[i].classList.toggle('on',p>=f-0.01);}
     if(nav) nav.classList.toggle('scrolled', y>18);
     if(toTop) toTop.classList.toggle('show', y>640);
   }
@@ -825,6 +907,22 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
     },{rootMargin:'-45% 0px -50% 0px',threshold:0});
     ids.forEach(function(id){spy.observe(document.getElementById(id));});
   }
+})();
+
+/* ---- #4 Spotlight + 3D tilt on cards & pricing tiers ---- */
+(function(){
+  if(REDUCE || (window.matchMedia && matchMedia('(hover:none)').matches)) return;
+  var els=[].slice.call(document.querySelectorAll('.card,.tier'));
+  els.forEach(function(el){
+    el.addEventListener('mousemove',function(e){
+      var r=el.getBoundingClientRect();
+      var px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+      el.style.setProperty('--mx',(px*100).toFixed(1)+'%');
+      el.style.setProperty('--my',(py*100).toFixed(1)+'%');
+      el.style.transform='perspective(820px) rotateX('+((0.5-py)*7).toFixed(2)+'deg) rotateY('+((px-0.5)*7).toFixed(2)+'deg) translateY(-6px)';
+    });
+    el.addEventListener('mouseleave',function(){ el.style.transform=''; });
+  });
 })();
 
 /* ---- Champagne celebration on "Apply for Elite" ---- */
