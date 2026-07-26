@@ -95,6 +95,15 @@ a{color:inherit;text-decoration:none}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:70px}
 .brand{display:flex;align-items:center;gap:11px;font-family:'Fraunces',serif;font-weight:700;font-size:19px;color:var(--green);letter-spacing:.01em}
 .brand .sub{color:var(--ink3);font-weight:500;font-family:'Inter';font-size:13px}
+.brand-main{display:flex;align-items:center;gap:11px;color:var(--green)}
+.brand-hub{color:var(--ink3);font-weight:500;font-family:'Inter';font-size:13px;display:inline-flex;align-items:center;gap:4px;transition:color .2s}
+.brand-hub:hover{color:var(--gold-d)}
+.brand-hub .hub-arr{font-size:11px;transition:transform .2s}
+.brand-hub:hover .hub-arr{transform:translate(2px,-2px)}
+.foot-hub{margin-top:16px}
+.foot-hub a{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#2a2005;background:var(--grad-gold);padding:9px 18px;border-radius:10px;text-decoration:none;box-shadow:0 8px 22px rgba(199,154,59,.28);transition:transform .16s,box-shadow .16s}
+.foot-hub a:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(199,154,59,.4)}
+.foot-hub .fh-arr{font-size:12px}
 .nav-links{display:flex;gap:26px;align-items:center}
 .nav-links a{font-size:14px;color:var(--ink2);font-weight:500;transition:color .2s}
 .nav-links a:hover{color:var(--green)}
@@ -512,7 +521,7 @@ footer{position:relative}
 <!-- NAV -->
 <nav class="nav">
   <div class="wrap nav-in">
-    <a class="brand" href="#top"><span class="mark"><span>M</span></span> MacRandle Acres <span class="sub">· Jeff Randle</span></a>
+    <div class="brand"><a class="brand-main" href="#top"><span class="mark"><span>M</span></span> MacRandle Acres</a><a class="brand-hub" href="/hub" title="Jeff Randle — my landing page">· Jeff Randle <span class="hub-arr">↗</span></a></div>
     <div class="nav-links">
       <a href="#voice">Why it matters</a>
       <a href="#outcomes">What you get</a>
@@ -797,6 +806,7 @@ footer{position:relative}
     <div class="fvals" data-edit="foot_vals">Growth · Foundation · Freedom · Trust</div>
     <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
     <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. We help ambitious real estate teams remove friction from growth.</span></small>
+    <div class="foot-hub"><a href="/hub">🍃 Explore Jeff Randle · Lucid Mage <span class="fh-arr">↗</span></a></div>
     <div class="foot-admin"><a href="/admin/login" id="adminLink">🔒 Admin · Edit site</a></div>
   </div>
 </footer>

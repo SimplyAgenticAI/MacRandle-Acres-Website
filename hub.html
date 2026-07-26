@@ -146,6 +146,15 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 .foot-admin{margin-top:16px}
 .foot-admin a{display:inline-flex;align-items:center;gap:7px;color:rgba(246,244,236,.45);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);padding:7px 15px;border-radius:9px;transition:.2s}
 .foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.nav-offer{font-size:14px;font-weight:600;color:var(--ink2);display:inline-flex;align-items:center;gap:5px;transition:color .2s;white-space:nowrap}
+.nav-offer:hover{color:var(--green)}
+.nav-offer .no-arr{font-size:11px;color:var(--gold-d)}
+.foot-hub{margin-top:14px}
+.foot-hub a{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--cream);border:1px solid rgba(246,244,236,.25);padding:9px 18px;border-radius:10px;text-decoration:none;transition:.2s}
+.foot-hub a:hover{background:rgba(255,255,255,.08);border-color:rgba(224,184,98,.5)}
+.foot-hub a .fh-note{color:rgba(246,244,236,.6);font-weight:500}
+@media(max-width:560px){.nav-offer{display:none}}
 
 /* reveal */
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -202,7 +211,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 <nav class="nav">
   <div class="wrap nav-in">
     <a class="brand" href="#top"><span class="mark"><span>M</span></span> Jeff Randle <span class="sub">· Lucid Mage</span></a>
-    <a class="btn btn-primary nav-cta" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="nav_cta">Schedule a Call</span></a>
+    <div class="nav-right">
+      <a class="nav-offer" href="/" title="MacRandle Acres — my growth-advisory offer">MacRandle Acres <span class="no-arr">↗</span></a>
+      <a class="btn btn-primary nav-cta" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="nav_cta">Schedule a Call</span></a>
+    </div>
   </div>
 </nav>
 
@@ -332,6 +344,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
     <div class="ftag" data-edit="foot_tag">Marketing · AI · Creative · Consciousness</div>
     <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
     <small>© <span id="yr"></span> <span data-edit="foot_copy">Jeff Randle. All one place, on purpose.</span></small>
+    <div class="foot-hub"><a href="/">← Back to MacRandle Acres <span class="fh-note">(the offer)</span></a></div>
     <div class="foot-admin"><a href="/admin/login?next=/hub" id="adminLink">🔒 Admin · Edit site</a></div>
   </div>
 </footer>
