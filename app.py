@@ -22,8 +22,12 @@ from flask import (Flask, request, session, redirect, jsonify,
                    send_from_directory, Response)
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-CONTENT_PATH = os.path.join(BASE, "content.json")
-BLOCKED_FILES = {"app.py", "content.json", "requirements.txt", ".gitignore", "render.yaml", "README.md"}
+PAGES = {
+    "main": {"html": "index.html", "content": "content.json"},
+    "hub":  {"html": "hub.html",   "content": "hub_content.json"},
+}
+BLOCKED_FILES = {"app.py", "requirements.txt", ".gitignore", "render.yaml", "README.md",
+                 "index.html", "hub.html", "content.json", "hub_content.json"}
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
@@ -31,17 +35,21 @@ ADMIN_PASSWORD = (os.getenv("ADMIN_PASSWORD") or "").strip()
 
 
 # ---------- content store ----------
-def load_content():
+def _content_path(page):
+    return os.path.join(BASE, PAGES[page]["content"])
+
+
+def load_content(page="main"):
     try:
-        with open(CONTENT_PATH, encoding="utf-8") as f:
+        with open(_content_path(page), encoding="utf-8") as f:
             data = json.load(f)
             return data if isinstance(data, dict) else {}
     except Exception:
         return {}
 
 
-def save_content(data):
-    with open(CONTENT_PATH, "w", encoding="utf-8") as f:
+def save_content(page, data):
+    with open(_content_path(page), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
@@ -62,13 +70,14 @@ def sanitize(value):
 
 
 # ---------- page rendering ----------
-def render_index():
-    with open(os.path.join(BASE, "index.html"), encoding="utf-8") as f:
+def render_page(page):
+    cfg = PAGES[page]
+    with open(os.path.join(BASE, cfg["html"]), encoding="utf-8") as f:
         html = f.read()
     is_admin = bool(session.get("admin"))
-    payload = json.dumps(load_content(), ensure_ascii=False).replace("</", "<\\/")
-    inject = ("<script>window.__ADMIN__=%s;window.__CONTENT__=%s;</script>"
-              % ("true" if is_admin else "false", payload))
+    payload = json.dumps(load_content(page), ensure_ascii=False).replace("</", "<\\/")
+    inject = ("<script>window.__ADMIN__=%s;window.__CONTENT__=%s;window.__PAGE__=%s;</script>"
+              % ("true" if is_admin else "false", payload, json.dumps(page)))
     html = html.replace("</head>", inject + "\n</head>", 1)
     resp = Response(html, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
@@ -77,47 +86,68 @@ def render_index():
 
 @app.route("/")
 def index():
-    return render_index()
+    return render_page("main")
+
+
+@app.route("/hub")
+def hub():
+    return render_page("hub")
 
 
 @app.route("/api/content", methods=["GET", "POST"])
 def api_content():
     if request.method == "GET":
-        return jsonify(ok=True, content=load_content())
+        page = request.args.get("page", "main")
+        if page not in PAGES:
+            page = "main"
+        return jsonify(ok=True, content=load_content(page))
     if not session.get("admin"):
         return jsonify(ok=False, error="unauthorized"), 401
-    incoming = request.get_json(silent=True)
+    body = request.get_json(silent=True)
+    if isinstance(body, dict) and "page" in body and "content" in body:
+        page, incoming = body.get("page"), body.get("content")
+    else:
+        page, incoming = "main", body
+    if page not in PAGES:
+        return jsonify(ok=False, error="unknown page"), 400
     if not isinstance(incoming, dict):
         return jsonify(ok=False, error="bad payload"), 400
-    current = load_content()
+    current = load_content(page)
     for key, val in incoming.items():
         current[str(key)] = sanitize(val)
-    save_content(current)
-    return jsonify(ok=True, saved=len(incoming))
+    save_content(page, current)
+    return jsonify(ok=True, saved=len(incoming), page=page)
 
 
 # ---------- admin auth ----------
+def _safe_next(value):
+    # Whitelist of real pages — airtight against open-redirect / attribute injection.
+    return value if value in ("/", "/hub") else "/"
+
+
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
+    nxt = _safe_next(request.values.get("next"))
     if not ADMIN_PASSWORD:
-        return _login_page("Editing isn't configured yet — set the ADMIN_PASSWORD environment variable."), 200
+        return _login_page("Editing isn't configured yet — set the ADMIN_PASSWORD environment variable.", nxt), 200
     if request.method == "POST":
         if request.form.get("password", "") == ADMIN_PASSWORD:
             session["admin"] = True
-            return redirect("/")
-        return _login_page("Incorrect password."), 401
-    return _login_page("")
+            return redirect(nxt)
+        return _login_page("Incorrect password.", nxt), 401
+    return _login_page("", nxt)
 
 
 @app.route("/admin/logout")
 def admin_logout():
     session.pop("admin", None)
-    return redirect("/")
+    return redirect(_safe_next(request.values.get("next")))
 
 
-def _login_page(message):
+def _login_page(message, nxt="/"):
     note = ("<p class='err'>%s</p>" % message) if message else ""
-    return Response(LOGIN_HTML.replace("<!--MSG-->", note), mimetype="text/html")
+    html = LOGIN_HTML.replace("<!--MSG-->", note).replace("__NEXT__", nxt)
+    return Response(html, mimetype="text/html")
 
 
 # ---------- static sibling assets (logo.jpg, etc.) ----------
@@ -151,9 +181,10 @@ a{color:#e0b862;font-size:12px;display:inline-block;margin-top:16px;text-decorat
 <form class=box method=post>
   <h1>MacRandle Acres</h1><div class=sub>Admin sign-in</div>
   <!--MSG-->
+  <input type=hidden name=next value="__NEXT__">
   <input type=password name=password placeholder="Admin password" autofocus autocomplete=current-password>
   <button type=submit>Sign in</button>
-  <a href="/">&larr; Back to site</a>
+  <a href="__NEXT__">&larr; Back</a>
 </form></body></html>"""
 
 

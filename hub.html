@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeff Randle — The Lucid Mage · Everything I do</title>
+<meta name="description" content="Jeff Randle, the Lucid Mage — marketing, AI, software, art, and lucid dreaming. Explore MacRandle Acres, Simply Agentic AI, and find me everywhere.">
+<meta name="theme-color" content="#234F3D">
+<meta property="og:title" content="Jeff Randle — The Lucid Mage">
+<meta property="og:description" content="Marketing, AI, creative, and consciousness — all in one place.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://macrandleacres.com/logo.jpg">
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+
+<!--
+  PERSONAL HUB (Gamma + Linktree replacement). Served at /hub via Flask.
+  Editable like the main site: sign in at /admin/login, then "Edit page".
+  Fill placeholder links: search this file for  [[LINK]]
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --green:#234F3D; --green-d:#1a3b2d; --green-l:#3a6b54;
+  --ink:#2D2D2D; --ink2:#5c635e; --ink3:#8a8f88;
+  --bg:#F8F7F3; --card:#ffffff; --cream:#f6f4ec;
+  --gold:#c79a3b; --gold-d:#a97f2a; --gold-l:#e0b862; --plum:#5B2C6F;
+  --bd:rgba(35,79,61,.16); --bd-soft:rgba(35,79,61,.10);
+  --shadow:0 22px 55px rgba(35,49,40,.14); --shadow-sm:0 8px 24px rgba(35,49,40,.10);
+  --grad-green:linear-gradient(135deg,#2a5c47,#1a3b2d); --grad-gold:linear-gradient(135deg,var(--gold-l),var(--gold-d));
+  --maxw:1080px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Fraunces','Georgia',serif;letter-spacing:-.01em;line-height:1.1;color:var(--ink)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green);padding:6px 15px;border:1px solid var(--bd);border-radius:100px;background:rgba(35,79,61,.05);margin-bottom:16px}
+.gold-text{color:var(--gold-d)}
+.accent-text{background:linear-gradient(120deg,var(--green) 20%,var(--gold) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* background */
+.bgwash{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(900px 520px at 50% -12%,rgba(199,154,59,.12),transparent 62%),
+  radial-gradient(760px 620px at 10% 8%,rgba(35,79,61,.06),transparent 60%),
+  radial-gradient(720px 620px at 92% 88%,rgba(35,79,61,.05),transparent 60%),var(--bg)}
+.atmosphere{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:radial-gradient(60% 50% at 28% 18%,rgba(199,154,59,.09),transparent 70%),radial-gradient(55% 45% at 78% 72%,rgba(35,79,61,.07),transparent 70%);
+  animation:breathe 17s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.09)}}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(248,247,243,.82);border-bottom:1px solid var(--bd-soft);transition:box-shadow .25s,background .25s}
+.nav.scrolled{box-shadow:0 6px 22px rgba(35,49,40,.1);background:rgba(248,247,243,.94)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+.brand{display:flex;align-items:center;gap:11px;font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:var(--green)}
+.brand .sub{color:var(--ink3);font-weight:500;font-family:'Inter';font-size:13px}
+.mark{width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:radial-gradient(circle at 38% 34%,#fbf7ea,#e9e3cf 60%,#d8cfb0);box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18);animation:markGlow 3.8s ease-in-out infinite}
+.mark span{font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:var(--green);margin-top:1px}
+@keyframes markGlow{0%,100%{box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18)}50%{box-shadow:0 0 0 1px rgba(199,154,59,.45),0 3px 10px rgba(35,49,40,.18),0 0 15px rgba(199,154,59,.4)}}
+.btn{display:inline-block;font-weight:700;font-size:14px;border-radius:11px;padding:12px 24px;cursor:pointer;transition:transform .16s,box-shadow .16s,background .2s;border:1px solid transparent;white-space:nowrap;will-change:transform}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--grad-green);color:var(--cream);box-shadow:0 10px 26px rgba(35,79,61,.28)}
+.btn-ghost{background:transparent;border-color:var(--bd);color:var(--green)}
+.btn-ghost:hover{background:rgba(35,79,61,.06);border-color:var(--green)}
+.btn-gold{background:var(--grad-gold);color:#3a2a05;box-shadow:0 10px 26px rgba(199,154,59,.32)}
+.nav-cta{padding:9px 18px}
+
+/* hero */
+.hero{text-align:center;padding:74px 0 40px;position:relative}
+.hero .halo{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:min(520px,88vw);height:320px;z-index:-1;background:radial-gradient(circle at 50% 30%,rgba(199,154,59,.16),transparent 62%)}
+.hero-logo{width:clamp(104px,16vw,132px);border-radius:22px;box-shadow:0 18px 42px rgba(35,49,40,.3);margin:0 auto 20px;display:block;animation:logoIn 1s cubic-bezier(.2,.8,.2,1) both,floaty 6.5s ease-in-out 1.1s infinite}
+@keyframes logoIn{0%{opacity:0;transform:scale(.85) translateY(12px)}100%{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hero .roles{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--pl,#a97f2a);font-weight:700;color:var(--gold-d);margin-bottom:14px}
+.hero h1{font-size:clamp(38px,7vw,72px);font-weight:600;margin-bottom:6px}
+.hero .sub-name{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(18px,3vw,26px);color:var(--gold-d);margin-bottom:18px}
+.hero .lead{font-size:clamp(16px,2.1vw,19px);color:var(--ink2);max-width:600px;margin:0 auto 26px}
+.hero-cta{display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
+
+/* sections */
+section{padding:44px 0}
+.sec-head{text-align:center;max-width:640px;margin:0 auto 30px}
+.sec-head h2{font-size:clamp(26px,4vw,40px);font-weight:600;margin-bottom:10px}
+.sec-head p{color:var(--ink2);font-size:16px}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+
+/* cards */
+.card{position:relative;background:var(--card);border:1px solid var(--bd-soft);border-radius:18px;padding:26px 24px;box-shadow:var(--shadow-sm);transition:transform .25s,box-shadow .25s,border-color .25s;display:flex;flex-direction:column}
+.card::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%),rgba(199,154,59,.15),transparent 62%)}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--bd)}
+.card:hover::after{opacity:1}
+.card .ico{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:24px;margin-bottom:14px;background:linear-gradient(135deg,rgba(35,79,61,.1),rgba(199,154,59,.14));border:1px solid var(--bd-soft);transition:transform .28s}
+.card:hover .ico{transform:scale(1.1) rotate(-4deg)}
+.card h3{font-size:19px;font-weight:600;margin-bottom:8px}
+.card p{color:var(--ink2);font-size:14.5px;margin-bottom:18px}
+.card .clink{margin-top:auto;display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:14px;color:var(--gold-d);transition:gap .2s}
+.card .clink:hover{gap:12px}
+
+/* featured ventures */
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.venture{position:relative;border-radius:22px;padding:34px 30px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s}
+.venture:hover{transform:translateY(-6px)}
+.venture.v-green{background:linear-gradient(160deg,#26543f,#1a3b2d);color:rgba(246,244,236,.85)}
+.venture.v-green h3,.venture.v-green .v-eyebrow{color:var(--cream)}
+.venture.v-light{background:var(--card);border:1px solid var(--bd)}
+.venture .v-eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-d);margin-bottom:10px}
+.venture.v-green .v-eyebrow{color:var(--gold-l)}
+.venture h3{font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-bottom:10px}
+.venture .v-desc{font-size:15px;margin-bottom:18px}
+.venture.v-light .v-desc{color:var(--ink2)}
+.venture ul{list-style:none;display:grid;gap:9px;margin-bottom:22px}
+.venture li{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.venture li .ck{flex:0 0 18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:10px;font-weight:800;background:var(--grad-gold);color:#3a2a05}
+.venture .v-cta{margin-top:auto}
+.v-tag{position:absolute;top:16px;right:16px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:100px;background:rgba(224,184,98,.2);color:var(--gold-l);border:1px solid rgba(224,184,98,.4)}
+.venture .halo-c{position:absolute;top:-70px;right:-50px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(199,154,59,.16),transparent 66%);pointer-events:none}
+
+/* social hub */
+.social-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.soc{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--bd-soft);border-radius:15px;padding:20px;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s,border-color .2s}
+.soc:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--bd)}
+.soc .se{font-size:24px;flex:0 0 auto}
+.soc h4{font-size:15.5px;font-weight:600;margin-bottom:3px}
+.soc p{font-size:12.5px;color:var(--ink3);margin-bottom:7px;line-height:1.45}
+.soc .go{font-size:12.5px;font-weight:700;color:var(--gold-d)}
+
+/* final */
+.final{text-align:center;padding:60px 0 20px}
+.final-box{border-radius:24px;padding:48px 30px;background:linear-gradient(160deg,#26543f,#1a3b2d);color:var(--cream);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.final h2{color:var(--cream);font-size:clamp(28px,4.4vw,44px);margin-bottom:12px}
+.final p{color:rgba(246,244,236,.8);font-size:17px;max-width:520px;margin:0 auto 26px}
+
+/* footer */
+footer{background:linear-gradient(180deg,#1c4032,#152e24);color:rgba(246,244,236,.72);padding:44px 0 42px;text-align:center;margin-top:40px}
+footer .fbrand{display:flex;align-items:center;justify-content:center;gap:11px;font-family:'Fraunces',serif;font-weight:700;font-size:22px;color:var(--cream);margin-bottom:6px}
+footer .ftag{font-family:'Fraunces',serif;font-style:italic;color:var(--gold-l);font-size:15px;margin-bottom:14px}
+footer .loc{color:rgba(246,244,236,.7);font-size:13.5px;margin-bottom:6px}
+footer small{color:rgba(246,244,236,.5);font-size:12.5px}
+.foot-admin{margin-top:16px}
+.foot-admin a{display:inline-flex;align-items:center;gap:7px;color:rgba(246,244,236,.45);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);padding:7px 15px;border-radius:9px;transition:.2s}
+.foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
+
+/* utility */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;background:linear-gradient(90deg,var(--gold),var(--green-l));transition:width .12s ease}
+#toTop{position:fixed;right:22px;bottom:24px;z-index:55;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;background:var(--grad-green);color:var(--cream);font-size:18px;box-shadow:var(--shadow-sm);opacity:0;transform:translateY(14px) scale(.9);pointer-events:none;transition:.3s}
+#toTop.show{opacity:1;transform:none;pointer-events:auto}
+#cursorGlow{position:fixed;top:0;left:0;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:45;transform:translate(-50%,-50%);opacity:0;transition:opacity .45s;background:radial-gradient(circle,rgba(199,154,59,.16),transparent 62%)}
+#cursorGlow.on{opacity:1}
+
+/* admin editor */
+#adminBar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:200;display:none;align-items:center;gap:9px;background:rgba(26,59,45,.97);color:var(--cream);padding:10px 14px;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.42);border:1px solid rgba(224,184,98,.35);font-size:13px}
+#adminBar.show{display:flex}
+body.editing #adminBar{display:none}
+#adminBar .ab-dot{width:8px;height:8px;border-radius:50%;background:#e0b862;box-shadow:0 0 8px #e0b862}
+#adminBar .ab-lbl{font-weight:700;white-space:nowrap}
+#adminBar button,.ab-logout{font-family:inherit;font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;border:1px solid transparent;cursor:pointer;text-decoration:none}
+.ab-edit{background:#e0b862;color:#2a2005}
+.ab-logout{background:transparent;border:1px solid rgba(246,244,236,.3);color:var(--cream)}
+#editBanner{position:fixed;left:0;right:0;top:0;z-index:220;display:none;align-items:center;justify-content:space-between;gap:14px;padding:9px 18px;background:linear-gradient(90deg,#234F3D,#1a3b2d);color:var(--cream);border-bottom:2px solid var(--gold);box-shadow:0 6px 22px rgba(0,0,0,.3)}
+body.editing #editBanner{display:flex}
+body.editing{padding-top:54px}body.editing .nav{top:54px}
+#editBanner .eb-msg{display:flex;align-items:center;gap:9px;font-size:13.5px;min-width:0}
+#editBanner .eb-pen{color:var(--gold-l);font-size:16px}
+#editBanner .eb-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#editBanner .eb-actions{display:flex;gap:9px;flex:0 0 auto}
+#editBanner button{font-family:inherit;font-weight:700;font-size:13.5px;border-radius:9px;padding:10px 18px;border:1px solid transparent;cursor:pointer}
+.eb-save{background:var(--gold-l);color:#2a2005;box-shadow:0 4px 14px rgba(224,184,98,.4);animation:savePulse 2s ease-in-out infinite}
+@keyframes savePulse{0%,100%{box-shadow:0 4px 14px rgba(224,184,98,.35)}50%{box-shadow:0 0 20px 3px rgba(224,184,98,.62)}}
+.eb-cancel{background:transparent;border:1px solid rgba(246,244,236,.35);color:var(--cream)}
+.eb-export{background:rgba(255,255,255,.1);border:1px solid rgba(246,244,236,.25);color:var(--cream);display:none}
+body.editing [data-edit]{outline:1.5px dashed rgba(199,154,59,.6);outline-offset:3px;border-radius:3px;cursor:text}
+body.editing [data-edit]:hover{outline-color:var(--gold);background:rgba(199,154,59,.06)}
+body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199,154,59,.09)}
+#adminToast{position:fixed;right:20px;bottom:88px;z-index:230;background:#234F3D;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;box-shadow:var(--shadow);max-width:min(360px,86vw)}
+#adminToast.show{opacity:1;transform:none}
+
+@media(max-width:820px){.feat-grid{grid-template-columns:1fr}.g3,.social-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.g2,.g3,.social-grid{grid-template-columns:1fr}.hero{padding:52px 0 30px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<div class="bgwash"></div>
+<div class="atmosphere" aria-hidden="true"></div>
+<div id="progress"></div>
+<button id="toTop" type="button" aria-label="Back to top">↑</button>
+<div id="cursorGlow" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><span class="mark"><span>M</span></span> Jeff Randle <span class="sub">· Lucid Mage</span></a>
+    <a class="btn btn-primary nav-cta" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="nav_cta">Schedule a Call</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="halo"></div>
+  <div class="wrap">
+    <img class="hero-logo" src="logo.jpg" alt="MacRandle Acres" onerror="this.style.display='none'">
+    <div class="roles" data-edit="hero_roles">Chief Marketing Officer · AI Specialist · Software Developer · Consciousness Explorer</div>
+    <h1><span class="accent-text" data-edit="hero_name">Jeff Randle</span></h1>
+    <div class="sub-name" data-edit="hero_subname">The Lucid Mage</div>
+    <p class="lead" data-edit="hero_lead">I help brands grow on Facebook with smarter strategy, automation, and AI — and I explore the edges of human consciousness through lucid dreaming.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="hero_cta1">Schedule a Call</span></a>
+      <a class="btn btn-ghost" href="#ventures"><span data-edit="hero_cta2">Explore my work</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- FEATURED VENTURES -->
+<section id="ventures">
+  <div class="wrap">
+    <div class="feat-grid">
+      <div class="venture v-green reveal">
+        <span class="halo-c"></span>
+        <span class="v-eyebrow" data-edit="ma_eyebrow">For real estate teams</span>
+        <h3 data-edit="ma_title">MacRandle Acres</h3>
+        <p class="v-desc" data-edit="ma_desc">Your Fractional Growth Advisor — every month I find hidden opportunities to make your business more profitable, then build the systems to capture them.</p>
+        <div class="v-cta"><a class="btn btn-gold" href="/"><span data-edit="ma_cta">See the offer →</span></a></div>
+      </div>
+      <div class="venture v-light reveal d1">
+        <span class="v-tag" data-edit="saai_tag">Live demo soon</span>
+        <span class="v-eyebrow" data-edit="saai_eyebrow">Frontier AI</span>
+        <h3 data-edit="saai_title">Simply Agentic AI</h3>
+        <p class="v-desc" data-edit="saai_desc">Coordinated AI teammates that remember, adapt, and act together inside the LLM you already use.</p>
+        <ul>
+          <li><span class="ck">✓</span><span data-edit="saai_li1">Memory, alignment, and autonomy</span></li>
+          <li><span class="ck">✓</span><span data-edit="saai_li2">Works inside ChatGPT and your favorite LLM</span></li>
+          <li><span class="ck">✓</span><span data-edit="saai_li3">Persistent and adaptive — not disposable prompts</span></li>
+        </ul>
+        <div class="v-cta"><a class="btn btn-ghost" href="[[LINK]]-saai"><span data-edit="saai_cta">Explore AI Solutions →</span></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FACEBOOK GROWTH TOOLKIT -->
+<section id="toolkit">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal" data-edit="tk_eyebrow">Facebook Growth Toolkit</span>
+      <h2 class="reveal">Three tools to <span class="accent-text" data-edit="tk_h2hi">attract, engage & convert</span></h2>
+    </div>
+    <div class="grid g3">
+      <div class="card reveal d1"><div class="ico">📈</div><h3 data-edit="tk1_h3">Facebook Strategy</h3><p data-edit="tk1_p">Build a sharper strategy that attracts the right audience and turns content into consistent revenue.</p><a class="clink" href="[[LINK]]-strategy"><span data-edit="tk1_cta">Scale Your Business</span> →</a></div>
+      <div class="card reveal d2"><div class="ico">💬</div><h3 data-edit="tk2_h3">Yuna Pro</h3><p data-edit="tk2_p">Turn DM conversations into clients using a proven Smart Messaging system — no cold calls needed.</p><a class="clink" href="[[LINK]]-yuna"><span data-edit="tk2_cta">Get Yuna Pro</span> →</a></div>
+      <div class="card reveal d3"><div class="ico">🤖</div><h3 data-edit="tk3_h3">FlowChat</h3><p data-edit="tk3_p">Automate follow-ups, book clients, and let AI handle outreach so you can focus on closing.</p><a class="clink" href="[[LINK]]-flowchat"><span data-edit="tk3_cta">Get FlowChat</span> →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- CREATIVE -->
+<section id="creative">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal" data-edit="cr_eyebrow">Creative Services</span>
+      <h2 class="reveal">Custom art & design to <span class="gold-text" data-edit="cr_h2hi">bring ideas to life</span></h2>
+    </div>
+    <div class="grid g2">
+      <div class="card reveal d1"><div class="ico">🎨</div><h3 data-edit="cr1_h3">Acrylic Pour Art</h3><p data-edit="cr1_p">Commission a one-of-a-kind fluid painting filled with movement and color — a living piece for your space.</p><a class="clink" href="[[LINK]]-art"><span data-edit="cr1_cta">Check Out My Art</span> →</a></div>
+      <div class="card reveal d2"><div class="ico">✨</div><h3 data-edit="cr2_h3">Graphic Design</h3><p data-edit="cr2_p">Custom branding, video editing, and animation that make your ideas stand out and stay memorable.</p><a class="clink" href="[[LINK]]-design"><span data-edit="cr2_cta">Explore Graphics</span> →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONSCIOUSNESS -->
+<section id="dreaming">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal" data-edit="dr_eyebrow">Consciousness & Lucid Dreaming</span>
+      <h2 class="reveal">Unlock <span class="gold-text" data-edit="dr_h2hi">Your Dreams</span></h2>
+      <p class="reveal" data-edit="dr_p">Join a supportive community focused on lucid dreaming, self-awareness, and intentional sleep — practical techniques, coaching, and sleep-hygiene support to make your nights more vivid.</p>
+    </div>
+    <div class="grid g2">
+      <div class="card reveal d1"><div class="ico">🌙</div><h3 data-edit="dr1_h3">Dreamers Community</h3><p data-edit="dr1_p">Connect with dreamers and share breakthroughs with supportive, experienced guidance.</p><a class="clink" href="[[LINK]]-lucid"><span data-edit="dr1_cta">Get Lucid</span> →</a></div>
+      <div class="card reveal d2"><div class="ico">🔮</div><h3 data-edit="dr2_h3">Patreon Access</h3><p data-edit="dr2_p">Unlock premium tools and exclusive resources to deepen your practice, night after night.</p><a class="clink" href="[[LINK]]-patreon"><span data-edit="dr2_cta">Join Patreon</span> →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- FIND ME EVERYWHERE -->
+<section id="connect">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal" data-edit="fm_eyebrow">Find Me Everywhere</span>
+      <h2 class="reveal">Follow the <span class="accent-text" data-edit="fm_h2hi">journey</span></h2>
+    </div>
+    <div class="social-grid">
+      <a class="soc reveal d1" href="[[LINK]]-skool"><span class="se">🎓</span><span><h4>Skool</h4><p data-edit="soc_skool">Facebook Growth Lab — strategies, training, and a growth-focused community.</p><span class="go">Join the Lab →</span></span></a>
+      <a class="soc reveal d1" href="[[LINK]]-fbcommunity"><span class="se">🌙</span><span><h4>Facebook Community</h4><p data-edit="soc_fb">Consciousness Explorers — lucid dreaming, astral projection, deeper awareness.</p><span class="go">Join Community →</span></span></a>
+      <a class="soc reveal d2" href="[[LINK]]-youtube"><span class="se">🎬</span><span><h4>YouTube</h4><p data-edit="soc_yt">Lucid dreaming tips, consciousness insights, and marketing wisdom.</p><span class="go">Subscribe →</span></span></a>
+      <a class="soc reveal d2" href="[[LINK]]-instagram"><span class="se">📸</span><span><h4>Instagram</h4><p data-edit="soc_ig">Daily inspiration, reflections, and behind-the-scenes moments.</p><span class="go">Follow Me →</span></span></a>
+      <a class="soc reveal d3" href="https://www.linkedin.com/in/jeff-randle-042a23196/"><span class="se">💼</span><span><h4>LinkedIn</h4><p data-edit="soc_li">Professional insights, collaboration, and conversations on growth.</p><span class="go">Connect →</span></span></a>
+      <a class="soc reveal d3" href="[[LINK]]-tiktok"><span class="se">🎵</span><span><h4>TikTok</h4><p data-edit="soc_tt">Concise lucid dreaming tips and techniques you can try right away.</p><span class="go">Watch Now →</span></span></a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CONTACT -->
+<section class="final">
+  <div class="wrap">
+    <div class="final-box reveal">
+      <h2 data-edit="final_h2">Let's connect</h2>
+      <p data-edit="final_p">Whether you want to scale on Facebook, explore AI, commission art, or go deeper into dreaming — reach out.</p>
+      <div class="hero-cta" style="justify-content:center">
+        <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="final_cta1">Schedule a Call</span></a>
+        <a class="btn btn-ghost" href="mailto:Macrandleacres@gmail.com" style="border-color:rgba(246,244,236,.4);color:var(--cream)"><span data-edit="final_cta2">Email Jeff</span></a>
+        <a class="btn btn-ghost" href="tel:+18622547839" style="border-color:rgba(246,244,236,.4);color:var(--cream)"><span data-edit="final_cta3">Call Now</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fbrand"><span class="mark"><span>M</span></span> <span data-edit="foot_brand">Jeff Randle · Lucid Mage</span></div>
+    <div class="ftag" data-edit="foot_tag">Marketing · AI · Creative · Consciousness</div>
+    <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
+    <small>© <span id="yr"></span> <span data-edit="foot_copy">Jeff Randle. All one place, on purpose.</span></small>
+    <div class="foot-admin"><a href="/admin/login?next=/hub" id="adminLink">🔒 Admin · Edit site</a></div>
+  </div>
+</footer>
+
+<div id="adminBar" aria-hidden="true">
+  <span class="ab-dot"></span><span class="ab-lbl">Admin</span>
+  <button class="ab-edit" type="button">✎ Edit page</button>
+  <a class="ab-logout" href="/admin/logout?next=/hub">Log out</a>
+</div>
+<div id="editBanner">
+  <div class="eb-msg"><span class="eb-pen">✎</span><span class="eb-txt"><b>Editing your hub</b> — click any text to change it. Not live until you save.</span></div>
+  <div class="eb-actions">
+    <button class="eb-export" type="button">⬇ Export</button>
+    <button class="eb-cancel" type="button">Discard &amp; exit</button>
+    <button class="eb-save" type="button">✓ Save changes</button>
+  </div>
+</div>
+<div id="adminToast"></div>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+var PAGE = window.__PAGE__ || 'hub';
+
+/* Content hydration for all visitors */
+(function(){ var C=window.__CONTENT__||{};
+  document.querySelectorAll('[data-edit]').forEach(function(el){var k=el.getAttribute('data-edit');
+    if(Object.prototype.hasOwnProperty.call(C,k)&&C[k]!=null)el.innerHTML=C[k];}); })();
+
+/* Reveal on scroll */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.14});
+document.querySelectorAll('.reveal:not(.in)').forEach(function(el){io.observe(el);});
+
+/* Progress, nav shadow, back-to-top */
+(function(){var nav=document.querySelector('.nav'),prog=document.getElementById('progress'),toTop=document.getElementById('toTop');
+  function s(){var y=window.pageYOffset||document.documentElement.scrollTop,h=document.documentElement.scrollHeight-window.innerHeight;
+    if(prog)prog.style.width=(h>0?y/h*100:0)+'%';if(nav)nav.classList.toggle('scrolled',y>18);if(toTop)toTop.classList.toggle('show',y>640);}
+  window.addEventListener('scroll',s,{passive:true});s();
+  if(toTop)toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+
+/* Tilt/spotlight + magnetic + cursor glow (desktop) */
+(function(){ if(REDUCE||(window.matchMedia&&matchMedia('(hover:none)').matches))return;
+  document.querySelectorAll('.card,.venture').forEach(function(el){
+    el.addEventListener('mousemove',function(e){var r=el.getBoundingClientRect();var px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      el.style.setProperty('--mx',(px*100).toFixed(1)+'%');el.style.setProperty('--my',(py*100).toFixed(1)+'%');
+      el.style.transform='perspective(820px) rotateX('+((0.5-py)*5).toFixed(2)+'deg) rotateY('+((px-0.5)*5).toFixed(2)+'deg) translateY(-6px)';});
+    el.addEventListener('mouseleave',function(){el.style.transform='';});});
+  document.querySelectorAll('.btn').forEach(function(b){
+    b.addEventListener('mousemove',function(e){var r=b.getBoundingClientRect();var dx=(e.clientX-(r.left+r.width/2))/r.width,dy=(e.clientY-(r.top+r.height/2))/r.height;
+      b.style.transform='translate('+(dx*9).toFixed(1)+'px,'+(dy*7-2).toFixed(1)+'px)';});
+    b.addEventListener('mouseleave',function(){b.style.transform='';});});
+  var g=document.getElementById('cursorGlow');
+  if(g){window.addEventListener('mousemove',function(e){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';g.classList.add('on');},{passive:true});
+    document.addEventListener('mouseleave',function(){g.classList.remove('on');});}})();
+
+/* Admin editor (page-aware) */
+(function(){
+  var SERVED=(typeof window.__CONTENT__!=='undefined'), SERVER_ADMIN=(window.__ADMIN__===true), LKEY='macra_hub_content_v1';
+  var bar=document.getElementById('adminBar'); if(!bar)return;
+  var link=document.getElementById('adminLink');
+  var eEdit=bar.querySelector('.ab-edit'),eLogout=bar.querySelector('.ab-logout'),eLbl=bar.querySelector('.ab-lbl');
+  var eSave=document.querySelector('.eb-save'),eCancel=document.querySelector('.eb-cancel'),eExport=document.querySelector('.eb-export'),eTxt=document.querySelector('#editBanner .eb-txt');
+  var snapshot={},mode=null,dirty=false;
+  function editing(){return document.body.classList.contains('editing');}
+  function nodes(){return document.querySelectorAll('[data-edit]');}
+  function collect(){var d={};nodes().forEach(function(el){d[el.getAttribute('data-edit')]=el.innerHTML;});return d;}
+  function toast(m){var t=document.getElementById('adminToast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3400);}
+  if(!SERVED){try{var d=JSON.parse(localStorage.getItem(LKEY)||'{}');nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(d[k]!=null)el.innerHTML=d[k];});}catch(e){}}
+  function showBar(m){mode=m;bar.classList.add('show');eLbl.textContent=(m==='server')?'Admin':'Admin · local preview';
+    eLogout.style.display=(m==='server')?'':'none';if(eExport)eExport.style.display=(m==='local')?'':'none';
+    if(eTxt)eTxt.innerHTML=(m==='local')?'<b>Editing (local preview)</b> — saved to this browser. Export to publish.':'<b>Editing your hub</b> — click any text to change it. Not live until you save.';}
+  function blockNav(e){var a=e.target.closest('a');if(a&&!a.classList.contains('ab-logout'))e.preventDefault();}
+  function markDirty(){dirty=true;}
+  function setEditing(on){document.body.classList.toggle('editing',on);
+    nodes().forEach(function(el){on?el.setAttribute('contenteditable','true'):el.removeAttribute('contenteditable');});
+    if(on){document.addEventListener('click',blockNav,true);document.addEventListener('input',markDirty,true);}
+    else{document.removeEventListener('click',blockNav,true);document.removeEventListener('input',markDirty,true);dirty=false;}}
+  function doSave(){var data=collect();
+    if(mode==='local'){try{localStorage.setItem(LKEY,JSON.stringify(data));dirty=false;setEditing(false);toast('Saved to this browser — Export to publish.');}catch(e){toast('Could not save locally');}return;}
+    if(eSave)eSave.textContent='Saving…';
+    fetch('/api/content',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({page:PAGE,content:data})})
+      .then(function(r){return r.json();}).then(function(j){if(eSave)eSave.textContent='✓ Save changes';
+        if(j&&j.ok){dirty=false;setEditing(false);toast('Saved! Your hub is live — back to normal view.');}else{toast('Save failed'+(j&&j.error?': '+j.error:''));}})
+      .catch(function(){if(eSave)eSave.textContent='✓ Save changes';toast('Save failed — sign in again at /admin/login');});}
+  function doCancel(){nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(snapshot[k]!=null)el.innerHTML=snapshot[k];});dirty=false;setEditing(false);toast('Changes discarded.');}
+  if(eEdit)eEdit.addEventListener('click',function(){snapshot=collect();dirty=false;setEditing(true);toast('Editing — click any text, then Save at the top (Ctrl/Cmd+S)');});
+  if(eSave)eSave.addEventListener('click',doSave);
+  if(eCancel)eCancel.addEventListener('click',doCancel);
+  if(eExport)eExport.addEventListener('click',function(){var blob=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hub_content.json';document.body.appendChild(a);a.click();a.remove();toast('hub_content.json downloaded — commit it to publish.');});
+  document.addEventListener('keydown',function(e){if(editing()&&(e.ctrlKey||e.metaKey)&&(e.key==='s'||e.key==='S')){e.preventDefault();doSave();}else if(editing()&&e.key==='Escape'){doCancel();}});
+  window.addEventListener('beforeunload',function(e){if(editing()&&dirty){e.preventDefault();e.returnValue='';}});
+  function enter(){if(SERVER_ADMIN){showBar('server');return;}if(SERVED){window.location.href='/admin/login?next=/hub';return;}showBar('local');}
+  if(SERVER_ADMIN)showBar('server');
+  if(link)link.addEventListener('click',function(e){e.preventDefault();enter();});
+  document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='E'||e.key==='e')){e.preventDefault();enter();}});
+  if(location.hash==='#admin'||location.hash==='#edit')enter();
+})();
+</script>
+</body>
+</html>

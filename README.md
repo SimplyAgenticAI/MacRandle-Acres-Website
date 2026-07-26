@@ -10,6 +10,13 @@ Freedom · Trust).
 Palette: green `#234F3D` · charcoal `#2D2D2D` · warm white `#F8F7F3` ·
 gold `#c79a3b` · plum `#5B2C6F`.
 
+## Pages
+- **`/`** — the MacRandle Acres growth-advisory offer page (realtors). Frozen/focused.
+- **`/hub`** — Jeff Randle's personal hub (replaces Gamma + Linktree): all ventures
+  and socials, with a doorway to the offer page. Simply Agentic AI lives here
+  (live demo coming). Each page has its own editable content store
+  (`content.json` / `hub_content.json`); edits never cross between pages.
+
 ## Two views: admin (editable) vs visitor (read-only)
 The site runs as a small **Flask app** (`app.py`).
 
