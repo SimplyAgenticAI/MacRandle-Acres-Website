@@ -371,6 +371,37 @@ body.editing #rootSpineWrap{display:none}
   transition:opacity .3s;background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(199,154,59,.16),transparent 62%)}
 .card:hover::after,.tier:hover::after{opacity:1}
 
+/* ===== Phase 2: cinematic hero, magnetic buttons, kinetic type ===== */
+/* #3 Hero cinematic intro (staggered rise) */
+@keyframes heroRise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.hero .wrap>*{animation:heroRise .85s cubic-bezier(.2,.8,.2,1) both}
+.hero .wrap>*:nth-child(1){animation-delay:.05s}
+.hero .wrap>*:nth-child(2){animation-delay:.34s}
+.hero .wrap>*:nth-child(3){animation-delay:.50s}
+.hero .wrap>*:nth-child(4){animation-delay:.68s}
+.hero .wrap>*:nth-child(5){animation-delay:.85s}
+.hero .wrap>*:nth-child(6){animation-delay:1.00s}
+.hero .wrap>*:nth-child(7){animation-delay:1.15s}
+.hero .halo,.hero .wrap{will-change:transform}
+
+/* #5 Magnetic buttons + cursor glow */
+.btn{will-change:transform}
+#cursorGlow{position:fixed;top:0;left:0;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:45;
+  transform:translate(-50%,-50%);opacity:0;transition:opacity .45s;
+  background:radial-gradient(circle,rgba(199,154,59,.16),transparent 62%)}
+#cursorGlow.on{opacity:1}
+body.editing #cursorGlow{display:none}
+
+/* #7 Kinetic typography — headings wipe in, accent word draws an underline */
+.sec-head h2.reveal{opacity:1;transform:none;clip-path:inset(0 106% -18% -6%);
+  transition:clip-path 1.05s cubic-bezier(.32,0,.14,1)}
+.sec-head h2.reveal.in{clip-path:inset(0 -6% -18% -6%)}
+.sec-head h2 .accent-text{position:relative}
+.sec-head h2 .accent-text::after{content:'';position:absolute;left:0;right:0;bottom:-3px;height:3px;border-radius:3px;
+  background:var(--grad-gold);transform:scaleX(0);transform-origin:left;
+  transition:transform .7s cubic-bezier(.4,0,.2,1) .55s}
+.sec-head h2.reveal.in .accent-text::after{transform:scaleX(1)}
+
 /* Button FX */
 .fx-start::after{content:'→';display:inline-block;margin-left:8px;transition:transform .25s ease}
 .fx-start:hover::after{transform:translateX(6px)}
@@ -406,7 +437,8 @@ body.editing #rootSpineWrap{display:none}
   .val-item{padding:0 20px;min-width:44%}
   .final-box{padding:44px 24px}
 }
-@media(prefers-reduced-motion:reduce){*{animation:none!important}.reveal{opacity:1;transform:none;transition:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}.reveal{opacity:1;transform:none;transition:none}
+  .sec-head h2.reveal{clip-path:none}.sec-head h2 .accent-text::after{transform:scaleX(1)}}
 </style>
 </head>
 <body>
@@ -697,6 +729,7 @@ body.editing #rootSpineWrap{display:none}
 <!-- Visitor polish -->
 <div id="progress"></div>
 <button id="toTop" type="button" aria-label="Back to top">↑</button>
+<div id="cursorGlow" aria-hidden="true"></div>
 
 <!-- ADMIN: entry bar (bottom) + editing banner (top) -->
 <div id="adminBar" aria-hidden="true">
@@ -923,6 +956,39 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
     });
     el.addEventListener('mouseleave',function(){ el.style.transform=''; });
   });
+})();
+
+/* ---- Phase 2: hero parallax, magnetic buttons, cursor glow ---- */
+(function(){
+  var canHover = !(window.matchMedia && matchMedia('(hover:none)').matches);
+  var hero=document.querySelector('.hero'), halo=document.querySelector('.hero .halo'),
+      heroWrap=document.querySelector('.hero .wrap');
+  var sY=0, mhx=0, mhy=0;
+  function updHalo(){ if(halo) halo.style.transform='translate(calc(-50% + '+mhx.toFixed(1)+'px), '+(sY*0.3+mhy).toFixed(1)+'px)'; }
+  if(!REDUCE){
+    window.addEventListener('scroll',function(){ sY=window.pageYOffset||document.documentElement.scrollTop||0;
+      if(heroWrap && sY<900) heroWrap.style.transform='translateY('+(sY*-0.05).toFixed(1)+'px)';
+      updHalo(); },{passive:true});
+    if(canHover && hero) hero.addEventListener('mousemove',function(e){
+      mhx=(e.clientX/window.innerWidth-0.5)*26; mhy=(e.clientY/window.innerHeight-0.5)*16; updHalo(); });
+  }
+  /* Magnetic buttons */
+  if(!REDUCE && canHover){
+    [].slice.call(document.querySelectorAll('.btn')).forEach(function(b){
+      b.addEventListener('mousemove',function(e){ var r=b.getBoundingClientRect();
+        var dx=(e.clientX-(r.left+r.width/2))/r.width, dy=(e.clientY-(r.top+r.height/2))/r.height;
+        b.style.transform='translate('+(dx*10).toFixed(1)+'px,'+(dy*8-2).toFixed(1)+'px)'; });
+      b.addEventListener('mouseleave',function(){ b.style.transform=''; });
+    });
+  }
+  /* Cursor glow (desktop) */
+  if(!REDUCE && canHover){
+    var g=document.getElementById('cursorGlow');
+    if(g){
+      window.addEventListener('mousemove',function(e){ g.style.left=e.clientX+'px'; g.style.top=e.clientY+'px'; g.classList.add('on'); },{passive:true});
+      document.addEventListener('mouseleave',function(){ g.classList.remove('on'); });
+    }
+  }
 })();
 
 /* ---- Champagne celebration on "Apply for Elite" ---- */
