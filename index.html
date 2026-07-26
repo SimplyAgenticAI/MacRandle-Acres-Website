@@ -439,11 +439,56 @@ body.editing #cursorGlow{display:none}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important}.reveal{opacity:1;transform:none;transition:none}
   .sec-head h2.reveal{clip-path:none}.sec-head h2 .accent-text::after{transform:scaleX(1)}}
+
+/* ===== Phase 3: organic dividers, impact band, living atmosphere ===== */
+/* #10 Living atmosphere */
+.atmosphere{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:radial-gradient(60% 50% at 28% 18%,rgba(199,154,59,.09),transparent 70%),
+             radial-gradient(55% 45% at 78% 72%,rgba(35,79,61,.07),transparent 70%);
+  animation:breathe 17s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.09)}}
+.firefly{position:fixed;width:5px;height:5px;border-radius:50%;z-index:-1;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,#fbf0c8,rgba(224,184,98,.65));box-shadow:0 0 9px 2px rgba(224,184,98,.55);
+  animation:flyPath 15s ease-in-out infinite,twinkle 3.2s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.12}50%{opacity:.85}}
+@keyframes flyPath{0%{transform:translate(0,0)}25%{transform:translate(34px,-46px)}
+  50%{transform:translate(-22px,-88px)}75%{transform:translate(24px,-44px)}100%{transform:translate(0,0)}}
+
+/* #6 Organic dividers */
+.flourish{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 auto;max-width:340px;padding:6px 24px}
+.flourish .fl-line{height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(199,154,59,.5))}
+.flourish .fl-line:last-child{background:linear-gradient(90deg,rgba(199,154,59,.5),transparent)}
+.flourish svg{width:36px;height:18px;flex:0 0 auto;fill:none;stroke:var(--gold-d);stroke-width:1.3;opacity:.85}
+footer{position:relative}
+.foot-wave{position:absolute;top:-56px;left:0;width:100%;height:58px;display:block;pointer-events:none}
+.foot-wave path{fill:#1c4032}
+
+/* #9 Impact band */
+.impact{padding:18px 0 6px}
+.impact-box{position:relative;border-radius:24px;overflow:hidden;padding:42px 30px;text-align:center;
+  background:linear-gradient(160deg,#26543f,#1a3b2d);color:var(--cream);box-shadow:var(--shadow)}
+.impact-box::after{content:'';position:absolute;top:-70px;right:-50px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(199,154,59,.16),transparent 66%);pointer-events:none}
+.impact-eyebrow{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-l);margin-bottom:6px}
+.impact-h{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(20px,2.6vw,27px);margin-bottom:4px;color:var(--cream)}
+.impact-note{font-size:11.5px;color:rgba(246,244,236,.55);margin-bottom:26px;font-style:italic}
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;position:relative;z-index:1}
+.impact-stat .num{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(30px,4.4vw,44px);line-height:1;
+  background:linear-gradient(135deg,#f6f4ec,var(--gold-l));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.impact-stat .lbl{font-size:12.5px;color:rgba(246,244,236,.78);margin-top:8px;letter-spacing:.02em}
+@media(max-width:700px){.impact-grid{grid-template-columns:1fr 1fr;gap:26px 18px}}
 </style>
 </head>
 <body>
 
 <div class="bgwash"></div>
+<div class="atmosphere" aria-hidden="true"></div>
+<span class="firefly" style="top:22%;left:12%;animation-delay:0s,.5s"></span>
+<span class="firefly" style="top:38%;left:82%;animation-delay:2s,1s"></span>
+<span class="firefly" style="top:64%;left:20%;animation-delay:4s,1.6s"></span>
+<span class="firefly" style="top:54%;left:68%;animation-delay:6s,.3s"></span>
+<span class="firefly" style="top:80%;left:44%;animation-delay:1s,2.2s"></span>
+<span class="firefly" style="top:14%;left:56%;animation-delay:3s,1.3s"></span>
 <div class="leaf l1"></div>
 <div class="leaf l2"></div>
 <canvas id="leaves"></canvas>
@@ -507,6 +552,12 @@ body.editing #cursorGlow{display:none}
 </header>
 
 <!-- CLIENT VOICE -->
+<div class="wrap"><div class="flourish" aria-hidden="true">
+  <span class="fl-line"></span>
+  <svg viewBox="0 0 40 20"><path d="M20,17 C13,15 7,9 6,4 C12,6 17,10 20,17 M20,17 C27,15 33,9 34,4 C28,6 23,10 20,17"/><line x1="20" y1="17" x2="20" y2="20"/></svg>
+  <span class="fl-line"></span>
+</div></div>
+
 <section id="voice">
   <div class="wrap">
     <div class="sec-head">
@@ -542,6 +593,23 @@ body.editing #cursorGlow{display:none}
 </section>
 
 <!-- OUTCOMES NOT TASKS -->
+<!-- IMPACT NUMBERS (#9) -->
+<section class="impact" id="impact">
+  <div class="wrap">
+    <div class="impact-box reveal">
+      <span class="impact-eyebrow" data-edit="impact_eyebrow">The impact I'm built to create</span>
+      <div class="impact-h" data-edit="impact_h">What a strong stretch looks like</div>
+      <div class="impact-note">Illustrative example — your real numbers land here as we work together.</div>
+      <div class="impact-grid">
+        <div class="impact-stat"><div class="num icount" data-to="142" data-prefix="$" data-suffix="K">$0</div><div class="lbl" data-edit="impact_l1">Saved for clients</div></div>
+        <div class="impact-stat"><div class="num icount" data-to="1900">0</div><div class="lbl" data-edit="impact_l2">Leads recovered</div></div>
+        <div class="impact-stat"><div class="num icount" data-to="380">0</div><div class="lbl" data-edit="impact_l3">Appointments booked</div></div>
+        <div class="impact-stat"><div class="num icount" data-to="96" data-suffix="%">0</div><div class="lbl" data-edit="impact_l4">Client retention</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="outcomes">
   <div class="wrap">
     <div class="sec-head">
@@ -591,6 +659,12 @@ body.editing #cursorGlow{display:none}
 </section>
 
 <!-- GROWTH SCORECARD -->
+<div class="wrap"><div class="flourish" aria-hidden="true">
+  <span class="fl-line"></span>
+  <svg viewBox="0 0 40 20"><path d="M20,17 C13,15 7,9 6,4 C12,6 17,10 20,17 M20,17 C27,15 33,9 34,4 C28,6 23,10 20,17"/><line x1="20" y1="17" x2="20" y2="20"/></svg>
+  <span class="fl-line"></span>
+</div></div>
+
 <section id="scorecard">
   <div class="wrap">
     <div class="band-green score reveal">
@@ -716,6 +790,7 @@ body.editing #cursorGlow{display:none}
 </section>
 
 <footer>
+  <svg class="foot-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,60 C240,8 480,52 720,30 C960,8 1200,52 1440,20 L1440,60 Z"/></svg>
   <div class="wrap">
     <div class="fbrand"><span class="mark"><span>M</span></span> <span data-edit="foot_brand">MacRandle Acres</span></div>
     <div class="ftag" data-edit="foot_tag">Cultivating better businesses</div>
@@ -989,6 +1064,23 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
       document.addEventListener('mouseleave',function(){ g.classList.remove('on'); });
     }
   }
+})();
+
+/* ---- Impact band count-up (#9) ---- */
+(function(){
+  var band=document.querySelector('#impact .impact-box'); if(!band) return;
+  function fmt(el,n){var p=el.getAttribute('data-prefix')||'',s=el.getAttribute('data-suffix')||'';
+    el.textContent=p+Math.round(n).toLocaleString()+s;}
+  function run(el){var to=parseFloat(el.getAttribute('data-to'))||0;
+    if(REDUCE){fmt(el,to);return;}
+    var dur=1500,st=null;
+    function step(ts){st=st||ts;var p=Math.min((ts-st)/dur,1);
+      fmt(el,(1-Math.pow(1-p,3))*to);if(p<1)requestAnimationFrame(step);else fmt(el,to);}
+    requestAnimationFrame(step);}
+  var done=false;
+  var ob=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting&&!done){done=true;
+    document.querySelectorAll('#impact .icount').forEach(run); ob.disconnect();} });},{threshold:.4});
+  ob.observe(band);
 })();
 
 /* ---- Champagne celebration on "Apply for Elite" ---- */
