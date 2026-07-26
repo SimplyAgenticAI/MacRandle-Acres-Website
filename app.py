@@ -27,7 +27,7 @@ PAGES = {
     "hub":  {"html": "hub.html",   "content": "hub_content.json"},
 }
 BLOCKED_FILES = {"app.py", "requirements.txt", ".gitignore", "render.yaml", "README.md",
-                 "index.html", "hub.html", "content.json", "hub_content.json"}
+                 "index.html", "content.json", "hub_content.json"}
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
@@ -92,6 +92,12 @@ def index():
 @app.route("/hub")
 def hub():
     return render_page("hub")
+
+
+@app.route("/hub.html")
+def hub_html_redirect():
+    # So cross-links to /hub.html work on the web service too (and on a static site).
+    return redirect("/hub")
 
 
 @app.route("/api/content", methods=["GET", "POST"])
