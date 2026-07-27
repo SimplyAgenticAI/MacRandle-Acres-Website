@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MacRandle Acres — Fractional Growth Advisor for Real Estate Teams</title>
-<meta name="description" content="Cultivating better businesses. A Monthly Revenue Growth Advisor for ambitious real estate teams — every month I find hidden opportunities to make your business more profitable, then build the systems to capture them. Jeff Randle, MacRandle Acres.">
+<title>MacRandle Acres, Fractional Growth Advisor for Real Estate Teams</title>
+<meta name="description" content="Cultivating better businesses. A Monthly Revenue Growth Advisor for ambitious real estate teams, every month I find hidden opportunities to make your business more profitable, then build the systems to capture them. Jeff Randle, MacRandle Acres.">
 <meta name="theme-color" content="#234F3D">
 
-<meta property="og:title" content="MacRandle Acres — Remove Friction. Accelerate Growth.">
+<meta property="og:title" content="MacRandle Acres, Remove Friction. Accelerate Growth.">
 <meta property="og:description" content="Cultivating better businesses. A Fractional Growth Advisor for real estate teams.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://macrandleacres.com/">
@@ -16,15 +16,15 @@
 <link rel="icon" type="image/jpeg" href="logo.jpg">
 
 <!--
-  ┌────────────────────────────────────────────────────────────────┐
-  │  ADMIN EDITING: run via Flask (app.py). Sign in at /admin/login │
-  │  with the ADMIN_PASSWORD env var, then an "Edit page" bar       │
-  │  appears — click any text to type. Save writes to content.json. │
-  │  Visitors see the saved content, read-only.                     │
-  │  Booking/email/phone links are wired. NOTE: the "Book a Growth   │
-  │  Audit" links point at a Google Calendar URL — replace with a    │
-  │  public Appointment Schedule link (calendar.app.google/...).     │
-  └────────────────────────────────────────────────────────────────┘
+ ┌────────────────────────────────────────────────────────────────┐
+ │ ADMIN EDITING: run via Flask (app.py). Sign in at /admin/login │
+ │ with the ADMIN_PASSWORD env var, then an "Edit page" bar    │
+ │ appears, click any text to type. Save writes to content.json. │
+ │ Visitors see the saved content, read-only.           │
+ │ Booking/email/phone links are wired. NOTE: the "Book a Growth  │
+ │ Audit" links point at a Google Calendar URL, replace with a  │
+ │ public Appointment Schedule link (calendar.app.google/...).   │
+ └────────────────────────────────────────────────────────────────┘
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,41 +33,41 @@
 
 <style>
 :root{
-  --green:#234F3D; --green-d:#1a3b2d; --green-l:#3a6b54;
-  --ink:#2D2D2D; --ink2:#5c635e; --ink3:#8a8f88;
-  --bg:#F8F7F3; --bg2:#f1efe7; --card:#ffffff; --cream:#f6f4ec;
-  --gold:#c79a3b; --gold-d:#a97f2a; --gold-l:#e0b862;
-  --plum:#5B2C6F;
-  --bd:rgba(35,79,61,.16); --bd-soft:rgba(35,79,61,.10);
-  --shadow:0 22px 55px rgba(35,49,40,.14); --shadow-sm:0 8px 24px rgba(35,49,40,.10);
-  --grad-green:linear-gradient(135deg,#2a5c47,#1a3b2d);
-  --grad-gold:linear-gradient(135deg,var(--gold-l),var(--gold-d));
-  --maxw:1160px;
+ --green:#234F3D; --green-d:#1a3b2d; --green-l:#3a6b54;
+ --ink:#2D2D2D; --ink2:#5c635e; --ink3:#8a8f88;
+ --bg:#F8F7F3; --bg2:#f1efe7; --card:#ffffff; --cream:#f6f4ec;
+ --gold:#c79a3b; --gold-d:#a97f2a; --gold-l:#e0b862;
+ --plum:#5B2C6F;
+ --bd:rgba(35,79,61,.16); --bd-soft:rgba(35,79,61,.10);
+ --shadow:0 22px 55px rgba(35,49,40,.14); --shadow-sm:0 8px 24px rgba(35,49,40,.10);
+ --grad-green:linear-gradient(135deg,#2a5c47,#1a3b2d);
+ --grad-gold:linear-gradient(135deg,var(--gold-l),var(--gold-d));
+ --maxw:1160px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);
-  line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+ line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 h1,h2,h3,.display{font-family:'Inter',system-ui,sans-serif;letter-spacing:-.01em;line-height:1.1;color:var(--ink)}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
 .eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--green);padding:6px 15px;border:1px solid var(--bd);border-radius:100px;background:rgba(35,79,61,.05);margin-bottom:18px}
+ color:var(--green);padding:6px 15px;border:1px solid var(--bd);border-radius:100px;background:rgba(35,79,61,.05);margin-bottom:18px}
 .accent-text{background:linear-gradient(120deg,var(--green) 20%,var(--gold) 100%);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+ -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .shimmer{background:linear-gradient(100deg,var(--green) 0%,var(--green) 36%,var(--gold-l) 50%,var(--green) 64%,var(--green) 100%);
-  background-size:260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  animation:sheen 5.5s ease-in-out infinite}
+ background-size:260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+ animation:sheen 5.5s ease-in-out infinite}
 @keyframes sheen{0%{background-position:135% 0}100%{background-position:-135% 0}}
 .gold-text{color:var(--gold-d)}
 .serif-i{font-family:'Inter',system-ui,sans-serif;font-style:italic;font-weight:500}
 
 /* Organic light background */
 .bgwash{position:fixed;inset:0;z-index:-2;background:
-  radial-gradient(920px 520px at 50% -12%, rgba(199,154,59,.12), transparent 62%),
-  radial-gradient(760px 620px at 10% 8%, rgba(35,79,61,.06), transparent 60%),
-  radial-gradient(720px 620px at 92% 88%, rgba(35,79,61,.05), transparent 60%),
-  var(--bg)}
+ radial-gradient(920px 520px at 50% -12%, rgba(199,154,59,.12), transparent 62%),
+ radial-gradient(760px 620px at 10% 8%, rgba(35,79,61,.06), transparent 60%),
+ radial-gradient(720px 620px at 92% 88%, rgba(35,79,61,.05), transparent 60%),
+ var(--bg)}
 .leaf{position:fixed;border-radius:50%;filter:blur(80px);opacity:.5;z-index:-1;pointer-events:none}
 .leaf.l1{width:440px;height:440px;top:-120px;left:-100px;background:radial-gradient(circle,rgba(35,79,61,.14),transparent 68%);animation:drift 24s ease-in-out infinite}
 .leaf.l2{width:400px;height:400px;bottom:-120px;right:-80px;background:radial-gradient(circle,rgba(199,154,59,.13),transparent 68%);animation:drift 30s ease-in-out infinite reverse}
@@ -75,8 +75,8 @@ a{color:inherit;text-decoration:none}
 #leaves{position:fixed;inset:0;z-index:-1;pointer-events:none}
 .mark{animation:markGlow 3.8s ease-in-out infinite}
 @keyframes markGlow{
-  0%,100%{box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18),0 0 0 rgba(199,154,59,0)}
-  50%{box-shadow:0 0 0 1px rgba(199,154,59,.45),0 3px 10px rgba(35,49,40,.18),0 0 15px rgba(199,154,59,.4)}}
+ 0%,100%{box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18),0 0 0 rgba(199,154,59,0)}
+ 50%{box-shadow:0 0 0 1px rgba(199,154,59,.45),0 3px 10px rgba(35,49,40,.18),0 0 15px rgba(199,154,59,.4)}}
 .card .ico{transition:transform .28s cubic-bezier(.2,.8,.2,1)}
 .card:hover .ico{transform:scale(1.1) rotate(-4deg)}
 .val-item .vi{transition:transform .28s cubic-bezier(.2,.8,.2,1)}
@@ -85,13 +85,13 @@ a{color:inherit;text-decoration:none}
 
 /* Brand mark (moon + M) */
 .mark{width:34px;height:34px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;position:relative;
-  background:radial-gradient(circle at 38% 34%,#fbf7ea,#e9e3cf 60%,#d8cfb0);
-  box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18)}
+ background:radial-gradient(circle at 38% 34%,#fbf7ea,#e9e3cf 60%,#d8cfb0);
+ box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18)}
 .mark span{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:19px;color:var(--green);line-height:1;margin-top:1px}
 
 /* Nav */
 .nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
-  background:rgba(248,247,243,.82);border-bottom:1px solid var(--bd-soft)}
+ background:rgba(248,247,243,.82);border-bottom:1px solid var(--bd-soft)}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:70px}
 .brand{display:flex;align-items:center;gap:11px;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:19px;color:var(--green);letter-spacing:.01em}
 .brand .sub{color:var(--ink3);font-weight:500;font-family:'Inter';font-size:13px}
@@ -108,7 +108,7 @@ a{color:inherit;text-decoration:none}
 .nav-links a{font-size:14px;color:var(--ink2);font-weight:500;transition:color .2s}
 .nav-links a:hover{color:var(--green)}
 .btn{display:inline-block;font-weight:700;font-size:14px;border-radius:11px;padding:12px 24px;cursor:pointer;
-  transition:transform .16s ease,box-shadow .16s ease,background .2s;border:1px solid transparent;white-space:nowrap}
+ transition:transform .16s ease,box-shadow .16s ease,background .2s;border:1px solid transparent;white-space:nowrap}
 .btn:hover{transform:translateY(-2px)}
 .btn-primary{background:var(--grad-green);color:var(--cream);box-shadow:0 10px 26px rgba(35,79,61,.28)}
 .btn-primary:hover{box-shadow:0 14px 32px rgba(35,79,61,.36)}
@@ -125,14 +125,14 @@ a{color:inherit;text-decoration:none}
 /* Hero */
 .hero{position:relative;padding:96px 0 60px;text-align:center}
 .hero .halo{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:min(560px,88vw);height:360px;z-index:-1;
-  background:radial-gradient(circle at 50% 30%,rgba(199,154,59,.16),transparent 62%)}
+ background:radial-gradient(circle at 50% 30%,rgba(199,154,59,.16),transparent 62%)}
 .hero-logo-wrap{position:relative;width:max-content;margin:0 auto 24px;display:block}
 .logo-glow{position:absolute;inset:-16%;border-radius:50%;z-index:0;pointer-events:none;filter:blur(16px);
-  background:radial-gradient(circle,rgba(199,154,59,.4),rgba(199,154,59,.1) 45%,transparent 66%);
-  animation:glowPulse 4.2s ease-in-out infinite}
+ background:radial-gradient(circle,rgba(199,154,59,.4),rgba(199,154,59,.1) 45%,transparent 66%);
+ animation:glowPulse 4.2s ease-in-out infinite}
 .hero-logo{position:relative;z-index:1;width:clamp(168px,24vw,216px);height:auto;display:block;border-radius:24px;
-  box-shadow:0 20px 48px rgba(35,49,40,.32),0 0 0 1px rgba(255,255,255,.06) inset;
-  animation:logoIn 1s cubic-bezier(.2,.8,.2,1) both, floaty 6.5s ease-in-out 1.1s infinite}
+ box-shadow:0 20px 48px rgba(35,49,40,.32),0 0 0 1px rgba(255,255,255,.06) inset;
+ animation:logoIn 1s cubic-bezier(.2,.8,.2,1) both, floaty 6.5s ease-in-out 1.1s infinite}
 @keyframes glowPulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes logoIn{0%{opacity:0;transform:scale(.82) translateY(14px)}100%{opacity:1;transform:scale(1) translateY(0)}}
@@ -142,12 +142,12 @@ a{color:inherit;text-decoration:none}
 .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 .hero .btn{padding:16px 34px;font-size:15px}
 .guarantee-ribbon{display:inline-flex;align-items:center;gap:10px;margin-top:30px;font-size:14px;color:var(--ink2);
-  background:rgba(35,79,61,.06);border:1px solid var(--bd);border-radius:100px;padding:9px 20px}
+ background:rgba(35,79,61,.06);border:1px solid var(--bd);border-radius:100px;padding:9px 20px}
 .guarantee-ribbon .g-ico{color:var(--green);font-weight:800}
 
 /* Values strip (mirrors logo) */
 .values{display:flex;justify-content:center;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:52px;
-  border-top:1px solid var(--bd-soft);border-bottom:1px solid var(--bd-soft);padding:22px 0}
+ border-top:1px solid var(--bd-soft);border-bottom:1px solid var(--bd-soft);padding:22px 0}
 .val-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 34px;position:relative;min-width:120px}
 .val-item + .val-item::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:1px;background:var(--bd-soft)}
 .val-item .vi{font-size:20px}
@@ -164,36 +164,36 @@ section{position:relative;padding:74px 0}
 .voice-lead b{color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:900px;margin:0 auto}
 .chip{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:15px 22px;font-size:16px;
-  font-weight:500;color:var(--ink);display:flex;align-items:center;gap:11px;box-shadow:var(--shadow-sm);
-  transition:transform .2s,box-shadow .2s}
+ font-weight:500;color:var(--ink);display:flex;align-items:center;gap:11px;box-shadow:var(--shadow-sm);
+ transition:transform .2s,box-shadow .2s}
 .chip:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
 .chip .q{color:var(--gold);font-family:'Inter',system-ui,sans-serif;font-size:26px;line-height:0;margin-top:10px}
 
 /* Green band (inverted, echoes logo) */
 .band-green{position:relative;border-radius:24px;overflow:hidden;
-  background:linear-gradient(160deg,#26543f,#1a3b2d);color:rgba(246,244,236,.82);box-shadow:var(--shadow)}
+ background:linear-gradient(160deg,#26543f,#1a3b2d);color:rgba(246,244,236,.82);box-shadow:var(--shadow)}
 .band-green::after{content:'';position:absolute;top:-80px;right:-60px;width:300px;height:300px;border-radius:50%;
-  background:radial-gradient(circle,rgba(199,154,59,.16),transparent 66%);pointer-events:none}
+ background:radial-gradient(circle,rgba(199,154,59,.16),transparent 66%);pointer-events:none}
 .band-green h2,.band-green h3{color:var(--cream)}
 .band-green .eyebrow{color:var(--gold-l);border-color:rgba(246,244,236,.22);background:rgba(246,244,236,.06)}
 
 /* Promise band */
 .promise-band{padding:54px;text-align:center}
 .promise-band .big{font-family:'Inter',system-ui,sans-serif;font-size:clamp(23px,3.3vw,36px);font-weight:500;line-height:1.28;
-  max-width:840px;margin:0 auto 32px;color:var(--cream)}
+ max-width:840px;margin:0 auto 32px;color:var(--cream)}
 .buy-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 .buy{padding:11px 22px;border-radius:100px;font-weight:700;font-size:15px;border:1px solid rgba(246,244,236,.2);
-  background:rgba(246,244,236,.05);color:var(--cream)}
+ background:rgba(246,244,236,.05);color:var(--cream)}
 .buy .bd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:9px;vertical-align:middle;background:var(--gold-l)}
 
 /* Cards / outcomes */
 .grid{display:grid;gap:22px}
 .g3{grid-template-columns:repeat(3,1fr)}
 .card{position:relative;background:var(--card);border:1px solid var(--bd-soft);border-radius:18px;padding:28px 26px;
-  box-shadow:var(--shadow-sm);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+ box-shadow:var(--shadow-sm);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
 .card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--bd)}
 .card .ico{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:24px;margin-bottom:16px;
-  background:linear-gradient(135deg,rgba(35,79,61,.10),rgba(199,154,59,.14));border:1px solid var(--bd-soft)}
+ background:linear-gradient(135deg,rgba(35,79,61,.10),rgba(199,154,59,.14));border:1px solid var(--bd-soft)}
 .card h3{font-size:20px;font-weight:600;margin-bottom:9px}
 .card p{color:var(--ink2);font-size:14.5px}
 .card .was{display:block;margin-top:14px;font-size:12px;color:var(--ink3);letter-spacing:.02em}
@@ -205,17 +205,17 @@ section{position:relative;padding:74px 0}
 .score .sub{color:rgba(246,244,236,.78);font-size:17px;margin:14px 0 24px}
 .score .kicker{color:var(--gold-l);font-weight:700;font-size:13px;letter-spacing:.16em;text-transform:uppercase}
 .report{background:var(--card);border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:26px;
-  box-shadow:0 24px 55px rgba(0,0,0,.28)}
+ box-shadow:0 24px 55px rgba(0,0,0,.28)}
 .report-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .report-top .rt-title{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:17px;color:var(--green)}
 .report-top .rt-mo{font-size:12px;color:var(--ink3)}
 .report .rt-sub{font-size:12px;color:var(--ink3);margin-bottom:18px}
-/* (legacy Scorecard list styles removed — replaced by the .rp-* dashboard) */
+/* (legacy Scorecard list styles removed, replaced by the .rp-* dashboard) */
 
 /* Pricing */
 .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
 .tier{position:relative;background:var(--card);border:1px solid var(--bd-soft);border-radius:20px;padding:32px 28px;
-  display:flex;flex-direction:column;box-shadow:var(--shadow-sm);transition:transform .25s,box-shadow .25s}
+ display:flex;flex-direction:column;box-shadow:var(--shadow-sm);transition:transform .25s,box-shadow .25s}
 .tier:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
 .tier.feature{background:linear-gradient(165deg,#26543f,#1a3b2d);border-color:transparent;color:rgba(246,244,236,.85)}
 .tier.feature .tname,.tier.feature .price .amt{color:var(--cream)}
@@ -223,8 +223,8 @@ section{position:relative;padding:74px 0}
 .tier.feature li{color:var(--cream)}
 .tier.feature li .ck{background:var(--grad-gold);color:#3a2a05}
 .tier .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--plum);color:#fff;
-  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 16px;border-radius:100px;
-  box-shadow:0 6px 16px rgba(91,44,111,.5)}
+ font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 16px;border-radius:100px;
+ box-shadow:0 6px 16px rgba(91,44,111,.5)}
 .tier .tname{font-family:'Inter',system-ui,sans-serif;font-size:22px;font-weight:700;margin-bottom:4px;color:var(--green)}
 .tier .tdesc{font-size:13.5px;color:var(--ink3);margin-bottom:18px;min-height:38px}
 .tier .price{font-family:'Inter',system-ui,sans-serif;font-weight:700;margin-bottom:2px}
@@ -233,16 +233,16 @@ section{position:relative;padding:74px 0}
 .tier ul{list-style:none;display:grid;gap:12px;margin:22px 0 26px}
 .tier li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink)}
 .tier li .ck{flex:0 0 20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:800;
-  background:var(--grad-green);color:var(--cream)}
+ background:var(--grad-green);color:var(--cream)}
 .tier .btn{margin-top:auto;text-align:center;width:100%}
 
 /* Guarantee */
 .promise2{text-align:center}
 .promise2 .pbox{position:relative;border-radius:24px;overflow:hidden;padding:52px 40px;background:var(--card);
-  border:1px solid var(--bd);box-shadow:var(--shadow)}
+ border:1px solid var(--bd);box-shadow:var(--shadow)}
 .promise2 .pbox::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--grad-gold)}
 .promise2 .pbadge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--gold-d);margin-bottom:16px}
+ color:var(--gold-d);margin-bottom:16px}
 .promise2 h2{font-size:clamp(26px,4vw,42px);font-weight:600;max-width:840px;margin:0 auto 16px}
 .promise2 p{color:var(--ink2);font-size:18px;max-width:620px;margin:0 auto}
 
@@ -255,7 +255,7 @@ section{position:relative;padding:74px 0}
 /* Footer */
 footer{background:linear-gradient(180deg,#1c4032,#152e24);color:rgba(246,244,236,.72);padding:52px 0 46px;text-align:center}
 footer .fbrand{display:flex;align-items:center;justify-content:center;gap:12px;font-family:'Inter',system-ui,sans-serif;
-  font-weight:700;font-size:24px;color:var(--cream);margin-bottom:8px}
+ font-weight:700;font-size:24px;color:var(--cream);margin-bottom:8px}
 footer .ftag{font-family:'Inter',system-ui,sans-serif;font-style:italic;color:var(--gold-l);font-size:16px;margin-bottom:18px}
 footer .fvals{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,244,236,.6);margin-bottom:8px}
 footer .loc{color:rgba(246,244,236,.7);font-size:14px;margin-bottom:6px}
@@ -268,21 +268,21 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 
 /* ---- Admin editor ---- */
 #adminBar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:200;display:none;
-  align-items:center;gap:9px;background:rgba(26,59,45,.97);color:var(--cream);padding:10px 14px;border-radius:14px;
-  box-shadow:0 16px 40px rgba(0,0,0,.42);border:1px solid rgba(224,184,98,.35);font-family:'Inter',sans-serif;font-size:13px}
+ align-items:center;gap:9px;background:rgba(26,59,45,.97);color:var(--cream);padding:10px 14px;border-radius:14px;
+ box-shadow:0 16px 40px rgba(0,0,0,.42);border:1px solid rgba(224,184,98,.35);font-family:'Inter',sans-serif;font-size:13px}
 #adminBar.show{display:flex}
 body.editing #adminBar{display:none}
 #adminBar .ab-dot{width:8px;height:8px;border-radius:50%;background:#e0b862;box-shadow:0 0 8px #e0b862}
 #adminBar .ab-lbl{font-weight:700;letter-spacing:.04em;margin-right:4px;white-space:nowrap}
 #adminBar button,.ab-logout{font-family:inherit;font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;
-  border:1px solid transparent;cursor:pointer;text-decoration:none}
+ border:1px solid transparent;cursor:pointer;text-decoration:none}
 .ab-edit{background:#e0b862;color:#2a2005}
 .ab-logout{background:transparent;border:1px solid rgba(246,244,236,.3);color:var(--cream)}
 
-/* Editing banner (top) — the clear Save / Discard controls */
+/* Editing banner (top), the clear Save / Discard controls */
 #editBanner{position:fixed;left:0;right:0;top:0;z-index:220;display:none;align-items:center;justify-content:space-between;
-  gap:14px;padding:9px 18px;background:linear-gradient(90deg,#234F3D,#1a3b2d);color:var(--cream);
-  border-bottom:2px solid var(--gold);box-shadow:0 6px 22px rgba(0,0,0,.3);font-family:'Inter',sans-serif}
+ gap:14px;padding:9px 18px;background:linear-gradient(90deg,#234F3D,#1a3b2d);color:var(--cream);
+ border-bottom:2px solid var(--gold);box-shadow:0 6px 22px rgba(0,0,0,.3);font-family:'Inter',sans-serif}
 body.editing #editBanner{display:flex}
 body.editing{padding-top:54px}
 body.editing .nav{top:54px}
@@ -292,7 +292,7 @@ body.editing .nav{top:54px}
 #editBanner .eb-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #editBanner .eb-actions{display:flex;gap:9px;align-items:center;flex:0 0 auto}
 #editBanner button{font-family:inherit;font-weight:700;font-size:13.5px;border-radius:9px;padding:10px 18px;
-  border:1px solid transparent;cursor:pointer}
+ border:1px solid transparent;cursor:pointer}
 .eb-save{background:var(--gold-l);color:#2a2005;box-shadow:0 4px 14px rgba(224,184,98,.4);animation:savePulse 2s ease-in-out infinite}
 .eb-save:hover{background:#fff}
 @keyframes savePulse{0%,100%{box-shadow:0 4px 14px rgba(224,184,98,.35)}50%{box-shadow:0 0 20px 3px rgba(224,184,98,.62)}}
@@ -304,17 +304,17 @@ body.editing [data-edit]{outline:1.5px dashed rgba(199,154,59,.6);outline-offset
 body.editing [data-edit]:hover{outline-color:var(--gold);background:rgba(199,154,59,.06)}
 body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199,154,59,.09)}
 #adminToast{position:fixed;right:20px;bottom:88px;z-index:230;background:#234F3D;color:#fff;padding:11px 16px;border-radius:10px;
-  font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;box-shadow:var(--shadow);max-width:min(360px,86vw)}
+ font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;box-shadow:var(--shadow);max-width:min(360px,86vw)}
 #adminToast.show{opacity:1;transform:none}
 .foot-admin{margin-top:18px}
 .foot-admin a{display:inline-flex;align-items:center;gap:7px;color:rgba(246,244,236,.45);font-size:11.5px;font-weight:700;
-  letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);
-  padding:7px 15px;border-radius:9px;transition:.2s}
+ letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);
+ padding:7px 15px;border-radius:9px;transition:.2s}
 .foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
 
 /* Visitor polish: scroll progress, nav shadow, active nav, back-to-top */
 #progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
-  background:linear-gradient(90deg,var(--gold),var(--green-l));transition:width .12s ease}
+ background:linear-gradient(90deg,var(--gold),var(--green-l));transition:width .12s ease}
 body.editing #progress{display:none}
 .nav{transition:box-shadow .25s ease,background .25s ease}
 .nav.scrolled{box-shadow:0 6px 22px rgba(35,49,40,.1);background:rgba(248,247,243,.94)}
@@ -322,8 +322,8 @@ body.editing #progress{display:none}
 .nav-links a.active{color:var(--green)}
 .nav-links a.active::after{content:'';position:absolute;left:0;right:0;bottom:-7px;height:2px;border-radius:2px;background:var(--grad-gold)}
 #toTop{position:fixed;right:22px;bottom:24px;z-index:55;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
-  background:var(--grad-green);color:var(--cream);font-size:19px;line-height:1;box-shadow:var(--shadow-sm);
-  opacity:0;transform:translateY(14px) scale(.9);pointer-events:none;transition:opacity .3s,transform .3s,box-shadow .2s}
+ background:var(--grad-green);color:var(--cream);font-size:19px;line-height:1;box-shadow:var(--shadow-sm);
+ opacity:0;transform:translateY(14px) scale(.9);pointer-events:none;transition:opacity .3s,transform .3s,box-shadow .2s}
 #toTop.show{opacity:1;transform:none;pointer-events:auto}
 #toTop:hover{box-shadow:0 12px 30px rgba(35,79,61,.4);transform:translateY(-2px)}
 body.editing #toTop{display:none}
@@ -333,9 +333,9 @@ body.editing #toTop{display:none}
 #rootSpineWrap{position:fixed;top:0;left:14px;width:36px;height:100vh;z-index:40;pointer-events:none}
 #rootSpine{width:100%;height:100%;overflow:visible;display:block}
 #rootPath{fill:none;stroke:url(#rootGrad);stroke-width:2.2;stroke-linecap:round;
-  stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 3px rgba(199,154,59,.35))}
+ stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 3px rgba(199,154,59,.35))}
 .root-leaf{position:absolute;width:12px;height:12px;border-radius:0 100% 0 100%;
-  transform:rotate(45deg) scale(0);opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s}
+ transform:rotate(45deg) scale(0);opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s}
 .root-leaf.on{transform:rotate(45deg) scale(1);opacity:.92}
 .rl-gold{background:linear-gradient(135deg,#e0b862,#c79a3b);box-shadow:0 0 7px rgba(199,154,59,.5)}
 .rl-green{background:linear-gradient(135deg,#3a6b54,#234F3D);box-shadow:0 0 7px rgba(35,79,61,.4)}
@@ -344,7 +344,7 @@ body.editing #rootSpineWrap{display:none}
 
 /* #2 Living Scorecard dashboard */
 .rp-chart{margin:16px 0 4px;padding:12px 12px 6px;border:1px solid rgba(35,79,61,.1);border-radius:12px;
-  background:linear-gradient(180deg,rgba(199,154,59,.07),rgba(255,255,255,0))}
+ background:linear-gradient(180deg,rgba(199,154,59,.07),rgba(255,255,255,0))}
 .rp-chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .rp-chart-lbl{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase}
 .rp-chart-up{font-size:11px;font-weight:700;color:#2f7a56}
@@ -352,7 +352,7 @@ body.editing #rootSpineWrap{display:none}
 .rp-area{opacity:0;transition:opacity 1s ease .5s}
 .report.in .rp-area{opacity:1}
 .rp-line{fill:none;stroke:var(--gold-d);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.7s cubic-bezier(.4,0,.2,1) .2s}
+ stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.7s cubic-bezier(.4,0,.2,1) .2s}
 .report.in .rp-line{stroke-dashoffset:0}
 .rp-dot{fill:var(--gold-d);opacity:0;transition:opacity .4s ease 1.7s}
 .report.in .rp-dot{opacity:1}
@@ -365,10 +365,10 @@ body.editing #rootSpineWrap{display:none}
 .rp-m-val.g{color:#2f7a56}.rp-m-val.gold{color:var(--gold-d)}
 .rp-bar{display:block;height:4px;border-radius:3px;background:rgba(35,79,61,.1);margin-top:6px;overflow:hidden}
 .rp-bar i{display:block;height:100%;width:0;border-radius:3px;background:var(--grad-gold);
-  transition:width 1.1s cubic-bezier(.2,.8,.2,1) .35s}
+ transition:width 1.1s cubic-bezier(.2,.8,.2,1) .35s}
 .report.in .rp-bar i{width:var(--w)}
 .rp-foot{display:flex;justify-content:space-between;align-items:center;margin-top:15px;padding-top:12px;
-  border-top:1px solid rgba(35,79,61,.1);font-size:13px}
+ border-top:1px solid rgba(35,79,61,.1);font-size:13px}
 .rp-foot-l{display:flex;align-items:center;gap:8px;color:var(--ink)}
 .rp-foot-v{font-family:'Inter',system-ui,sans-serif;font-weight:700;color:var(--green)}
 .rp-next{margin-top:11px;font-size:12.5px;color:var(--ink3);display:flex;justify-content:space-between;align-items:center}
@@ -377,7 +377,7 @@ body.editing #rootSpineWrap{display:none}
 /* #4 Spotlight + 3D-tilt cards */
 .card,.tier{transform-style:preserve-3d;will-change:transform}
 .card::after,.tier::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
-  transition:opacity .3s;background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(199,154,59,.16),transparent 62%)}
+ transition:opacity .3s;background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(199,154,59,.16),transparent 62%)}
 .card:hover::after,.tier:hover::after{opacity:1}
 
 /* ===== Phase 2: cinematic hero, magnetic buttons, kinetic type ===== */
@@ -396,19 +396,19 @@ body.editing #rootSpineWrap{display:none}
 /* #5 Magnetic buttons + cursor glow */
 .btn{will-change:transform}
 #cursorGlow{position:fixed;top:0;left:0;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:45;
-  transform:translate(-50%,-50%);opacity:0;transition:opacity .45s;
-  background:radial-gradient(circle,rgba(199,154,59,.16),transparent 62%)}
+ transform:translate(-50%,-50%);opacity:0;transition:opacity .45s;
+ background:radial-gradient(circle,rgba(199,154,59,.16),transparent 62%)}
 #cursorGlow.on{opacity:1}
 body.editing #cursorGlow{display:none}
 
-/* #7 Kinetic typography — headings wipe in, accent word draws an underline */
+/* #7 Kinetic typography, headings wipe in, accent word draws an underline */
 .sec-head h2.reveal{opacity:1;transform:none;clip-path:inset(0 106% -18% -6%);
-  transition:clip-path 1.05s cubic-bezier(.32,0,.14,1)}
+ transition:clip-path 1.05s cubic-bezier(.32,0,.14,1)}
 .sec-head h2.reveal.in{clip-path:inset(0 -6% -18% -6%)}
 .sec-head h2 .accent-text{position:relative}
 .sec-head h2 .accent-text::after{content:'';position:absolute;left:0;right:0;bottom:-3px;height:3px;border-radius:3px;
-  background:var(--grad-gold);transform:scaleX(0);transform-origin:left;
-  transition:transform .7s cubic-bezier(.4,0,.2,1) .55s}
+ background:var(--grad-gold);transform:scaleX(0);transform-origin:left;
+ transition:transform .7s cubic-bezier(.4,0,.2,1) .55s}
 .sec-head h2.reveal.in .accent-text::after{transform:scaleX(1)}
 
 /* Button FX */
@@ -416,52 +416,52 @@ body.editing #cursorGlow{display:none}
 .fx-start:hover::after{transform:translateX(6px)}
 .fx-gleam{position:relative;overflow:hidden}
 .fx-gleam::after{content:'';position:absolute;top:0;left:-130%;width:55%;height:100%;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);
-  animation:gleam 4s ease-in-out infinite}
+ background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);
+ animation:gleam 4s ease-in-out infinite}
 @keyframes gleam{0%{left:-130%}22%{left:165%}100%{left:165%}}
 .fx-elite{border-color:rgba(199,154,59,.6)!important;color:var(--gold-d)!important;
-  background:linear-gradient(135deg,rgba(199,154,59,.13),rgba(199,154,59,.03))!important;
-  animation:eliteAura 2.6s ease-in-out infinite}
+ background:linear-gradient(135deg,rgba(199,154,59,.13),rgba(199,154,59,.03))!important;
+ animation:eliteAura 2.6s ease-in-out infinite}
 .fx-elite:hover{border-color:var(--gold)!important;
-  background:linear-gradient(135deg,rgba(199,154,59,.22),rgba(199,154,59,.07))!important}
+ background:linear-gradient(135deg,rgba(199,154,59,.22),rgba(199,154,59,.07))!important}
 @keyframes eliteAura{0%,100%{box-shadow:0 6px 20px rgba(199,154,59,.2)}
-  50%{box-shadow:0 0 24px 3px rgba(199,154,59,.5),0 8px 28px rgba(199,154,59,.4)}}
+ 50%{box-shadow:0 0 24px 3px rgba(199,154,59,.5),0 8px 28px rgba(199,154,59,.4)}}
 .fizz{position:fixed;z-index:300;pointer-events:none;will-change:transform,opacity;
-  animation:fizzpop var(--dur,1200ms) cubic-bezier(.15,.6,.3,1) forwards}
+ animation:fizzpop var(--dur,1200ms) cubic-bezier(.15,.6,.3,1) forwards}
 @keyframes fizzpop{
-  0%{transform:translate(-50%,-50%) scale(.3);opacity:0}
-  12%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{transform:translate(calc(-50% + var(--dx,0)),calc(-50% + var(--dy,0))) rotate(var(--rot,0deg)) scale(.9);opacity:0}}
+ 0%{transform:translate(-50%,-50%) scale(.3);opacity:0}
+ 12%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+ 100%{transform:translate(calc(-50% + var(--dx,0)),calc(-50% + var(--dy,0))) rotate(var(--rot,0deg)) scale(.9);opacity:0}}
 
 @media(max-width:900px){
-  .g3{grid-template-columns:1fr 1fr}
-  .score-grid{grid-template-columns:1fr;gap:30px}
-  .score,.promise-band{padding:38px 28px}
-  .price-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto}
+ .g3{grid-template-columns:1fr 1fr}
+ .score-grid{grid-template-columns:1fr;gap:30px}
+ .score,.promise-band{padding:38px 28px}
+ .price-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto}
 }
 @media(max-width:620px){
-  .nav-links{display:none}.hamb{display:block}
-  .g3{grid-template-columns:1fr}
-  .hero{padding:64px 0 48px}section{padding:52px 0}
-  .val-item{padding:0 20px;min-width:44%}
-  .final-box{padding:44px 24px}
+ .nav-links{display:none}.hamb{display:block}
+ .g3{grid-template-columns:1fr}
+ .hero{padding:64px 0 48px}section{padding:52px 0}
+ .val-item{padding:0 20px;min-width:44%}
+ .final-box{padding:44px 24px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important}.reveal{opacity:1;transform:none;transition:none}
-  .sec-head h2.reveal{clip-path:none}.sec-head h2 .accent-text::after{transform:scaleX(1)}}
+ .sec-head h2.reveal{clip-path:none}.sec-head h2 .accent-text::after{transform:scaleX(1)}}
 
 /* ===== Phase 3: organic dividers, impact band, living atmosphere ===== */
 /* #10 Living atmosphere */
 .atmosphere{position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background:radial-gradient(60% 50% at 28% 18%,rgba(199,154,59,.09),transparent 70%),
-             radial-gradient(55% 45% at 78% 72%,rgba(35,79,61,.07),transparent 70%);
-  animation:breathe 17s ease-in-out infinite}
+ background:radial-gradient(60% 50% at 28% 18%,rgba(199,154,59,.09),transparent 70%),
+       radial-gradient(55% 45% at 78% 72%,rgba(35,79,61,.07),transparent 70%);
+ animation:breathe 17s ease-in-out infinite}
 @keyframes breathe{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.09)}}
 .firefly{position:fixed;width:5px;height:5px;border-radius:50%;z-index:-1;pointer-events:none;opacity:0;
-  background:radial-gradient(circle,#fbf0c8,rgba(224,184,98,.65));box-shadow:0 0 9px 2px rgba(224,184,98,.55);
-  animation:flyPath 15s ease-in-out infinite,twinkle 3.2s ease-in-out infinite}
+ background:radial-gradient(circle,#fbf0c8,rgba(224,184,98,.65));box-shadow:0 0 9px 2px rgba(224,184,98,.55);
+ animation:flyPath 15s ease-in-out infinite,twinkle 3.2s ease-in-out infinite}
 @keyframes twinkle{0%,100%{opacity:.12}50%{opacity:.85}}
 @keyframes flyPath{0%{transform:translate(0,0)}25%{transform:translate(34px,-46px)}
-  50%{transform:translate(-22px,-88px)}75%{transform:translate(24px,-44px)}100%{transform:translate(0,0)}}
+ 50%{transform:translate(-22px,-88px)}75%{transform:translate(24px,-44px)}100%{transform:translate(0,0)}}
 
 /* #6 Organic dividers */
 .flourish{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 auto;max-width:340px;padding:6px 24px}
@@ -475,15 +475,15 @@ footer{position:relative}
 /* #9 Impact band */
 .impact{padding:18px 0 6px}
 .impact-box{position:relative;border-radius:24px;overflow:hidden;padding:42px 30px;text-align:center;
-  background:linear-gradient(160deg,#26543f,#1a3b2d);color:var(--cream);box-shadow:var(--shadow)}
+ background:linear-gradient(160deg,#26543f,#1a3b2d);color:var(--cream);box-shadow:var(--shadow)}
 .impact-box::after{content:'';position:absolute;top:-70px;right:-50px;width:280px;height:280px;border-radius:50%;
-  background:radial-gradient(circle,rgba(199,154,59,.16),transparent 66%);pointer-events:none}
+ background:radial-gradient(circle,rgba(199,154,59,.16),transparent 66%);pointer-events:none}
 .impact-eyebrow{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-l);margin-bottom:6px}
 .impact-h{font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:clamp(20px,2.6vw,27px);margin-bottom:4px;color:var(--cream)}
 .impact-note{font-size:11.5px;color:rgba(246,244,236,.55);margin-bottom:26px;font-style:italic}
 .impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;position:relative;z-index:1}
 .impact-stat .num{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:clamp(30px,4.4vw,44px);line-height:1;
-  background:linear-gradient(135deg,#f6f4ec,var(--gold-l));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+ background:linear-gradient(135deg,#f6f4ec,var(--gold-l));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .impact-stat .lbl{font-size:12.5px;color:rgba(246,244,236,.78);margin-top:8px;letter-spacing:.02em}
 @media(max-width:700px){.impact-grid{grid-template-columns:1fr 1fr;gap:26px 18px}}
 </style>
@@ -504,311 +504,311 @@ footer{position:relative}
 
 <!-- #1 Root-growth spine: draws in as you scroll -->
 <div id="rootSpineWrap" aria-hidden="true">
-  <svg id="rootSpine" viewBox="0 0 40 1000" preserveAspectRatio="none">
-    <defs><linearGradient id="rootGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#e0b862"/><stop offset="0.5" stop-color="#c79a3b"/><stop offset="1" stop-color="#3a6b54"/>
-    </linearGradient></defs>
-    <path id="rootPath" pathLength="1" d="M20,2 C6,120 34,220 20,340 C6,460 34,560 20,680 C8,800 32,900 20,998"/>
-  </svg>
-  <span class="root-leaf rl-gold"  data-at="0.15" style="top:15%;left:5px"></span>
-  <span class="root-leaf rl-green" data-at="0.30" style="top:30%;left:23px"></span>
-  <span class="root-leaf rl-gold"  data-at="0.45" style="top:45%;left:6px"></span>
-  <span class="root-leaf rl-green" data-at="0.60" style="top:60%;left:22px"></span>
-  <span class="root-leaf rl-gold"  data-at="0.74" style="top:74%;left:7px"></span>
-  <span class="root-leaf rl-green" data-at="0.88" style="top:88%;left:21px"></span>
+ <svg id="rootSpine" viewBox="0 0 40 1000" preserveAspectRatio="none">
+  <defs><linearGradient id="rootGrad" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="#e0b862"/><stop offset="0.5" stop-color="#c79a3b"/><stop offset="1" stop-color="#3a6b54"/>
+  </linearGradient></defs>
+  <path id="rootPath" pathLength="1" d="M20,2 C6,120 34,220 20,340 C6,460 34,560 20,680 C8,800 32,900 20,998"/>
+ </svg>
+ <span class="root-leaf rl-gold" data-at="0.15" style="top:15%;left:5px"></span>
+ <span class="root-leaf rl-green" data-at="0.30" style="top:30%;left:23px"></span>
+ <span class="root-leaf rl-gold" data-at="0.45" style="top:45%;left:6px"></span>
+ <span class="root-leaf rl-green" data-at="0.60" style="top:60%;left:22px"></span>
+ <span class="root-leaf rl-gold" data-at="0.74" style="top:74%;left:7px"></span>
+ <span class="root-leaf rl-green" data-at="0.88" style="top:88%;left:21px"></span>
 </div>
 
 <!-- NAV -->
 <nav class="nav">
-  <div class="wrap nav-in">
-    <div class="brand"><a class="brand-main" href="#top"><span class="mark"><span>M</span></span> MacRandle Acres</a><a class="brand-hub" href="/hub.html" title="Jeff Randle — my landing page">· Jeff Randle <span class="hub-arr">↗</span></a></div>
-    <div class="nav-links">
-      <a href="#voice">Why it matters</a>
-      <a href="#outcomes">What you get</a>
-      <a href="#scorecard">Growth Scorecard</a>
-      <a href="#pricing">Pricing</a>
-      <a class="btn btn-primary nav-cta" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="nav_cta">Book a Growth Audit</span></a>
-    </div>
-    <button class="hamb" id="hamb" aria-label="Menu">☰</button>
+ <div class="wrap nav-in">
+  <div class="brand"><a class="brand-main" href="#top"><span class="mark"><span>M</span></span> MacRandle Acres</a><a class="brand-hub" href="/hub.html" title="Jeff Randle, my landing page">· Jeff Randle <span class="hub-arr">↗</span></a></div>
+  <div class="nav-links">
+   <a href="#voice">Why it matters</a>
+   <a href="#outcomes">What you get</a>
+   <a href="#scorecard">Growth Scorecard</a>
+   <a href="#pricing">Pricing</a>
+   <a class="btn btn-primary nav-cta" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="nav_cta">Book a Growth Audit</span></a>
   </div>
+  <button class="hamb" id="hamb" aria-label="Menu">☰</button>
+ </div>
 </nav>
 
 <!-- HERO -->
 <header class="hero" id="top">
-  <div class="halo"></div>
-  <div class="wrap">
-    <div class="hero-logo-wrap reveal in">
-      <span class="logo-glow"></span>
-      <img class="hero-logo" src="logo.jpg" alt="MacRandle Acres — Cultivating Better Businesses" onerror="this.parentNode.style.display='none'">
-    </div>
-    <span class="eyebrow reveal in" data-edit="hero_eyebrow">Fractional Growth Advisor · For Real Estate Teams</span>
-    <h1 class="reveal in"><span class="accent-text shimmer" data-edit="hero_h1a">Remove Friction.</span><br><span data-edit="hero_h1b">Accelerate Growth.</span></h1>
-    <p class="promise reveal in" data-edit="hero_promise">Every month I find hidden opportunities to make your real estate business <b>more profitable</b> — then I implement the systems to capture them.</p>
-    <div class="hero-cta reveal in">
-      <a class="btn btn-primary" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="hero_cta1">Book a Growth Audit</span></a>
-      <a class="btn btn-ghost" href="#scorecard"><span data-edit="hero_cta2">See how it works</span></a>
-    </div>
-    <div class="reveal in" style="display:flex;justify-content:center">
-      <div class="guarantee-ribbon"><span class="g-ico">✓</span> <span data-edit="hero_guarantee">If I can't find ways to improve your business every month, I'm not doing my job.</span></div>
-    </div>
-    <div class="values reveal">
-      <div class="val-item"><span class="vi">🌱</span><span class="vl" data-edit="val1">Growth</span></div>
-      <div class="val-item"><span class="vi">🌳</span><span class="vl" data-edit="val2">Foundation</span></div>
-      <div class="val-item"><span class="vi">🌅</span><span class="vl" data-edit="val3">Freedom</span></div>
-      <div class="val-item"><span class="vi">💚</span><span class="vl" data-edit="val4">Trust</span></div>
-    </div>
+ <div class="halo"></div>
+ <div class="wrap">
+  <div class="hero-logo-wrap reveal in">
+   <span class="logo-glow"></span>
+   <img class="hero-logo" src="logo.jpg" alt="MacRandle Acres, Cultivating Better Businesses" onerror="this.parentNode.style.display='none'">
   </div>
+  <span class="eyebrow reveal in" data-edit="hero_eyebrow">Fractional Growth Advisor · For Real Estate Teams</span>
+  <h1 class="reveal in"><span class="accent-text shimmer" data-edit="hero_h1a">Remove Friction.</span><br><span data-edit="hero_h1b">Accelerate Growth.</span></h1>
+  <p class="promise reveal in" data-edit="hero_promise">Every month I find hidden opportunities to make your real estate business <b>more profitable</b>, then I implement the systems to capture them.</p>
+  <div class="hero-cta reveal in">
+   <a class="btn btn-primary" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="hero_cta1">Book a Growth Audit</span></a>
+   <a class="btn btn-ghost" href="#scorecard"><span data-edit="hero_cta2">See how it works</span></a>
+  </div>
+  <div class="reveal in" style="display:flex;justify-content:center">
+   <div class="guarantee-ribbon"><span class="g-ico">✓</span> <span data-edit="hero_guarantee">If I can't find ways to improve your business every month, I'm not doing my job.</span></div>
+  </div>
+  <div class="values reveal">
+   <div class="val-item"><span class="vi">🌱</span><span class="vl" data-edit="val1">Growth</span></div>
+   <div class="val-item"><span class="vi">🌳</span><span class="vl" data-edit="val2">Foundation</span></div>
+   <div class="val-item"><span class="vi">🌅</span><span class="vl" data-edit="val3">Freedom</span></div>
+   <div class="val-item"><span class="vi">💚</span><span class="vl" data-edit="val4">Trust</span></div>
+  </div>
+ </div>
 </header>
 
 <!-- CLIENT VOICE -->
 <div class="wrap"><div class="flourish" aria-hidden="true">
-  <span class="fl-line"></span>
-  <svg viewBox="0 0 40 20"><path d="M20,17 C13,15 7,9 6,4 C12,6 17,10 20,17 M20,17 C27,15 33,9 34,4 C28,6 23,10 20,17"/><line x1="20" y1="17" x2="20" y2="20"/></svg>
-  <span class="fl-line"></span>
+ <span class="fl-line"></span>
+ <svg viewBox="0 0 40 20"><path d="M20,17 C13,15 7,9 6,4 C12,6 17,10 20,17 M20,17 C27,15 33,9 34,4 C28,6 23,10 20,17"/><line x1="20" y1="17" x2="20" y2="20"/></svg>
+ <span class="fl-line"></span>
 </div></div>
 
 <section id="voice">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow reveal" data-edit="voice_eyebrow">Why it matters</span>
-      <h2 class="reveal">Nobody wakes up wanting <span class="accent-text" data-edit="voice_h2hi">"CRM optimization"</span></h2>
-    </div>
-    <p class="voice-lead reveal" data-edit="voice_lead">You wake up thinking about the things that actually keep growth stuck. <b>That's</b> what I fix.</p>
-    <div class="chips">
-      <div class="chip reveal d1"><span class="q">&ldquo;</span><span data-edit="chip1">I don't want opportunities slipping.</span></div>
-      <div class="chip reveal d1"><span class="q">&ldquo;</span><span data-edit="chip2">I don't want to babysit technology.</span></div>
-      <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip3">I want to beat the team down the street.</span></div>
-      <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip4">I want someone who notices problems before I do.</span></div>
-      <div class="chip reveal d3"><span class="q">&ldquo;</span><span data-edit="chip5">I don't want another employee.</span></div>
-    </div>
+ <div class="wrap">
+  <div class="sec-head">
+   <span class="eyebrow reveal" data-edit="voice_eyebrow">Why it matters</span>
+   <h2 class="reveal">Nobody wakes up wanting <span class="accent-text" data-edit="voice_h2hi">"CRM optimization"</span></h2>
   </div>
+  <p class="voice-lead reveal" data-edit="voice_lead">You wake up thinking about the things that actually keep growth stuck. <b>That's</b> what I fix.</p>
+  <div class="chips">
+   <div class="chip reveal d1"><span class="q">&ldquo;</span><span data-edit="chip1">I don't want opportunities slipping.</span></div>
+   <div class="chip reveal d1"><span class="q">&ldquo;</span><span data-edit="chip2">I don't want to babysit technology.</span></div>
+   <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip3">I want to beat the team down the street.</span></div>
+   <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip4">I want someone who notices problems before I do.</span></div>
+   <div class="chip reveal d3"><span class="q">&ldquo;</span><span data-edit="chip5">I don't want another employee.</span></div>
+  </div>
+ </div>
 </section>
 
 <!-- PROMISE / WHAT YOU BUY -->
 <section id="promise">
-  <div class="wrap">
-    <div class="band-green promise-band reveal">
-      <span class="eyebrow" data-edit="promise_eyebrow">I'm not another vendor</span>
-      <p class="big" data-edit="promise_big">I don't sell you AI, ads, or software. I sell you <span style="color:var(--gold-l)">measurable growth</span> — and I use marketing, AI, automation, and proven systems to deliver it.</p>
-      <div class="buy-row">
-        <div class="buy"><span class="bd"></span><span data-edit="buy1">Clarity</span></div>
-        <div class="buy"><span class="bd"></span><span data-edit="buy2">Growth</span></div>
-        <div class="buy"><span class="bd"></span><span data-edit="buy3">Confidence</span></div>
-        <div class="buy"><span class="bd"></span><span data-edit="buy4">Time</span></div>
-        <div class="buy"><span class="bd"></span><span data-edit="buy5">Profit</span></div>
-      </div>
-    </div>
+ <div class="wrap">
+  <div class="band-green promise-band reveal">
+   <span class="eyebrow" data-edit="promise_eyebrow">I'm not another vendor</span>
+   <p class="big" data-edit="promise_big">I don't sell you AI, ads, or software. I sell you <span style="color:var(--gold-l)">measurable growth</span>, and I use marketing, AI, automation, and proven systems to deliver it.</p>
+   <div class="buy-row">
+    <div class="buy"><span class="bd"></span><span data-edit="buy1">Clarity</span></div>
+    <div class="buy"><span class="bd"></span><span data-edit="buy2">Growth</span></div>
+    <div class="buy"><span class="bd"></span><span data-edit="buy3">Confidence</span></div>
+    <div class="buy"><span class="bd"></span><span data-edit="buy4">Time</span></div>
+    <div class="buy"><span class="bd"></span><span data-edit="buy5">Profit</span></div>
+   </div>
   </div>
+ </div>
 </section>
 
 <!-- OUTCOMES NOT TASKS -->
 <!-- IMPACT NUMBERS (#9) -->
 <section class="impact" id="impact">
-  <div class="wrap">
-    <div class="impact-box reveal">
-      <span class="impact-eyebrow" data-edit="impact_eyebrow">The impact I'm built to create</span>
-      <div class="impact-h" data-edit="impact_h">What a strong stretch looks like</div>
-      <div class="impact-note">Illustrative example — your real numbers land here as we work together.</div>
-      <div class="impact-grid">
-        <div class="impact-stat"><div class="num icount" data-to="142" data-prefix="$" data-suffix="K">$0</div><div class="lbl" data-edit="impact_l1">Saved for clients</div></div>
-        <div class="impact-stat"><div class="num icount" data-to="1900">0</div><div class="lbl" data-edit="impact_l2">Leads recovered</div></div>
-        <div class="impact-stat"><div class="num icount" data-to="380">0</div><div class="lbl" data-edit="impact_l3">Appointments booked</div></div>
-        <div class="impact-stat"><div class="num icount" data-to="96" data-suffix="%">0</div><div class="lbl" data-edit="impact_l4">Client retention</div></div>
-      </div>
-    </div>
+ <div class="wrap">
+  <div class="impact-box reveal">
+   <span class="impact-eyebrow" data-edit="impact_eyebrow">The impact I'm built to create</span>
+   <div class="impact-h" data-edit="impact_h">What a strong stretch looks like</div>
+   <div class="impact-note">Illustrative example, your real numbers land here as we work together.</div>
+   <div class="impact-grid">
+    <div class="impact-stat"><div class="num icount" data-to="142" data-prefix="$" data-suffix="K">$0</div><div class="lbl" data-edit="impact_l1">Saved for clients</div></div>
+    <div class="impact-stat"><div class="num icount" data-to="1900">0</div><div class="lbl" data-edit="impact_l2">Leads recovered</div></div>
+    <div class="impact-stat"><div class="num icount" data-to="380">0</div><div class="lbl" data-edit="impact_l3">Appointments booked</div></div>
+    <div class="impact-stat"><div class="num icount" data-to="96" data-suffix="%">0</div><div class="lbl" data-edit="impact_l4">Client retention</div></div>
+   </div>
   </div>
+ </div>
 </section>
 
 <section id="outcomes">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow reveal" data-edit="outcomes_eyebrow">What you get</span>
-      <h2 class="reveal">You buy <span class="accent-text" data-edit="outcomes_h2hi">results</span>, not tasks</h2>
-      <p class="reveal" data-edit="outcomes_p">The same work every agency lists — reframed around the outcome you actually care about.</p>
-    </div>
-    <div class="grid g3">
-      <div class="card reveal d1">
-        <div class="ico">⚡</div>
-        <h3 data-edit="card1_h3">Faster lead response</h3>
-        <p data-edit="card1_p">Leads get answered in seconds, not hours — so the deal is yours before a competitor even sees it.</p>
-        <span class="was"><s data-edit="card1_was">Monthly CRM optimization</s></span>
-      </div>
-      <div class="card reveal d2">
-        <div class="ico">🔁</div>
-        <h3 data-edit="card2_h3">Recover more opportunities — automatically</h3>
-        <p data-edit="card2_p">AI follow-up and automation catch the leads that used to go cold and quietly slip away.</p>
-        <span class="was"><s data-edit="card2_was">AI workflow improvement</s></span>
-      </div>
-      <div class="card reveal d3">
-        <div class="ico">💸</div>
-        <h3 data-edit="card3_h3">Stop wasting ad dollars</h3>
-        <p data-edit="card3_p">Every month I find the spend that isn't working and move it to what actually closes.</p>
-        <span class="was"><s data-edit="card3_was">Facebook ad audit</s></span>
-      </div>
-      <div class="card reveal d1">
-        <div class="ico">🌱</div>
-        <h3 data-edit="card4_h3">Never let a lead go cold</h3>
-        <p data-edit="card4_p">Consistent nurturing keeps every prospect warm until they're ready to move.</p>
-        <span class="was"><s data-edit="card4_was">Weekly nurturing sequences</s></span>
-      </div>
-      <div class="card reveal d2">
-        <div class="ico">📅</div>
-        <h3 data-edit="card5_h3">More appointments booked</h3>
-        <p data-edit="card5_p">Conversations turn into calendar slots without you chasing anyone down.</p>
-        <span class="was"><s data-edit="card5_was">Lead follow-up management</s></span>
-      </div>
-      <div class="card reveal d3">
-        <div class="ico">🧭</div>
-        <h3 data-edit="card6_h3">Always know your next move</h3>
-        <p data-edit="card6_p">A clear monthly plan of the highest-ROI improvements — so you're never guessing what's next.</p>
-        <span class="was"><s data-edit="card6_was">Monthly strategy call</s></span>
-      </div>
-    </div>
+ <div class="wrap">
+  <div class="sec-head">
+   <span class="eyebrow reveal" data-edit="outcomes_eyebrow">What you get</span>
+   <h2 class="reveal">You buy <span class="accent-text" data-edit="outcomes_h2hi">results</span>, not tasks</h2>
+   <p class="reveal" data-edit="outcomes_p">The same work every agency lists, reframed around the outcome you actually care about.</p>
   </div>
+  <div class="grid g3">
+   <div class="card reveal d1">
+    <div class="ico">⚡</div>
+    <h3 data-edit="card1_h3">Faster lead response</h3>
+    <p data-edit="card1_p">Leads get answered in seconds, not hours, so the deal is yours before a competitor even sees it.</p>
+    <span class="was"><s data-edit="card1_was">Monthly CRM optimization</s></span>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">🔁</div>
+    <h3 data-edit="card2_h3">Recover more opportunities, automatically</h3>
+    <p data-edit="card2_p">AI follow-up and automation catch the leads that used to go cold and quietly slip away.</p>
+    <span class="was"><s data-edit="card2_was">AI workflow improvement</s></span>
+   </div>
+   <div class="card reveal d3">
+    <div class="ico">💸</div>
+    <h3 data-edit="card3_h3">Stop wasting ad dollars</h3>
+    <p data-edit="card3_p">Every month I find the spend that isn't working and move it to what actually closes.</p>
+    <span class="was"><s data-edit="card3_was">Facebook ad audit</s></span>
+   </div>
+   <div class="card reveal d1">
+    <div class="ico">🌱</div>
+    <h3 data-edit="card4_h3">Never let a lead go cold</h3>
+    <p data-edit="card4_p">Consistent nurturing keeps every prospect warm until they're ready to move.</p>
+    <span class="was"><s data-edit="card4_was">Weekly nurturing sequences</s></span>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">📅</div>
+    <h3 data-edit="card5_h3">More appointments booked</h3>
+    <p data-edit="card5_p">Conversations turn into calendar slots without you chasing anyone down.</p>
+    <span class="was"><s data-edit="card5_was">Lead follow-up management</s></span>
+   </div>
+   <div class="card reveal d3">
+    <div class="ico">🧭</div>
+    <h3 data-edit="card6_h3">Always know your next move</h3>
+    <p data-edit="card6_p">A clear monthly plan of the highest-ROI improvements, so you're never guessing what's next.</p>
+    <span class="was"><s data-edit="card6_was">Monthly strategy call</s></span>
+   </div>
+  </div>
+ </div>
 </section>
 
 <!-- GROWTH SCORECARD -->
 <div class="wrap"><div class="flourish" aria-hidden="true">
-  <span class="fl-line"></span>
-  <svg viewBox="0 0 40 20"><path d="M20,17 C13,15 7,9 6,4 C12,6 17,10 20,17 M20,17 C27,15 33,9 34,4 C28,6 23,10 20,17"/><line x1="20" y1="17" x2="20" y2="20"/></svg>
-  <span class="fl-line"></span>
+ <span class="fl-line"></span>
+ <svg viewBox="0 0 40 20"><path d="M20,17 C13,15 7,9 6,4 C12,6 17,10 20,17 M20,17 C27,15 33,9 34,4 C28,6 23,10 20,17"/><line x1="20" y1="17" x2="20" y2="20"/></svg>
+ <span class="fl-line"></span>
 </div></div>
 
 <section id="scorecard">
-  <div class="wrap">
-    <div class="band-green score reveal">
-      <div class="score-grid">
-        <div>
-          <span class="kicker" data-edit="score_kicker">The signature deliverable</span>
-          <h2 style="margin-top:10px">Your monthly <span style="color:var(--gold-l)" data-edit="score_h2hi">Growth Scorecard</span></h2>
-          <p class="sub" data-edit="score_sub">You're not paying for Facebook posts. You're paying for measurable business growth — and every month you see exactly what that growth looks like, in plain numbers.</p>
-          <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="score_cta">Get your first Scorecard</span></a>
-        </div>
-        <div class="report" aria-label="Example Growth Scorecard (illustrative)">
-          <div class="report-top">
-            <span class="rt-title">📊 Growth Scorecard</span>
-            <span class="rt-mo">Example month</span>
-          </div>
-          <div class="rt-sub">MacRandle Acres · prepared for your team</div>
-
-          <div class="rp-chart">
-            <div class="rp-chart-head"><span class="rp-chart-lbl">Growth momentum · last 6 months</span><span class="rp-chart-up">▲ trending up</span></div>
-            <svg class="rp-spark" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
-              <defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="rgba(224,184,98,.5)"/><stop offset="1" stop-color="rgba(224,184,98,0)"/></linearGradient></defs>
-              <path class="rp-area" d="M0,68 L60,58 L120,52 L180,36 L240,24 L300,10 L300,80 L0,80 Z" fill="url(#sparkFill)"/>
-              <path class="rp-line" pathLength="1" d="M0,68 L60,58 L120,52 L180,36 L240,24 L300,10"/>
-              <circle class="rp-dot" cx="300" cy="10" r="3.5"/>
-            </svg>
-          </div>
-
-          <ul class="rp-metrics">
-            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🔎</span><span data-edit="rl1">Opportunities found</span></span><span class="rp-m-val gold count" data-to="14">0</span></div><span class="rp-bar"><i style="--w:72%"></i></span></li>
-            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">💰</span><span data-edit="rl2">Money saved</span></span><span class="rp-m-val g count" data-prefix="$" data-to="3200">$0</span></div><span class="rp-bar"><i style="--w:64%"></i></span></li>
-            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🎯</span><span data-edit="rl3">Leads recovered</span></span><span class="rp-m-val g count" data-to="27">0</span></div><span class="rp-bar"><i style="--w:80%"></i></span></li>
-            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📉</span><span data-edit="rl4">Ad spend optimized</span></span><span class="rp-m-val g count" data-prefix="$" data-to="1850">$0</span></div><span class="rp-bar"><i style="--w:55%"></i></span></li>
-            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🤖</span><span data-edit="rl5">AI conversations handled</span></span><span class="rp-m-val count" data-to="431">0</span></div><span class="rp-bar"><i style="--w:90%"></i></span></li>
-            <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📅</span><span data-edit="rl6">Appointments booked</span></span><span class="rp-m-val g count" data-to="19">0</span></div><span class="rp-bar"><i style="--w:60%"></i></span></li>
-          </ul>
-          <div class="rp-foot">
-            <span class="rp-foot-l"><span class="dot2">⚙️</span><span data-edit="rl7">Systems improved</span></span>
-            <span class="rp-foot-v count" data-to="6">0</span>
-          </div>
-          <div class="rp-next"><span data-edit="rl8">Next month's priorities</span> <b>Set →</b></div>
-        </div>
-      </div>
+ <div class="wrap">
+  <div class="band-green score reveal">
+   <div class="score-grid">
+    <div>
+     <span class="kicker" data-edit="score_kicker">The signature deliverable</span>
+     <h2 style="margin-top:10px">Your monthly <span style="color:var(--gold-l)" data-edit="score_h2hi">Growth Scorecard</span></h2>
+     <p class="sub" data-edit="score_sub">You're not paying for Facebook posts. You're paying for measurable business growth, and every month you see exactly what that growth looks like, in plain numbers.</p>
+     <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="score_cta">Get your first Scorecard</span></a>
     </div>
+    <div class="report" aria-label="Example Growth Scorecard (illustrative)">
+     <div class="report-top">
+      <span class="rt-title">📊 Growth Scorecard</span>
+      <span class="rt-mo">Example month</span>
+     </div>
+     <div class="rt-sub">MacRandle Acres · prepared for your team</div>
+
+     <div class="rp-chart">
+      <div class="rp-chart-head"><span class="rp-chart-lbl">Growth momentum · last 6 months</span><span class="rp-chart-up">▲ trending up</span></div>
+      <svg class="rp-spark" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
+       <defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="rgba(224,184,98,.5)"/><stop offset="1" stop-color="rgba(224,184,98,0)"/></linearGradient></defs>
+       <path class="rp-area" d="M0,68 L60,58 L120,52 L180,36 L240,24 L300,10 L300,80 L0,80 Z" fill="url(#sparkFill)"/>
+       <path class="rp-line" pathLength="1" d="M0,68 L60,58 L120,52 L180,36 L240,24 L300,10"/>
+       <circle class="rp-dot" cx="300" cy="10" r="3.5"/>
+      </svg>
+     </div>
+
+     <ul class="rp-metrics">
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">👀</span><span data-edit="rl1">People reached</span></span><span class="rp-m-val gold count" data-to="48200">0</span></div><span class="rp-bar"><i style="--w:92%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">👆</span><span data-edit="rl2">Link clicks</span></span><span class="rp-m-val g count" data-to="1340">0</span></div><span class="rp-bar"><i style="--w:70%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📞</span><span data-edit="rl3">Calls from ads</span></span><span class="rp-m-val g count" data-to="62">0</span></div><span class="rp-bar"><i style="--w:45%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">💬</span><span data-edit="rl4">Conversations started</span></span><span class="rp-m-val g count" data-to="210">0</span></div><span class="rp-bar"><i style="--w:62%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🌱</span><span data-edit="rl5">Seeds planted</span></span><span class="rp-m-val gold count" data-to="95">0</span></div><span class="rp-bar"><i style="--w:52%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📅</span><span data-edit="rl6">Appointments booked</span></span><span class="rp-m-val g count" data-to="19">0</span></div><span class="rp-bar"><i style="--w:40%"></i></span></li>
+     </ul>
+     <div class="rp-foot">
+      <span class="rp-foot-l"><span class="dot2">🌿</span><span data-edit="rl7">New followers gained</span></span>
+      <span class="rp-foot-v count" data-to="112">0</span>
+     </div>
+     <div class="rp-next"><span data-edit="rl8">Next month's focus</span> <b>Locked in</b></div>
+    </div>
+   </div>
   </div>
+ </div>
 </section>
 
 <!-- PRICING -->
 <section id="pricing">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow reveal" data-edit="pricing_eyebrow">Simple, outcome-based plans</span>
-      <h2 class="reveal">Pick your <span class="accent-text" data-edit="pricing_h2hi">level of growth</span></h2>
-      <p class="reveal" data-edit="pricing_p">Every plan starts with finding where you're leaking money, time, and opportunities — then fixing it.</p>
-    </div>
-    <div class="price-grid">
-      <div class="tier reveal d1">
-        <div class="tname" data-edit="t1_name">Growth Audit</div>
-        <div class="tdesc" data-edit="t1_desc">Find the leaks and fix the highest-ROI ones — every month.</div>
-        <div class="price" data-edit="t1_price"><span class="amt">$997–1,250</span> <span class="per">/mo</span></div>
-        <ul>
-          <li><span class="ck">✓</span><span data-edit="t1_li1">Monthly business review</span></li>
-          <li><span class="ck">✓</span><span data-edit="t1_li2">Find the leaks costing you money</span></li>
-          <li><span class="ck">✓</span><span data-edit="t1_li3">Clear, prioritized recommendations</span></li>
-          <li><span class="ck">✓</span><span data-edit="t1_li4">I implement the highest-ROI fixes</span></li>
-        </ul>
-        <a class="btn btn-ghost fx-start" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t1_btn">Start here</span></a>
-      </div>
-      <div class="tier feature reveal d2">
-        <span class="tag" data-edit="t2_tag">Most popular</span>
-        <div class="tname" data-edit="t2_name">Growth Partner</div>
-        <div class="tdesc" data-edit="t2_desc">Done-with-you growth — I build and optimize alongside your team.</div>
-        <div class="price" data-edit="t2_price"><span class="amt">$1,997–2,500</span> <span class="per">/mo</span></div>
-        <ul>
-          <li><span class="ck">✓</span><span data-edit="t2_li1">Everything in Growth Audit</span></li>
-          <li><span class="ck">✓</span><span data-edit="t2_li2">Done-with-you implementation</span></li>
-          <li><span class="ck">✓</span><span data-edit="t2_li3">Continuous monthly optimization</span></li>
-          <li><span class="ck">✓</span><span data-edit="t2_li4">Priority support</span></li>
-        </ul>
-        <a class="btn btn-gold fx-gleam" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t2_btn">Become a partner</span></a>
-      </div>
-      <div class="tier reveal d3">
-        <div class="tname" data-edit="t3_name">Rainmaker Elite</div>
-        <div class="tdesc" data-edit="t3_desc">Your Fractional Growth Advisor — all-in on scaling the business.</div>
-        <div class="price" data-edit="t3_price"><span class="amt">$3,500–5,000</span> <span class="per">/mo</span></div>
-        <ul>
-          <li><span class="ck">✓</span><span data-edit="t3_li1">Dedicated Fractional Growth Advisor</span></li>
-          <li><span class="ck">✓</span><span data-edit="t3_li2">Unlimited strategic guidance (within reason)</span></li>
-          <li><span class="ck">✓</span><span data-edit="t3_li3">Custom AI built for your business</span></li>
-          <li><span class="ck">✓</span><span data-edit="t3_li4">Recruiting & expansion systems</span></li>
-          <li><span class="ck">✓</span><span data-edit="t3_li5">Quarterly planning</span></li>
-        </ul>
-        <a class="btn btn-ghost fx-elite" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t3_btn">Apply for Elite</span></a>
-      </div>
-    </div>
+ <div class="wrap">
+  <div class="sec-head">
+   <span class="eyebrow reveal" data-edit="pricing_eyebrow">Simple, outcome-based plans</span>
+   <h2 class="reveal">Pick your <span class="accent-text" data-edit="pricing_h2hi">level of growth</span></h2>
+   <p class="reveal" data-edit="pricing_p">Every plan starts with finding where you're leaking money, time, and opportunities, then fixing it.</p>
   </div>
+  <div class="price-grid">
+   <div class="tier reveal d1">
+    <div class="tname" data-edit="t1_name">Growth Audit</div>
+    <div class="tdesc" data-edit="t1_desc">Find the leaks and fix the highest-ROI ones, every month.</div>
+    <div class="price" data-edit="t1_price"><span class="amt">$997–1,250</span> <span class="per">/mo</span></div>
+    <ul>
+     <li><span class="ck">✓</span><span data-edit="t1_li1">Monthly business review</span></li>
+     <li><span class="ck">✓</span><span data-edit="t1_li2">Find the leaks costing you money</span></li>
+     <li><span class="ck">✓</span><span data-edit="t1_li3">Clear, prioritized recommendations</span></li>
+     <li><span class="ck">✓</span><span data-edit="t1_li4">I implement the highest-ROI fixes</span></li>
+    </ul>
+    <a class="btn btn-ghost fx-start" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t1_btn">Start here</span></a>
+   </div>
+   <div class="tier feature reveal d2">
+    <span class="tag" data-edit="t2_tag">Most popular</span>
+    <div class="tname" data-edit="t2_name">Growth Partner</div>
+    <div class="tdesc" data-edit="t2_desc">Done-with-you growth, I build and optimize alongside your team.</div>
+    <div class="price" data-edit="t2_price"><span class="amt">$1,997–2,500</span> <span class="per">/mo</span></div>
+    <ul>
+     <li><span class="ck">✓</span><span data-edit="t2_li1">Everything in Growth Audit</span></li>
+     <li><span class="ck">✓</span><span data-edit="t2_li2">Done-with-you implementation</span></li>
+     <li><span class="ck">✓</span><span data-edit="t2_li3">Continuous monthly optimization</span></li>
+     <li><span class="ck">✓</span><span data-edit="t2_li4">Priority support</span></li>
+    </ul>
+    <a class="btn btn-gold fx-gleam" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t2_btn">Become a partner</span></a>
+   </div>
+   <div class="tier reveal d3">
+    <div class="tname" data-edit="t3_name">Rainmaker Elite</div>
+    <div class="tdesc" data-edit="t3_desc">Your Fractional Growth Advisor, all-in on scaling the business.</div>
+    <div class="price" data-edit="t3_price"><span class="amt">$3,500–5,000</span> <span class="per">/mo</span></div>
+    <ul>
+     <li><span class="ck">✓</span><span data-edit="t3_li1">Dedicated Fractional Growth Advisor</span></li>
+     <li><span class="ck">✓</span><span data-edit="t3_li2">Unlimited strategic guidance (within reason)</span></li>
+     <li><span class="ck">✓</span><span data-edit="t3_li3">Custom AI built for your business</span></li>
+     <li><span class="ck">✓</span><span data-edit="t3_li4">Recruiting & expansion systems</span></li>
+     <li><span class="ck">✓</span><span data-edit="t3_li5">Quarterly planning</span></li>
+    </ul>
+    <a class="btn btn-ghost fx-elite" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t3_btn">Apply for Elite</span></a>
+   </div>
+  </div>
+ </div>
 </section>
 
 <!-- GUARANTEE -->
 <section class="promise2">
-  <div class="wrap">
-    <div class="pbox reveal">
-      <span class="pbadge" data-edit="guar_badge">The promise</span>
-      <h2 data-edit="guar_h2">Every month, I'll help you <span class="gold-text">make more money, save more money, or save more time</span> — ideally all three.</h2>
-      <p data-edit="guar_p">If I can't find ways to improve your business every month, I'm not doing my job. That's the standard the whole relationship is held to.</p>
-    </div>
+ <div class="wrap">
+  <div class="pbox reveal">
+   <span class="pbadge" data-edit="guar_badge">The promise</span>
+   <h2 data-edit="guar_h2">Every month, I'll help you <span class="gold-text">make more money, save more money, or save more time</span>, ideally all three.</h2>
+   <p data-edit="guar_p">If I can't find ways to improve your business every month, I'm not doing my job. That's the standard the whole relationship is held to.</p>
   </div>
+ </div>
 </section>
 
 <!-- FINAL CTA -->
 <section class="final">
-  <div class="wrap">
-    <div class="band-green final-box reveal">
-      <h2>Where are you <span style="color:var(--gold-l)" data-edit="final_h2hi">leaking growth?</span></h2>
-      <p data-edit="final_p">Let's find out. Book a Growth Audit and I'll show you the opportunities hiding in your business right now.</p>
-      <div class="hero-cta" style="justify-content:center">
-        <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="final_cta1">Book a Growth Audit</span></a>
-        <a class="btn btn-ghost-l" href="mailto:Macrandleacres@gmail.com"><span data-edit="final_cta2">Email Jeff</span></a>
-        <a class="btn btn-cream" href="tel:+18622547839"><span data-edit="final_cta3">Call Now</span></a>
-      </div>
-    </div>
+ <div class="wrap">
+  <div class="band-green final-box reveal">
+   <h2>Where are you <span style="color:var(--gold-l)" data-edit="final_h2hi">leaking growth?</span></h2>
+   <p data-edit="final_p">Let's find out. Book a Growth Audit and I'll show you the opportunities hiding in your business right now.</p>
+   <div class="hero-cta" style="justify-content:center">
+    <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="final_cta1">Book a Growth Audit</span></a>
+    <a class="btn btn-ghost-l" href="mailto:Macrandleacres@gmail.com"><span data-edit="final_cta2">Email Jeff</span></a>
+    <a class="btn btn-cream" href="tel:+18622547839"><span data-edit="final_cta3">Call Now</span></a>
+   </div>
   </div>
+ </div>
 </section>
 
 <footer>
-  <svg class="foot-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,60 C240,8 480,52 720,30 C960,8 1200,52 1440,20 L1440,60 Z"/></svg>
-  <div class="wrap">
-    <div class="fbrand"><span class="mark"><span>M</span></span> <span data-edit="foot_brand">MacRandle Acres</span></div>
-    <div class="ftag" data-edit="foot_tag">Cultivating better businesses</div>
-    <div class="fvals" data-edit="foot_vals">Growth · Foundation · Freedom · Trust</div>
-    <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
-    <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. We help ambitious real estate teams remove friction from growth.</span></small>
-    <div class="foot-hub"><a href="/hub.html">🍃 Explore Jeff Randle's Landing Page <span class="fh-arr">↗</span></a></div>
-    <div class="foot-admin"><a href="/admin/login" id="adminLink">🔒 Admin · Edit site</a></div>
-  </div>
+ <svg class="foot-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,60 C240,8 480,52 720,30 C960,8 1200,52 1440,20 L1440,60 Z"/></svg>
+ <div class="wrap">
+  <div class="fbrand"><span class="mark"><span>M</span></span> <span data-edit="foot_brand">MacRandle Acres</span></div>
+  <div class="ftag" data-edit="foot_tag">Cultivating better businesses</div>
+  <div class="fvals" data-edit="foot_vals">Growth · Foundation · Freedom · Trust</div>
+  <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
+  <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. We help ambitious real estate teams remove friction from growth.</span></small>
+  <div class="foot-hub"><a href="/hub.html">🍃 Explore Jeff Randle's Landing Page <span class="fh-arr">↗</span></a></div>
+  <div class="foot-admin"><a href="/admin/login" id="adminLink">🔒 Admin · Edit site</a></div>
+ </div>
 </footer>
 
 <!-- Visitor polish -->
@@ -818,17 +818,17 @@ footer{position:relative}
 
 <!-- ADMIN: entry bar (bottom) + editing banner (top) -->
 <div id="adminBar" aria-hidden="true">
-  <span class="ab-dot"></span><span class="ab-lbl">Admin</span>
-  <button class="ab-edit" type="button">✎ Edit page</button>
-  <a class="ab-logout" href="/admin/logout">Log out</a>
+ <span class="ab-dot"></span><span class="ab-lbl">Admin</span>
+ <button class="ab-edit" type="button">✎ Edit page</button>
+ <a class="ab-logout" href="/admin/logout">Log out</a>
 </div>
 <div id="editBanner">
-  <div class="eb-msg"><span class="eb-pen">✎</span><span class="eb-txt"><b>Editing mode</b> — click any text to change it. Not live until you save.</span></div>
-  <div class="eb-actions">
-    <button class="eb-export" type="button" title="Download content.json">⬇ Export</button>
-    <button class="eb-cancel" type="button">Discard &amp; exit</button>
-    <button class="eb-save" type="button">✓ Save changes</button>
-  </div>
+ <div class="eb-msg"><span class="eb-pen">✎</span><span class="eb-txt"><b>Editing mode</b>, click any text to change it. Not live until you save.</span></div>
+ <div class="eb-actions">
+  <button class="eb-export" type="button" title="Download content.json">⬇ Export</button>
+  <button class="eb-cancel" type="button">Discard &amp; exit</button>
+  <button class="eb-save" type="button">✓ Save changes</button>
+ </div>
 </div>
 <div id="adminToast"></div>
 
@@ -836,307 +836,307 @@ footer{position:relative}
 document.getElementById('yr').textContent = new Date().getFullYear();
 
 document.getElementById('hamb').addEventListener('click',function(){
-  var nl=document.querySelector('.nav-links');
-  var open=nl.style.display==='flex';
-  nl.style.display=open?'':'flex';
-  if(!open){nl.style.position='absolute';nl.style.top='70px';nl.style.right='16px';nl.style.flexDirection='column';
-    nl.style.background='rgba(248,247,243,.98)';nl.style.padding='16px 20px';nl.style.borderRadius='14px';
-    nl.style.border='1px solid var(--bd)';nl.style.gap='14px';nl.style.boxShadow='var(--shadow)';}
+ var nl=document.querySelector('.nav-links');
+ var open=nl.style.display==='flex';
+ nl.style.display=open?'':'flex';
+ if(!open){nl.style.position='absolute';nl.style.top='70px';nl.style.right='16px';nl.style.flexDirection='column';
+  nl.style.background='rgba(248,247,243,.98)';nl.style.padding='16px 20px';nl.style.borderRadius='14px';
+  nl.style.border='1px solid var(--bd)';nl.style.gap='14px';nl.style.boxShadow='var(--shadow)';}
 });
 
 /* ---- Content hydration: apply saved edits for ALL visitors ---- */
 (function(){
-  var C = window.__CONTENT__ || {};
-  document.querySelectorAll('[data-edit]').forEach(function(el){
-    var k = el.getAttribute('data-edit');
-    if(Object.prototype.hasOwnProperty.call(C,k) && C[k]!=null) el.innerHTML = C[k];
-  });
+ var C = window.__CONTENT__ || {};
+ document.querySelectorAll('[data-edit]').forEach(function(el){
+  var k = el.getAttribute('data-edit');
+  if(Object.prototype.hasOwnProperty.call(C,k) && C[k]!=null) el.innerHTML = C[k];
+ });
 })();
 
 var io=new IntersectionObserver(function(entries){
-  entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
+ entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
 },{threshold:.14});
 document.querySelectorAll('.reveal:not(.in)').forEach(function(el){io.observe(el);});
 
 var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
 
-/* Growth Scorecard — count up on scroll into view */
+/* Growth Scorecard, count up on scroll into view */
 (function(){
-  function fmt(el,n){var p=el.getAttribute('data-prefix')||'';el.textContent=p+Math.round(n).toLocaleString();}
-  function run(el){
-    var to=parseFloat(el.getAttribute('data-to'))||0;
-    if(REDUCE){fmt(el,to);return;}
-    var dur=1300,start=null;
-    function step(ts){start=start||ts;var p=Math.min((ts-start)/dur,1);
-      fmt(el,(1-Math.pow(1-p,3))*to);if(p<1)requestAnimationFrame(step);else fmt(el,to);}
-    requestAnimationFrame(step);
-  }
-  var done=false, rep=document.querySelector('#scorecard .report');
-  if(!rep)return;
-  var ob=new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting&&!done){done=true; rep.classList.add('in');
-      rep.querySelectorAll('.rp-bar i').forEach(function(el){ el.style.width=el.style.getPropertyValue('--w')||'0'; });
-      var ln=rep.querySelector('.rp-line'); if(ln) ln.style.strokeDashoffset='0';
-      var ar=rep.querySelector('.rp-area'); if(ar) ar.style.opacity='1';
-      var dt=rep.querySelector('.rp-dot'); if(dt) dt.style.opacity='1';
-      document.querySelectorAll('#scorecard .count').forEach(run); ob.disconnect();} });
-  },{threshold:.45});
-  ob.observe(rep);
+ function fmt(el,n){var p=el.getAttribute('data-prefix')||'';el.textContent=p+Math.round(n).toLocaleString();}
+ function run(el){
+  var to=parseFloat(el.getAttribute('data-to'))||0;
+  if(REDUCE){fmt(el,to);return;}
+  var dur=1300,start=null;
+  function step(ts){start=start||ts;var p=Math.min((ts-start)/dur,1);
+   fmt(el,(1-Math.pow(1-p,3))*to);if(p<1)requestAnimationFrame(step);else fmt(el,to);}
+  requestAnimationFrame(step);
+ }
+ var done=false, rep=document.querySelector('#scorecard .report');
+ if(!rep)return;
+ var ob=new IntersectionObserver(function(es){
+  es.forEach(function(e){ if(e.isIntersecting&&!done){done=true; rep.classList.add('in');
+   rep.querySelectorAll('.rp-bar i').forEach(function(el){ el.style.width=el.style.getPropertyValue('--w')||'0'; });
+   var ln=rep.querySelector('.rp-line'); if(ln) ln.style.strokeDashoffset='0';
+   var ar=rep.querySelector('.rp-area'); if(ar) ar.style.opacity='1';
+   var dt=rep.querySelector('.rp-dot'); if(dt) dt.style.opacity='1';
+   document.querySelectorAll('#scorecard .count').forEach(run); ob.disconnect();} });
+ },{threshold:.45});
+ ob.observe(rep);
 })();
 
-/* Drifting leaves — subtle botanical ambience */
+/* Drifting leaves, subtle botanical ambience */
 (function(){
-  if(REDUCE)return;
-  var c=document.getElementById('leaves'); if(!c)return;
-  var x=c.getContext('2d'),W,H,leaves=[];
-  function rnd(a,b){return a+Math.random()*(b-a);}
-  function mk(top){return {x:rnd(0,W),y:top?rnd(-H,0):rnd(-40,-10),s:rnd(6,13),sp:rnd(.22,.6),
-    sway:rnd(.4,1.3),ph:rnd(0,6.28),rot:rnd(0,6.28),vr:rnd(-.012,.012),
-    col:Math.random()<.5?'199,154,59':'35,79,61',a:rnd(.05,.15)};}
-  function init(){W=c.width=innerWidth;H=c.height=innerHeight;leaves=[];
-    var n=Math.min(22,Math.floor(W/64));for(var i=0;i<n;i++)leaves.push(mk(true));}
-  function draw(){x.clearRect(0,0,W,H);
-    for(var i=0;i<leaves.length;i++){var l=leaves[i];
-      l.y+=l.sp; l.ph+=.01; l.x+=Math.sin(l.ph)*l.sway*.3; l.rot+=l.vr;
-      if(l.y>H+20){leaves[i]=mk(false);continue;}
-      x.save();x.translate(l.x,l.y);x.rotate(l.rot);x.beginPath();
-      x.moveTo(0,-l.s);x.quadraticCurveTo(l.s*.72,0,0,l.s);x.quadraticCurveTo(-l.s*.72,0,0,-l.s);
-      x.fillStyle='rgba('+l.col+','+l.a+')';x.fill();x.restore();}
-    requestAnimationFrame(draw);}
-  init();draw();addEventListener('resize',init);
+ if(REDUCE)return;
+ var c=document.getElementById('leaves'); if(!c)return;
+ var x=c.getContext('2d'),W,H,leaves=[];
+ function rnd(a,b){return a+Math.random()*(b-a);}
+ function mk(top){return {x:rnd(0,W),y:top?rnd(-H,0):rnd(-40,-10),s:rnd(6,13),sp:rnd(.22,.6),
+  sway:rnd(.4,1.3),ph:rnd(0,6.28),rot:rnd(0,6.28),vr:rnd(-.012,.012),
+  col:Math.random()<.5?'199,154,59':'35,79,61',a:rnd(.05,.15)};}
+ function init(){W=c.width=innerWidth;H=c.height=innerHeight;leaves=[];
+  var n=Math.min(22,Math.floor(W/64));for(var i=0;i<n;i++)leaves.push(mk(true));}
+ function draw(){x.clearRect(0,0,W,H);
+  for(var i=0;i<leaves.length;i++){var l=leaves[i];
+   l.y+=l.sp; l.ph+=.01; l.x+=Math.sin(l.ph)*l.sway*.3; l.rot+=l.vr;
+   if(l.y>H+20){leaves[i]=mk(false);continue;}
+   x.save();x.translate(l.x,l.y);x.rotate(l.rot);x.beginPath();
+   x.moveTo(0,-l.s);x.quadraticCurveTo(l.s*.72,0,0,l.s);x.quadraticCurveTo(-l.s*.72,0,0,-l.s);
+   x.fillStyle='rgba('+l.col+','+l.a+')';x.fill();x.restore();}
+  requestAnimationFrame(draw);}
+ init();draw();addEventListener('resize',init);
 })();
 
 /* ---- Unified inline editor: server-publish OR local-preview ---- */
 (function(){
-  var SERVED = (typeof window.__CONTENT__ !== 'undefined');   // true when Flask served the page
-  var SERVER_ADMIN = (window.__ADMIN__ === true);             // signed in via /admin/login
-  var LKEY = 'macra_content_v1';
-  var bar=document.getElementById('adminBar'); if(!bar) return;
-  var link=document.getElementById('adminLink');
-  var eEdit=bar.querySelector('.ab-edit'), eLogout=bar.querySelector('.ab-logout'), eLbl=bar.querySelector('.ab-lbl');
-  var eSave=document.querySelector('.eb-save'), eCancel=document.querySelector('.eb-cancel'),
-      eExport=document.querySelector('.eb-export'), eTxt=document.querySelector('#editBanner .eb-txt');
-  var snapshot={}, mode=null, dirty=false;
+ var SERVED = (typeof window.__CONTENT__ !== 'undefined');  // true when Flask served the page
+ var SERVER_ADMIN = (window.__ADMIN__ === true);       // signed in via /admin/login
+ var LKEY = 'macra_content_v1';
+ var bar=document.getElementById('adminBar'); if(!bar) return;
+ var link=document.getElementById('adminLink');
+ var eEdit=bar.querySelector('.ab-edit'), eLogout=bar.querySelector('.ab-logout'), eLbl=bar.querySelector('.ab-lbl');
+ var eSave=document.querySelector('.eb-save'), eCancel=document.querySelector('.eb-cancel'),
+   eExport=document.querySelector('.eb-export'), eTxt=document.querySelector('#editBanner .eb-txt');
+ var snapshot={}, mode=null, dirty=false;
 
-  function editing(){return document.body.classList.contains('editing');}
-  function nodes(){return document.querySelectorAll('[data-edit]');}
-  function collect(){var d={};nodes().forEach(function(el){d[el.getAttribute('data-edit')]=el.innerHTML;});return d;}
-  function toast(m){var t=document.getElementById('adminToast');t.textContent=m;t.classList.add('show');
-    clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3400);}
+ function editing(){return document.body.classList.contains('editing');}
+ function nodes(){return document.querySelectorAll('[data-edit]');}
+ function collect(){var d={};nodes().forEach(function(el){d[el.getAttribute('data-edit')]=el.innerHTML;});return d;}
+ function toast(m){var t=document.getElementById('adminToast');t.textContent=m;t.classList.add('show');
+  clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3400);}
 
-  /* Apply a locally-saved draft when there is no server backing the page */
-  if(!SERVED){
-    try{var d=JSON.parse(localStorage.getItem(LKEY)||'{}');
-      nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(d[k]!=null)el.innerHTML=d[k];});}catch(e){}
-  }
+ /* Apply a locally-saved draft when there is no server backing the page */
+ if(!SERVED){
+  try{var d=JSON.parse(localStorage.getItem(LKEY)||'{}');
+   nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(d[k]!=null)el.innerHTML=d[k];});}catch(e){}
+ }
 
-  function showBar(m){
-    mode=m; bar.classList.add('show');
-    eLbl.textContent = (m==='server') ? 'Admin' : 'Admin · local preview';
-    eLogout.style.display = (m==='server') ? '' : 'none';
-    if(eExport) eExport.style.display = (m==='local') ? '' : 'none';
-    if(eTxt) eTxt.innerHTML = (m==='local')
-      ? '<b>Editing &middot; local preview</b> — saved to this browser. Use Export to publish.'
-      : '<b>Editing mode</b> — click any text to change it. Not live until you save.';
-  }
-  function blockNav(e){var a=e.target.closest('a');if(a && !a.classList.contains('ab-logout'))e.preventDefault();}
-  function markDirty(){dirty=true;}
-  function setEditing(on){
-    document.body.classList.toggle('editing',on);
-    nodes().forEach(function(el){on?el.setAttribute('contenteditable','true'):el.removeAttribute('contenteditable');});
-    if(on){document.addEventListener('click',blockNav,true);document.addEventListener('input',markDirty,true);}
-    else {document.removeEventListener('click',blockNav,true);document.removeEventListener('input',markDirty,true);dirty=false;}
-  }
+ function showBar(m){
+  mode=m; bar.classList.add('show');
+  eLbl.textContent = (m==='server') ? 'Admin' : 'Admin · local preview';
+  eLogout.style.display = (m==='server') ? '' : 'none';
+  if(eExport) eExport.style.display = (m==='local') ? '' : 'none';
+  if(eTxt) eTxt.innerHTML = (m==='local')
+   ? '<b>Editing &middot; local preview</b>, saved to this browser. Use Export to publish.'
+   : '<b>Editing mode</b>, click any text to change it. Not live until you save.';
+ }
+ function blockNav(e){var a=e.target.closest('a');if(a && !a.classList.contains('ab-logout'))e.preventDefault();}
+ function markDirty(){dirty=true;}
+ function setEditing(on){
+  document.body.classList.toggle('editing',on);
+  nodes().forEach(function(el){on?el.setAttribute('contenteditable','true'):el.removeAttribute('contenteditable');});
+  if(on){document.addEventListener('click',blockNav,true);document.addEventListener('input',markDirty,true);}
+  else {document.removeEventListener('click',blockNav,true);document.removeEventListener('input',markDirty,true);dirty=false;}
+ }
 
-  function enterEdit(){ snapshot=collect(); dirty=false; setEditing(true);
-    toast('Editing — click any text, then hit "Save changes" up top (Ctrl/Cmd+S)'); }
-  function doSave(){
-    var data=collect();
-    if(mode==='local'){
-      try{localStorage.setItem(LKEY,JSON.stringify(data));dirty=false;setEditing(false);
-        toast('Saved to this browser — back to normal view. Export to publish live.');}
-      catch(e){toast('Could not save in this browser');}
-      return;
-    }
-    if(eSave) eSave.textContent='Saving…';
-    fetch('/api/content',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)})
-      .then(function(r){return r.json();})
-      .then(function(j){ if(eSave) eSave.textContent='✓ Save changes';
-        if(j&&j.ok){ dirty=false; setEditing(false); toast('Saved! Changes are live — back to the normal view.'); }
-        else { toast('Save failed'+(j&&j.error?': '+j.error:'')); } })
-      .catch(function(){ if(eSave) eSave.textContent='✓ Save changes'; toast('Save failed — sign in again at /admin/login'); });
+ function enterEdit(){ snapshot=collect(); dirty=false; setEditing(true);
+  toast('Editing, click any text, then hit "Save changes" up top (Ctrl/Cmd+S)'); }
+ function doSave(){
+  var data=collect();
+  if(mode==='local'){
+   try{localStorage.setItem(LKEY,JSON.stringify(data));dirty=false;setEditing(false);
+    toast('Saved to this browser, back to normal view. Export to publish live.');}
+   catch(e){toast('Could not save in this browser');}
+   return;
   }
-  function doCancel(){
-    nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(snapshot[k]!=null)el.innerHTML=snapshot[k];});
-    dirty=false; setEditing(false); toast('Changes discarded — back to the normal view.');
-  }
+  if(eSave) eSave.textContent='Saving…';
+  fetch('/api/content',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(data)})
+   .then(function(r){return r.json();})
+   .then(function(j){ if(eSave) eSave.textContent='✓ Save changes';
+    if(j&&j.ok){ dirty=false; setEditing(false); toast('Saved! Changes are live, back to the normal view.'); }
+    else { toast('Save failed'+(j&&j.error?': '+j.error:'')); } })
+   .catch(function(){ if(eSave) eSave.textContent='✓ Save changes'; toast('Save failed, sign in again at /admin/login'); });
+ }
+ function doCancel(){
+  nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(snapshot[k]!=null)el.innerHTML=snapshot[k];});
+  dirty=false; setEditing(false); toast('Changes discarded, back to the normal view.');
+ }
 
-  if(eEdit) eEdit.addEventListener('click',enterEdit);
-  if(eSave) eSave.addEventListener('click',doSave);
-  if(eCancel) eCancel.addEventListener('click',doCancel);
-  if(eExport) eExport.addEventListener('click',function(){
-    var blob=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});
-    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='content.json';
-    document.body.appendChild(a); a.click(); a.remove();
-    toast('content.json downloaded — commit it to publish for everyone.');
-  });
-  document.addEventListener('keydown',function(e){
-    if(editing() && (e.ctrlKey||e.metaKey) && (e.key==='s'||e.key==='S')){ e.preventDefault(); doSave(); }
-    else if(editing() && e.key==='Escape'){ doCancel(); }
-  });
-  window.addEventListener('beforeunload',function(e){ if(editing() && dirty){ e.preventDefault(); e.returnValue=''; } });
+ if(eEdit) eEdit.addEventListener('click',enterEdit);
+ if(eSave) eSave.addEventListener('click',doSave);
+ if(eCancel) eCancel.addEventListener('click',doCancel);
+ if(eExport) eExport.addEventListener('click',function(){
+  var blob=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='content.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('content.json downloaded, commit it to publish for everyone.');
+ });
+ document.addEventListener('keydown',function(e){
+  if(editing() && (e.ctrlKey||e.metaKey) && (e.key==='s'||e.key==='S')){ e.preventDefault(); doSave(); }
+  else if(editing() && e.key==='Escape'){ doCancel(); }
+ });
+ window.addEventListener('beforeunload',function(e){ if(editing() && dirty){ e.preventDefault(); e.returnValue=''; } });
 
-  function enter(){
-    if(SERVER_ADMIN){ showBar('server'); return; }
-    if(SERVED){ window.location.href='/admin/login'; return; }  // Flask running, not signed in
-    showBar('local');                                           // opened as a file / static host
-  }
-  if(SERVER_ADMIN) showBar('server');                           // already signed in → bar appears
-  if(link) link.addEventListener('click',function(e){ e.preventDefault(); enter(); });
-  document.addEventListener('keydown',function(e){
-    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='E'||e.key==='e')){ e.preventDefault(); enter(); }
-  });
-  if(location.hash==='#admin'||location.hash==='#edit'||/[?&]edit=1/.test(location.search)) enter();
+ function enter(){
+  if(SERVER_ADMIN){ showBar('server'); return; }
+  if(SERVED){ window.location.href='/admin/login'; return; } // Flask running, not signed in
+  showBar('local');                      // opened as a file / static host
+ }
+ if(SERVER_ADMIN) showBar('server');              // already signed in → bar appears
+ if(link) link.addEventListener('click',function(e){ e.preventDefault(); enter(); });
+ document.addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='E'||e.key==='e')){ e.preventDefault(); enter(); }
+ });
+ if(location.hash==='#admin'||location.hash==='#edit'||/[?&]edit=1/.test(location.search)) enter();
 })();
 
 /* ---- Visitor polish: scroll progress, nav shadow, active-section nav, back-to-top ---- */
 (function(){
-  var nav=document.querySelector('.nav'), prog=document.getElementById('progress'), toTop=document.getElementById('toTop');
-  var spine=document.getElementById('rootPath'), leaves=[].slice.call(document.querySelectorAll('.root-leaf'));
-  var links=[].slice.call(document.querySelectorAll('.nav-links a[href^="#"]')), secmap={};
-  links.forEach(function(a){var id=a.getAttribute('href').slice(1);if(document.getElementById(id))secmap[id]=a;});
-  function onScroll(){
-    var y=window.pageYOffset||document.documentElement.scrollTop;
-    var h=document.documentElement.scrollHeight-window.innerHeight;
-    var p=h>0?(y/h):0;
-    if(prog) prog.style.width=(p*100)+'%';
-    if(spine) spine.style.strokeDashoffset=(1-p);
-    for(var i=0;i<leaves.length;i++){var f=parseFloat(leaves[i].getAttribute('data-at'))||0;leaves[i].classList.toggle('on',p>=f-0.01);}
-    if(nav) nav.classList.toggle('scrolled', y>18);
-    if(toTop) toTop.classList.toggle('show', y>640);
-  }
-  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
-  if(toTop) toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
-  var ids=Object.keys(secmap);
-  if(ids.length && 'IntersectionObserver' in window){
-    var spy=new IntersectionObserver(function(es){
-      es.forEach(function(e){ if(e.isIntersecting){
-        ids.forEach(function(id){secmap[id].classList.toggle('active', id===e.target.id);}); } });
-    },{rootMargin:'-45% 0px -50% 0px',threshold:0});
-    ids.forEach(function(id){spy.observe(document.getElementById(id));});
-  }
+ var nav=document.querySelector('.nav'), prog=document.getElementById('progress'), toTop=document.getElementById('toTop');
+ var spine=document.getElementById('rootPath'), leaves=[].slice.call(document.querySelectorAll('.root-leaf'));
+ var links=[].slice.call(document.querySelectorAll('.nav-links a[href^="#"]')), secmap={};
+ links.forEach(function(a){var id=a.getAttribute('href').slice(1);if(document.getElementById(id))secmap[id]=a;});
+ function onScroll(){
+  var y=window.pageYOffset||document.documentElement.scrollTop;
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  var p=h>0?(y/h):0;
+  if(prog) prog.style.width=(p*100)+'%';
+  if(spine) spine.style.strokeDashoffset=(1-p);
+  for(var i=0;i<leaves.length;i++){var f=parseFloat(leaves[i].getAttribute('data-at'))||0;leaves[i].classList.toggle('on',p>=f-0.01);}
+  if(nav) nav.classList.toggle('scrolled', y>18);
+  if(toTop) toTop.classList.toggle('show', y>640);
+ }
+ window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+ if(toTop) toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+ var ids=Object.keys(secmap);
+ if(ids.length && 'IntersectionObserver' in window){
+  var spy=new IntersectionObserver(function(es){
+   es.forEach(function(e){ if(e.isIntersecting){
+    ids.forEach(function(id){secmap[id].classList.toggle('active', id===e.target.id);}); } });
+  },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+  ids.forEach(function(id){spy.observe(document.getElementById(id));});
+ }
 })();
 
 /* ---- #4 Spotlight + 3D tilt on cards & pricing tiers ---- */
 (function(){
-  if(REDUCE || (window.matchMedia && matchMedia('(hover:none)').matches)) return;
-  var els=[].slice.call(document.querySelectorAll('.card,.tier'));
-  els.forEach(function(el){
-    el.addEventListener('mousemove',function(e){
-      var r=el.getBoundingClientRect();
-      var px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
-      el.style.setProperty('--mx',(px*100).toFixed(1)+'%');
-      el.style.setProperty('--my',(py*100).toFixed(1)+'%');
-      el.style.transform='perspective(820px) rotateX('+((0.5-py)*7).toFixed(2)+'deg) rotateY('+((px-0.5)*7).toFixed(2)+'deg) translateY(-6px)';
-    });
-    el.addEventListener('mouseleave',function(){ el.style.transform=''; });
+ if(REDUCE || (window.matchMedia && matchMedia('(hover:none)').matches)) return;
+ var els=[].slice.call(document.querySelectorAll('.card,.tier'));
+ els.forEach(function(el){
+  el.addEventListener('mousemove',function(e){
+   var r=el.getBoundingClientRect();
+   var px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+   el.style.setProperty('--mx',(px*100).toFixed(1)+'%');
+   el.style.setProperty('--my',(py*100).toFixed(1)+'%');
+   el.style.transform='perspective(820px) rotateX('+((0.5-py)*7).toFixed(2)+'deg) rotateY('+((px-0.5)*7).toFixed(2)+'deg) translateY(-6px)';
   });
+  el.addEventListener('mouseleave',function(){ el.style.transform=''; });
+ });
 })();
 
 /* ---- Phase 2: hero parallax, magnetic buttons, cursor glow ---- */
 (function(){
-  var canHover = !(window.matchMedia && matchMedia('(hover:none)').matches);
-  var hero=document.querySelector('.hero'), halo=document.querySelector('.hero .halo'),
-      heroWrap=document.querySelector('.hero .wrap');
-  var sY=0, mhx=0, mhy=0;
-  function updHalo(){ if(halo) halo.style.transform='translate(calc(-50% + '+mhx.toFixed(1)+'px), '+(sY*0.3+mhy).toFixed(1)+'px)'; }
-  if(!REDUCE){
-    window.addEventListener('scroll',function(){ sY=window.pageYOffset||document.documentElement.scrollTop||0;
-      if(heroWrap && sY<900) heroWrap.style.transform='translateY('+(sY*-0.05).toFixed(1)+'px)';
-      updHalo(); },{passive:true});
-    if(canHover && hero) hero.addEventListener('mousemove',function(e){
-      mhx=(e.clientX/window.innerWidth-0.5)*26; mhy=(e.clientY/window.innerHeight-0.5)*16; updHalo(); });
+ var canHover = !(window.matchMedia && matchMedia('(hover:none)').matches);
+ var hero=document.querySelector('.hero'), halo=document.querySelector('.hero .halo'),
+   heroWrap=document.querySelector('.hero .wrap');
+ var sY=0, mhx=0, mhy=0;
+ function updHalo(){ if(halo) halo.style.transform='translate(calc(-50% + '+mhx.toFixed(1)+'px), '+(sY*0.3+mhy).toFixed(1)+'px)'; }
+ if(!REDUCE){
+  window.addEventListener('scroll',function(){ sY=window.pageYOffset||document.documentElement.scrollTop||0;
+   if(heroWrap && sY<900) heroWrap.style.transform='translateY('+(sY*-0.05).toFixed(1)+'px)';
+   updHalo(); },{passive:true});
+  if(canHover && hero) hero.addEventListener('mousemove',function(e){
+   mhx=(e.clientX/window.innerWidth-0.5)*26; mhy=(e.clientY/window.innerHeight-0.5)*16; updHalo(); });
+ }
+ /* Magnetic buttons */
+ if(!REDUCE && canHover){
+  [].slice.call(document.querySelectorAll('.btn')).forEach(function(b){
+   b.addEventListener('mousemove',function(e){ var r=b.getBoundingClientRect();
+    var dx=(e.clientX-(r.left+r.width/2))/r.width, dy=(e.clientY-(r.top+r.height/2))/r.height;
+    b.style.transform='translate('+(dx*10).toFixed(1)+'px,'+(dy*8-2).toFixed(1)+'px)'; });
+   b.addEventListener('mouseleave',function(){ b.style.transform=''; });
+  });
+ }
+ /* Cursor glow (desktop) */
+ if(!REDUCE && canHover){
+  var g=document.getElementById('cursorGlow');
+  if(g){
+   window.addEventListener('mousemove',function(e){ g.style.left=e.clientX+'px'; g.style.top=e.clientY+'px'; g.classList.add('on'); },{passive:true});
+   document.addEventListener('mouseleave',function(){ g.classList.remove('on'); });
   }
-  /* Magnetic buttons */
-  if(!REDUCE && canHover){
-    [].slice.call(document.querySelectorAll('.btn')).forEach(function(b){
-      b.addEventListener('mousemove',function(e){ var r=b.getBoundingClientRect();
-        var dx=(e.clientX-(r.left+r.width/2))/r.width, dy=(e.clientY-(r.top+r.height/2))/r.height;
-        b.style.transform='translate('+(dx*10).toFixed(1)+'px,'+(dy*8-2).toFixed(1)+'px)'; });
-      b.addEventListener('mouseleave',function(){ b.style.transform=''; });
-    });
-  }
-  /* Cursor glow (desktop) */
-  if(!REDUCE && canHover){
-    var g=document.getElementById('cursorGlow');
-    if(g){
-      window.addEventListener('mousemove',function(e){ g.style.left=e.clientX+'px'; g.style.top=e.clientY+'px'; g.classList.add('on'); },{passive:true});
-      document.addEventListener('mouseleave',function(){ g.classList.remove('on'); });
-    }
-  }
+ }
 })();
 
 /* ---- Impact band count-up (#9) ---- */
 (function(){
-  var band=document.querySelector('#impact .impact-box'); if(!band) return;
-  function fmt(el,n){var p=el.getAttribute('data-prefix')||'',s=el.getAttribute('data-suffix')||'';
-    el.textContent=p+Math.round(n).toLocaleString()+s;}
-  function run(el){var to=parseFloat(el.getAttribute('data-to'))||0;
-    if(REDUCE){fmt(el,to);return;}
-    var dur=1500,st=null;
-    function step(ts){st=st||ts;var p=Math.min((ts-st)/dur,1);
-      fmt(el,(1-Math.pow(1-p,3))*to);if(p<1)requestAnimationFrame(step);else fmt(el,to);}
-    requestAnimationFrame(step);}
-  var done=false;
-  var ob=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting&&!done){done=true;
-    document.querySelectorAll('#impact .icount').forEach(run); ob.disconnect();} });},{threshold:.4});
-  ob.observe(band);
+ var band=document.querySelector('#impact .impact-box'); if(!band) return;
+ function fmt(el,n){var p=el.getAttribute('data-prefix')||'',s=el.getAttribute('data-suffix')||'';
+  el.textContent=p+Math.round(n).toLocaleString()+s;}
+ function run(el){var to=parseFloat(el.getAttribute('data-to'))||0;
+  if(REDUCE){fmt(el,to);return;}
+  var dur=1500,st=null;
+  function step(ts){st=st||ts;var p=Math.min((ts-st)/dur,1);
+   fmt(el,(1-Math.pow(1-p,3))*to);if(p<1)requestAnimationFrame(step);else fmt(el,to);}
+  requestAnimationFrame(step);}
+ var done=false;
+ var ob=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting&&!done){done=true;
+  document.querySelectorAll('#impact .icount').forEach(run); ob.disconnect();} });},{threshold:.4});
+ ob.observe(band);
 })();
 
 /* ---- Champagne celebration on "Apply for Elite" ---- */
 (function(){
-  var el=document.querySelector('.fx-elite'); if(!el) return;
-  var BUBBLE=['#e0b862','#c79a3b','#f7d36a','#f6f4ec','#ffffff'];
-  var CONFETTI=['#c79a3b','#e0b862','#234F3D','#5B2C6F','#f6f4ec'];
-  function pop(cx,cy){
-    if(REDUCE) return;
-    for(var i=0;i<32;i++){
-      var bub=i<21, p=document.createElement('div'), a, dist, dx, dy, size, dur;
-      if(bub){                                   // champagne fizz rises in a fan
-        a=(-Math.PI/2)+(Math.random()-.5)*1.5; dist=45+Math.random()*135;
-        dx=Math.cos(a)*dist; dy=Math.sin(a)*dist-(30+Math.random()*70);
-        size=5+Math.random()*7;
-        p.style.background=BUBBLE[(Math.random()*BUBBLE.length)|0]; p.style.borderRadius='50%';
-        p.style.width=size+'px';
-      } else {                                   // confetti fans out and falls
-        a=(-Math.PI/2)+(Math.random()-.5)*2.6; dist=50+Math.random()*120;
-        dx=Math.cos(a)*dist; dy=Math.sin(a)*dist+(50+Math.random()*100);
-        size=6+Math.random()*5;
-        p.style.background=CONFETTI[(Math.random()*CONFETTI.length)|0]; p.style.borderRadius='2px';
-        p.style.width=(size*0.6)+'px';
-      }
-      p.className='fizz'; p.style.left=cx+'px'; p.style.top=cy+'px'; p.style.height=size+'px';
-      dur=1000+Math.random()*750;
-      p.style.setProperty('--dx',dx.toFixed(1)+'px');
-      p.style.setProperty('--dy',dy.toFixed(1)+'px');
-      p.style.setProperty('--rot',((Math.random()*720-360)|0)+'deg');
-      p.style.setProperty('--dur',dur+'ms');
-      document.body.appendChild(p);
-      (function(n){setTimeout(function(){n.remove();},dur+80);})(p);
-    }
+ var el=document.querySelector('.fx-elite'); if(!el) return;
+ var BUBBLE=['#e0b862','#c79a3b','#f7d36a','#f6f4ec','#ffffff'];
+ var CONFETTI=['#c79a3b','#e0b862','#234F3D','#5B2C6F','#f6f4ec'];
+ function pop(cx,cy){
+  if(REDUCE) return;
+  for(var i=0;i<32;i++){
+   var bub=i<21, p=document.createElement('div'), a, dist, dx, dy, size, dur;
+   if(bub){                  // champagne fizz rises in a fan
+    a=(-Math.PI/2)+(Math.random()-.5)*1.5; dist=45+Math.random()*135;
+    dx=Math.cos(a)*dist; dy=Math.sin(a)*dist-(30+Math.random()*70);
+    size=5+Math.random()*7;
+    p.style.background=BUBBLE[(Math.random()*BUBBLE.length)|0]; p.style.borderRadius='50%';
+    p.style.width=size+'px';
+   } else {                  // confetti fans out and falls
+    a=(-Math.PI/2)+(Math.random()-.5)*2.6; dist=50+Math.random()*120;
+    dx=Math.cos(a)*dist; dy=Math.sin(a)*dist+(50+Math.random()*100);
+    size=6+Math.random()*5;
+    p.style.background=CONFETTI[(Math.random()*CONFETTI.length)|0]; p.style.borderRadius='2px';
+    p.style.width=(size*0.6)+'px';
+   }
+   p.className='fizz'; p.style.left=cx+'px'; p.style.top=cy+'px'; p.style.height=size+'px';
+   dur=1000+Math.random()*750;
+   p.style.setProperty('--dx',dx.toFixed(1)+'px');
+   p.style.setProperty('--dy',dy.toFixed(1)+'px');
+   p.style.setProperty('--rot',((Math.random()*720-360)|0)+'deg');
+   p.style.setProperty('--dur',dur+'ms');
+   document.body.appendChild(p);
+   (function(n){setTimeout(function(){n.remove();},dur+80);})(p);
   }
-  el.addEventListener('click',function(e){
-    if(document.body.classList.contains('editing')) return;   // don't fire while editing
-    var r=el.getBoundingClientRect();
-    pop(r.left+r.width/2, r.top+r.height/2);
-    var href=el.getAttribute('href')||'';
-    if(href.indexOf('[[LINK]]')!==-1 || href.charAt(0)==='#'){
-      e.preventDefault();                                     // placeholder/anchor: just celebrate
-    } else if(href){
-      e.preventDefault();                                     // real link: celebrate, then go
-      setTimeout(function(){ window.location.href=href; }, 850);
-    }
-  });
+ }
+ el.addEventListener('click',function(e){
+  if(document.body.classList.contains('editing')) return;  // don't fire while editing
+  var r=el.getBoundingClientRect();
+  pop(r.left+r.width/2, r.top+r.height/2);
+  var href=el.getAttribute('href')||'';
+  if(href.indexOf('[[LINK]]')!==-1 || href.charAt(0)==='#'){
+   e.preventDefault();                   // placeholder/anchor: just celebrate
+  } else if(href){
+   e.preventDefault();                   // real link: celebrate, then go
+   setTimeout(function(){ window.location.href=href; }, 850);
+  }
+ });
 })();
 </script>
 </body>
