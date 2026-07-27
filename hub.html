@@ -36,7 +36,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:'Fraunces','Georgia',serif;letter-spacing:-.01em;line-height:1.1;color:var(--ink)}
+h1,h2,h3{font-family:'Inter',system-ui,sans-serif;letter-spacing:-.01em;line-height:1.1;color:var(--ink)}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
 .eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green);padding:6px 15px;border:1px solid var(--bd);border-radius:100px;background:rgba(35,79,61,.05);margin-bottom:16px}
@@ -57,10 +57,10 @@ a{color:inherit;text-decoration:none}
 .nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(248,247,243,.82);border-bottom:1px solid var(--bd-soft);transition:box-shadow .25s,background .25s}
 .nav.scrolled{box-shadow:0 6px 22px rgba(35,49,40,.1);background:rgba(248,247,243,.94)}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
-.brand{display:flex;align-items:center;gap:11px;font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:var(--green)}
+.brand{display:flex;align-items:center;gap:11px;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:18px;color:var(--green)}
 .brand .sub{color:var(--ink3);font-weight:500;font-family:'Inter';font-size:13px}
 .mark{width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:radial-gradient(circle at 38% 34%,#fbf7ea,#e9e3cf 60%,#d8cfb0);box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18);animation:markGlow 3.8s ease-in-out infinite}
-.mark span{font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:var(--green);margin-top:1px}
+.mark span{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:18px;color:var(--green);margin-top:1px}
 @keyframes markGlow{0%,100%{box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18)}50%{box-shadow:0 0 0 1px rgba(199,154,59,.45),0 3px 10px rgba(35,49,40,.18),0 0 15px rgba(199,154,59,.4)}}
 .btn{display:inline-block;font-weight:700;font-size:14px;border-radius:11px;padding:12px 24px;cursor:pointer;transition:transform .16s,box-shadow .16s,background .2s;border:1px solid transparent;white-space:nowrap;will-change:transform}
 .btn:hover{transform:translateY(-2px)}
@@ -78,7 +78,7 @@ a{color:inherit;text-decoration:none}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .hero .roles{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--pl,#a97f2a);font-weight:700;color:var(--gold-d);margin-bottom:14px}
 .hero h1{font-family:'Inter',system-ui,sans-serif;font-size:clamp(38px,7vw,70px);font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
-.hero .sub-name{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(18px,3vw,26px);color:var(--gold-d);margin-bottom:18px}
+.hero .sub-name{font-family:'Inter',system-ui,sans-serif;font-style:italic;font-size:clamp(18px,3vw,26px);color:var(--gold-d);margin-bottom:18px}
 .hero .lead{font-size:clamp(16px,2.1vw,19px);color:var(--ink2);max-width:600px;margin:0 auto 26px}
 .hero-cta{display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
 
@@ -112,7 +112,7 @@ section{padding:44px 0}
 .venture.v-light{background:var(--card);border:1px solid var(--bd)}
 .venture .v-eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-d);margin-bottom:10px}
 .venture.v-green .v-eyebrow{color:var(--gold-l)}
-.venture h3{font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-bottom:10px}
+.venture h3{font-family:'Inter',system-ui,sans-serif;font-size:26px;font-weight:700;margin-bottom:10px}
 .venture .v-desc{font-size:15px;margin-bottom:18px}
 .venture.v-light .v-desc{color:var(--ink2)}
 .venture ul{list-style:none;display:grid;gap:9px;margin-bottom:22px}
@@ -139,8 +139,8 @@ section{padding:44px 0}
 
 /* footer */
 footer{background:linear-gradient(180deg,#1c4032,#152e24);color:rgba(246,244,236,.72);padding:44px 0 42px;text-align:center;margin-top:40px}
-footer .fbrand{display:flex;align-items:center;justify-content:center;gap:11px;font-family:'Fraunces',serif;font-weight:700;font-size:22px;color:var(--cream);margin-bottom:6px}
-footer .ftag{font-family:'Fraunces',serif;font-style:italic;color:var(--gold-l);font-size:15px;margin-bottom:14px}
+footer .fbrand{display:flex;align-items:center;justify-content:center;gap:11px;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:22px;color:var(--cream);margin-bottom:6px}
+footer .ftag{font-family:'Inter',system-ui,sans-serif;font-style:italic;color:var(--gold-l);font-size:15px;margin-bottom:14px}
 footer .loc{color:rgba(246,244,236,.7);font-size:13.5px;margin-bottom:6px}
 footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 .foot-admin{margin-top:16px}
@@ -255,7 +255,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
           <li><span class="ck">✓</span><span data-edit="saai_li2">Works inside ChatGPT and your favorite LLM</span></li>
           <li><span class="ck">✓</span><span data-edit="saai_li3">Persistent and adaptive — not disposable prompts</span></li>
         </ul>
-        <div class="v-cta"><a class="btn btn-ghost" href="[[LINK]]-saai"><span data-edit="saai_cta">Explore AI Solutions →</span></a></div>
+        <div class="v-cta"><a class="btn btn-ghost" data-link="lk_saai" href="[[LINK]]-saai"><span data-edit="saai_cta">Explore AI Solutions →</span></a></div>
       </div>
     </div>
   </div>
@@ -269,9 +269,9 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
       <h2 class="reveal">Three tools to <span class="accent-text" data-edit="tk_h2hi">attract, engage & convert</span></h2>
     </div>
     <div class="grid g3">
-      <div class="card reveal d1"><div class="ico">📈</div><h3 data-edit="tk1_h3">Facebook Strategy</h3><p data-edit="tk1_p">Build a sharper strategy that attracts the right audience and turns content into consistent revenue.</p><a class="clink" href="[[LINK]]-strategy"><span data-edit="tk1_cta">Scale Your Business</span> →</a></div>
-      <div class="card reveal d2"><div class="ico">💬</div><h3 data-edit="tk2_h3">Yuna Pro</h3><p data-edit="tk2_p">Turn DM conversations into clients using a proven Smart Messaging system — no cold calls needed.</p><a class="clink" href="[[LINK]]-yuna"><span data-edit="tk2_cta">Get Yuna Pro</span> →</a></div>
-      <div class="card reveal d3"><div class="ico">🤖</div><h3 data-edit="tk3_h3">FlowChat</h3><p data-edit="tk3_p">Automate follow-ups, book clients, and let AI handle outreach so you can focus on closing.</p><a class="clink" href="[[LINK]]-flowchat"><span data-edit="tk3_cta">Get FlowChat</span> →</a></div>
+      <div class="card reveal d1"><div class="ico">📈</div><h3 data-edit="tk1_h3">Facebook Strategy</h3><p data-edit="tk1_p">Build a sharper strategy that attracts the right audience and turns content into consistent revenue.</p><a class="clink" data-link="lk_strategy" href="[[LINK]]-strategy"><span data-edit="tk1_cta">Scale Your Business</span> →</a></div>
+      <div class="card reveal d2"><div class="ico">💬</div><h3 data-edit="tk2_h3">Yuna Pro</h3><p data-edit="tk2_p">Turn DM conversations into clients using a proven Smart Messaging system — no cold calls needed.</p><a class="clink" data-link="lk_yuna" href="[[LINK]]-yuna"><span data-edit="tk2_cta">Get Yuna Pro</span> →</a></div>
+      <div class="card reveal d3"><div class="ico">🤖</div><h3 data-edit="tk3_h3">FlowChat</h3><p data-edit="tk3_p">Automate follow-ups, book clients, and let AI handle outreach so you can focus on closing.</p><a class="clink" data-link="lk_flowchat" href="[[LINK]]-flowchat"><span data-edit="tk3_cta">Get FlowChat</span> →</a></div>
     </div>
   </div>
 </section>
@@ -284,8 +284,8 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
       <h2 class="reveal">Custom art & design to <span class="gold-text" data-edit="cr_h2hi">bring ideas to life</span></h2>
     </div>
     <div class="grid g2">
-      <div class="card reveal d1"><div class="ico">🎨</div><h3 data-edit="cr1_h3">Acrylic Pour Art</h3><p data-edit="cr1_p">Commission a one-of-a-kind fluid painting filled with movement and color — a living piece for your space.</p><a class="clink" href="[[LINK]]-art"><span data-edit="cr1_cta">Check Out My Art</span> →</a></div>
-      <div class="card reveal d2"><div class="ico">✨</div><h3 data-edit="cr2_h3">Graphic Design</h3><p data-edit="cr2_p">Custom branding, video editing, and animation that make your ideas stand out and stay memorable.</p><a class="clink" href="[[LINK]]-design"><span data-edit="cr2_cta">Explore Graphics</span> →</a></div>
+      <div class="card reveal d1"><div class="ico">🎨</div><h3 data-edit="cr1_h3">Acrylic Pour Art</h3><p data-edit="cr1_p">Commission a one-of-a-kind fluid painting filled with movement and color — a living piece for your space.</p><a class="clink" data-link="lk_art" href="[[LINK]]-art"><span data-edit="cr1_cta">Check Out My Art</span> →</a></div>
+      <div class="card reveal d2"><div class="ico">✨</div><h3 data-edit="cr2_h3">Graphic Design</h3><p data-edit="cr2_p">Custom branding, video editing, and animation that make your ideas stand out and stay memorable.</p><a class="clink" data-link="lk_design" href="[[LINK]]-design"><span data-edit="cr2_cta">Explore Graphics</span> →</a></div>
     </div>
   </div>
 </section>
@@ -299,8 +299,8 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
       <p class="reveal" data-edit="dr_p">Join a supportive community focused on lucid dreaming, self-awareness, and intentional sleep — practical techniques, coaching, and sleep-hygiene support to make your nights more vivid.</p>
     </div>
     <div class="grid g2">
-      <div class="card reveal d1"><div class="ico">🌙</div><h3 data-edit="dr1_h3">Dreamers Community</h3><p data-edit="dr1_p">Connect with dreamers and share breakthroughs with supportive, experienced guidance.</p><a class="clink" href="[[LINK]]-lucid"><span data-edit="dr1_cta">Get Lucid</span> →</a></div>
-      <div class="card reveal d2"><div class="ico">🔮</div><h3 data-edit="dr2_h3">Patreon Access</h3><p data-edit="dr2_p">Unlock premium tools and exclusive resources to deepen your practice, night after night.</p><a class="clink" href="[[LINK]]-patreon"><span data-edit="dr2_cta">Join Patreon</span> →</a></div>
+      <div class="card reveal d1"><div class="ico">🌙</div><h3 data-edit="dr1_h3">Dreamers Community</h3><p data-edit="dr1_p">Connect with dreamers and share breakthroughs with supportive, experienced guidance.</p><a class="clink" data-link="lk_lucid" href="[[LINK]]-lucid"><span data-edit="dr1_cta">Get Lucid</span> →</a></div>
+      <div class="card reveal d2"><div class="ico">🔮</div><h3 data-edit="dr2_h3">Patreon Access</h3><p data-edit="dr2_p">Unlock premium tools and exclusive resources to deepen your practice, night after night.</p><a class="clink" data-link="lk_patreon" href="[[LINK]]-patreon"><span data-edit="dr2_cta">Join Patreon</span> →</a></div>
     </div>
   </div>
 </section>
@@ -313,12 +313,12 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
       <h2 class="reveal">Follow the <span class="accent-text" data-edit="fm_h2hi">journey</span></h2>
     </div>
     <div class="social-grid">
-      <a class="soc reveal d1" href="[[LINK]]-skool"><span class="se">🎓</span><span><h4>Skool</h4><p data-edit="soc_skool">Facebook Growth Lab — strategies, training, and a growth-focused community.</p><span class="go">Join the Lab →</span></span></a>
-      <a class="soc reveal d1" href="[[LINK]]-fbcommunity"><span class="se">🌙</span><span><h4>Facebook Community</h4><p data-edit="soc_fb">Consciousness Explorers — lucid dreaming, astral projection, deeper awareness.</p><span class="go">Join Community →</span></span></a>
-      <a class="soc reveal d2" href="[[LINK]]-youtube"><span class="se">🎬</span><span><h4>YouTube</h4><p data-edit="soc_yt">Lucid dreaming tips, consciousness insights, and marketing wisdom.</p><span class="go">Subscribe →</span></span></a>
-      <a class="soc reveal d2" href="[[LINK]]-instagram"><span class="se">📸</span><span><h4>Instagram</h4><p data-edit="soc_ig">Daily inspiration, reflections, and behind-the-scenes moments.</p><span class="go">Follow Me →</span></span></a>
-      <a class="soc reveal d3" href="https://www.linkedin.com/in/jeff-randle-042a23196/"><span class="se">💼</span><span><h4>LinkedIn</h4><p data-edit="soc_li">Professional insights, collaboration, and conversations on growth.</p><span class="go">Connect →</span></span></a>
-      <a class="soc reveal d3" href="[[LINK]]-tiktok"><span class="se">🎵</span><span><h4>TikTok</h4><p data-edit="soc_tt">Concise lucid dreaming tips and techniques you can try right away.</p><span class="go">Watch Now →</span></span></a>
+      <a class="soc reveal d1" data-link="lk_skool" href="[[LINK]]-skool"><span class="se">🎓</span><span><h4>Skool</h4><p data-edit="soc_skool">Facebook Growth Lab — strategies, training, and a growth-focused community.</p><span class="go">Join the Lab →</span></span></a>
+      <a class="soc reveal d1" data-link="lk_fbcommunity" href="[[LINK]]-fbcommunity"><span class="se">🌙</span><span><h4>Facebook Community</h4><p data-edit="soc_fb">Consciousness Explorers — lucid dreaming, astral projection, deeper awareness.</p><span class="go">Join Community →</span></span></a>
+      <a class="soc reveal d2" data-link="lk_youtube" href="[[LINK]]-youtube"><span class="se">🎬</span><span><h4>YouTube</h4><p data-edit="soc_yt">Lucid dreaming tips, consciousness insights, and marketing wisdom.</p><span class="go">Subscribe →</span></span></a>
+      <a class="soc reveal d2" data-link="lk_instagram" href="[[LINK]]-instagram"><span class="se">📸</span><span><h4>Instagram</h4><p data-edit="soc_ig">Daily inspiration, reflections, and behind-the-scenes moments.</p><span class="go">Follow Me →</span></span></a>
+      <a class="soc reveal d3" data-link="lk_linkedin" href="https://www.linkedin.com/in/jeff-randle-042a23196/"><span class="se">💼</span><span><h4>LinkedIn</h4><p data-edit="soc_li">Professional insights, collaboration, and conversations on growth.</p><span class="go">Connect →</span></span></a>
+      <a class="soc reveal d3" data-link="lk_tiktok" href="[[LINK]]-tiktok"><span class="se">🎵</span><span><h4>TikTok</h4><p data-edit="soc_tt">Concise lucid dreaming tips and techniques you can try right away.</p><span class="go">Watch Now →</span></span></a>
     </div>
   </div>
 </section>
@@ -372,7 +372,9 @@ var PAGE = window.__PAGE__ || 'hub';
 /* Content hydration for all visitors */
 (function(){ var C=window.__CONTENT__||{};
   document.querySelectorAll('[data-edit]').forEach(function(el){var k=el.getAttribute('data-edit');
-    if(Object.prototype.hasOwnProperty.call(C,k)&&C[k]!=null)el.innerHTML=C[k];}); })();
+    if(Object.prototype.hasOwnProperty.call(C,k)&&C[k]!=null)el.innerHTML=C[k];});
+  document.querySelectorAll('[data-link]').forEach(function(el){var k=el.getAttribute('data-link');
+    if(Object.prototype.hasOwnProperty.call(C,k)&&C[k]!=null&&C[k]!=='')el.setAttribute('href',C[k]);}); })();
 
 /* Reveal on scroll */
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.14});
@@ -410,13 +412,22 @@ document.querySelectorAll('.reveal:not(.in)').forEach(function(el){io.observe(el
   var snapshot={},mode=null,dirty=false;
   function editing(){return document.body.classList.contains('editing');}
   function nodes(){return document.querySelectorAll('[data-edit]');}
-  function collect(){var d={};nodes().forEach(function(el){d[el.getAttribute('data-edit')]=el.innerHTML;});return d;}
+  function collect(){var d={};nodes().forEach(function(el){d[el.getAttribute('data-edit')]=el.innerHTML;});
+    document.querySelectorAll('[data-link]').forEach(function(el){d[el.getAttribute('data-link')]=el.getAttribute('href')||'';});return d;}
   function toast(m){var t=document.getElementById('adminToast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3400);}
   if(!SERVED){try{var d=JSON.parse(localStorage.getItem(LKEY)||'{}');nodes().forEach(function(el){var k=el.getAttribute('data-edit');if(d[k]!=null)el.innerHTML=d[k];});}catch(e){}}
   function showBar(m){mode=m;bar.classList.add('show');eLbl.textContent=(m==='server')?'Admin':'Admin · local preview';
     eLogout.style.display=(m==='server')?'':'none';if(eExport)eExport.style.display=(m==='local')?'':'none';
-    if(eTxt)eTxt.innerHTML=(m==='local')?'<b>Editing (local preview)</b> — saved to this browser. Export to publish.':'<b>Editing your hub</b> — click any text to change it. Not live until you save.';}
-  function blockNav(e){var a=e.target.closest('a');if(a&&!a.classList.contains('ab-logout'))e.preventDefault();}
+    if(eTxt)eTxt.innerHTML=(m==='local')?'<b>Editing (local preview)</b> — click text to edit, click a button/link to set its URL. Export to publish.':'<b>Editing your hub</b> — click text to edit it, click a button/link to set its URL. Save when done.';}
+  function blockNav(e){var a=e.target.closest('a');if(!a||a.classList.contains('ab-logout'))return;e.preventDefault();
+    var lk=a.hasAttribute('data-link')?a:a.closest('[data-link]');
+    if(lk && !e.target.closest('[data-edit]')){
+      var cur=lk.getAttribute('href')||'';if(cur.indexOf('[[LINK]]')===0)cur='https://';
+      var url=window.prompt('Paste the full URL for this link:',cur);
+      if(url!==null){url=url.trim();if(url&&!/^(https?:|mailto:|tel:|\/|#)/i.test(url))url='https://'+url;
+        lk.setAttribute('href',url);dirty=true;toast('Link set — click “Save changes” to publish it');}
+    }
+  }
   function markDirty(){dirty=true;}
   function setEditing(on){document.body.classList.toggle('editing',on);
     nodes().forEach(function(el){on?el.setAttribute('contenteditable','true'):el.removeAttribute('contenteditable');});
