@@ -27,7 +27,7 @@ PAGES = {
     "hub":  {"html": "hub.html",   "content": "hub_content.json"},
 }
 BLOCKED_FILES = {"app.py", "requirements.txt", ".gitignore", "render.yaml", "README.md",
-                 "index.html", "content.json", "hub_content.json", "scorecards.json"}
+                 "index.html", "content.json", "hub_content.json", "scorecards.json", "visits.json"}
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
@@ -409,6 +409,143 @@ document.querySelectorAll('.sc-num').forEach(function(el){
   requestAnimationFrame(step);
 });
 </script></body></html>"""
+
+
+# ========== Lightweight, cookieless visit analytics ==========
+import threading
+from urllib.parse import urlparse as _urlparse
+
+VISITS_PATH = os.path.join(BASE, "visits.json")
+_visits_lock = threading.Lock()
+_BOT_RE = re.compile(r"bot|crawl|spider|slurp|bing|preview|monitor|curl|wget|python-requests|facebookexternalhit|headless|render|uptime", re.I)
+_TRACK_EXACT = {"/", "/hub"}
+_SELF_HOSTS = ("macrandleacres.com", "onrender.com")
+
+
+def load_visits():
+    try:
+        with open(VISITS_PATH, encoding="utf-8") as f:
+            d = json.load(f)
+            return d if isinstance(d, list) else []
+    except Exception:
+        return []
+
+
+def _record_visit(path, referrer, ua):
+    host = ""
+    if referrer:
+        try:
+            host = (_urlparse(referrer).netloc or "").lower()
+        except Exception:
+            host = ""
+    if not host:
+        host = "direct"
+    elif any(s in host for s in _SELF_HOSTS):
+        host = "(internal)"
+    rec = {"t": datetime.datetime.utcnow().isoformat(timespec="seconds"),
+           "p": path, "r": host, "d": "mobile" if "Mobi" in (ua or "") else "desktop"}
+    with _visits_lock:
+        v = load_visits()
+        v.append(rec)
+        if len(v) > 4000:
+            v = v[-4000:]
+        try:
+            with open(VISITS_PATH, "w", encoding="utf-8") as f:
+                json.dump(v, f, ensure_ascii=False)
+        except Exception:
+            pass
+
+
+@app.before_request
+def _track_visit():
+    if request.method != "GET":
+        return
+    p = request.path
+    if not (p in _TRACK_EXACT or p.startswith("/s/")):
+        return
+    ua = request.headers.get("User-Agent", "")
+    if _BOT_RE.search(ua):
+        return
+    _record_visit(p, request.referrer, ua)
+
+
+@app.route("/admin/analytics")
+def admin_analytics():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/analytics")
+    from collections import Counter
+    v = load_visits()
+    days, pages, refs, devs = {}, Counter(), Counter(), Counter()
+    for r in v:
+        day = (r.get("t") or "")[:10]
+        days[day] = days.get(day, 0) + 1
+        pages[r.get("p", "?")] += 1
+        rf = r.get("r", "direct")
+        if rf != "(internal)":
+            refs[rf] += 1
+        devs[r.get("d", "?")] += 1
+    today = datetime.date.today()
+    series = [((today - datetime.timedelta(days=i)).isoformat(), 0) for i in range(13, -1, -1)]
+    series = [(d[5:], days.get(d, 0)) for d, _ in series]
+    mx = max([c for _, c in series] + [1])
+    bars = ""
+    for lbl, c in series:
+        bars += ('<div class="bar"><div class="bwrap"><div class="bfill" style="height:%d%%" title="%d visits"></div></div>'
+                 '<div class="blbl">%s</div></div>') % (int(c / mx * 100), c, lbl)
+    todayc = days.get(today.isoformat(), 0)
+    last7 = sum(days.get((today - datetime.timedelta(days=i)).isoformat(), 0) for i in range(7))
+
+    def rows(counter):
+        out = "".join("<tr><td>%s</td><td>%d</td></tr>" % (_esc(str(k)), c) for k, c in counter.most_common(8))
+        return out or '<tr><td colspan="2" style="opacity:.5">No data yet</td></tr>'
+
+    html = (ANALYTICS_HTML.replace("__TOTAL__", str(len(v))).replace("__TODAY__", str(todayc))
+            .replace("__LAST7__", str(last7)).replace("__BARS__", bars)
+            .replace("__PAGES__", rows(pages)).replace("__REFS__", rows(refs))
+            .replace("__MOB__", str(devs.get("mobile", 0))).replace("__DESK__", str(devs.get("desktop", 0))))
+    return Response(html, mimetype="text/html")
+
+
+ANALYTICS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Site visits</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:26px 16px}
+.wrap{max-width:760px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decoration:none}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:14px;padding:18px;box-shadow:0 8px 22px rgba(35,49,40,.06)}
+.stat .n{font-size:30px;font-weight:800;color:#234F3D}.stat .l{font-size:12px;color:#5c635e;margin-top:3px}
+.panel{background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:16px;padding:20px;box-shadow:0 8px 22px rgba(35,49,40,.06);margin-bottom:18px}
+.panel h2{font-size:15px;color:#234F3D;margin-bottom:14px}
+.chart{display:flex;align-items:flex-end;gap:6px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bwrap{width:100%;height:100px;display:flex;align-items:flex-end}
+.bfill{width:100%;background:linear-gradient(180deg,#e0b862,#a97f2a);border-radius:4px 4px 0 0;min-height:2px}
+.blbl{font-size:9px;color:#8a8f88}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:8px 6px;border-bottom:1px solid rgba(35,79,61,.08)}td:last-child{text-align:right;font-weight:700;color:#234F3D}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.dev{display:flex;gap:24px;font-size:14px}
+.note{font-size:11.5px;color:#8a8f88;margin-top:10px;line-height:1.5}
+@media(max-width:600px){.two{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+</style></head><body><div class="wrap">
+<div class="top"><h1>Site visits</h1><a class="back" href="/">&larr; Site</a></div>
+<div class="stats">
+  <div class="stat"><div class="n">__TOTAL__</div><div class="l">Total visits tracked</div></div>
+  <div class="stat"><div class="n">__TODAY__</div><div class="l">Today</div></div>
+  <div class="stat"><div class="n">__LAST7__</div><div class="l">Last 7 days</div></div>
+</div>
+<div class="panel"><h2>Visits, last 14 days</h2><div class="chart">__BARS__</div></div>
+<div class="two">
+  <div class="panel"><h2>Top pages</h2><table>__PAGES__</table></div>
+  <div class="panel"><h2>Top sources</h2><table>__REFS__</table></div>
+</div>
+<div class="panel"><h2>Devices</h2><div class="dev"><span>&#128241; Mobile: <b>__MOB__</b></span><span>&#128187; Desktop: <b>__DESK__</b></span></div>
+<div class="note">Cookieless &amp; privacy-friendly, no personal data stored. Counts reset if the server redeploys (free tier). Want permanent, richer tracking (traffic sources, ad conversions)? Ask me to add Google Analytics or your Meta Pixel.</div></div>
+</div></body></html>"""
 
 
 if __name__ == "__main__":
