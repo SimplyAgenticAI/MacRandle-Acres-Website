@@ -70,6 +70,29 @@ def sanitize(value):
 
 
 # ---------- page rendering ----------
+def tracking_head():
+    """Google Analytics + Meta Pixel snippets, injected only when their IDs are
+    configured as env vars (GA_ID / META_PIXEL_ID). IDs are public by design."""
+    out = []
+    ga = re.sub(r"[^A-Za-z0-9\-]", "", os.getenv("GA_ID", "").strip())
+    if ga:
+        out.append(
+            '<script async src="https://www.googletagmanager.com/gtag/js?id=%s"></script>'
+            '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}'
+            'gtag("js",new Date());gtag("config","%s");</script>' % (ga, ga))
+    px = re.sub(r"[^0-9]", "", os.getenv("META_PIXEL_ID", "").strip())
+    if px:
+        out.append(
+            '<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?'
+            'n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;'
+            'n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;'
+            's=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script",'
+            '"https://connect.facebook.net/en_US/fbevents.js");fbq("init","%s");fbq("track","PageView");</script>'
+            '<noscript><img height="1" width="1" style="display:none" '
+            'src="https://www.facebook.com/tr?id=%s&ev=PageView&noscript=1"/></noscript>' % (px, px))
+    return "".join(out)
+
+
 def render_page(page):
     cfg = PAGES[page]
     with open(os.path.join(BASE, cfg["html"]), encoding="utf-8") as f:
@@ -78,7 +101,9 @@ def render_page(page):
     payload = json.dumps(load_content(page), ensure_ascii=False).replace("</", "<\\/")
     inject = ("<script>window.__ADMIN__=%s;window.__CONTENT__=%s;window.__PAGE__=%s;</script>"
               % ("true" if is_admin else "false", payload, json.dumps(page)))
-    html = html.replace("</head>", inject + "\n</head>", 1)
+    # Don't track the signed-in owner (keeps your own visits out of the stats)
+    head = ("" if is_admin else tracking_head()) + inject
+    html = html.replace("</head>", head + "\n</head>", 1)
     resp = Response(html, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
     return resp

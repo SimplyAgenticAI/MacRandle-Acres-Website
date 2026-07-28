@@ -366,6 +366,12 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* Ad conversion tracking: fire a Lead event when a booking button is clicked */
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;
+  if((a.getAttribute('href')||'').indexOf('calendar.')>-1){
+    if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','book_call_click');}
+});
 var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
 var PAGE = window.__PAGE__ || 'hub';
 

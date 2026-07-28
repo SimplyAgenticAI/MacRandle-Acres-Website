@@ -837,6 +837,12 @@ footer{position:relative}
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
 
+/* Ad conversion tracking: fire a Lead event when a booking button is clicked */
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;
+  if((a.getAttribute('href')||'').indexOf('calendar.')>-1){
+    if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','book_call_click');}
+});
+
 document.getElementById('hamb').addEventListener('click',function(){
  var nl=document.querySelector('.nav-links');
  var open=nl.style.display==='flex';
