@@ -485,6 +485,9 @@ footer{position:relative}
 .impact-stat .num{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:clamp(30px,4.4vw,44px);line-height:1;
  background:linear-gradient(135deg,#f6f4ec,var(--gold-l));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .impact-stat .lbl{font-size:12.5px;color:rgba(246,244,236,.78);margin-top:8px;letter-spacing:.02em}
+.impact-stat .im-ic{font-size:26px;margin-bottom:8px}
+.impact-stat .im-name{font-weight:700;font-size:16px;color:var(--cream);margin-bottom:4px;line-height:1.25}
+.impact-stat .im-src{font-size:12.5px;color:rgba(246,244,236,.72);line-height:1.4}
 @media(max-width:700px){.impact-grid{grid-template-columns:1fr 1fr;gap:26px 18px}}
 </style>
 </head>
@@ -606,14 +609,14 @@ footer{position:relative}
 <section class="impact" id="impact">
  <div class="wrap">
   <div class="impact-box reveal">
-   <span class="impact-eyebrow" data-edit="impact_eyebrow">The impact I'm built to create</span>
-   <div class="impact-h" data-edit="impact_h">What a strong stretch looks like</div>
-   <div class="impact-note">Illustrative example, your real numbers land here as we work together.</div>
+   <span class="impact-eyebrow" data-edit="mz_eyebrow">No vanity metrics, no fluff</span>
+   <div class="impact-h" data-edit="mz_h">Every number is real, measured, and yours to verify</div>
+   <div class="impact-note">I only report what can actually be tracked, pulled straight from the source. No inflated claims, ever.</div>
    <div class="impact-grid">
-    <div class="impact-stat"><div class="num icount" data-to="142" data-prefix="$" data-suffix="K">$0</div><div class="lbl" data-edit="impact_l1">Saved for clients</div></div>
-    <div class="impact-stat"><div class="num icount" data-to="1900">0</div><div class="lbl" data-edit="impact_l2">Leads recovered</div></div>
-    <div class="impact-stat"><div class="num icount" data-to="380">0</div><div class="lbl" data-edit="impact_l3">Appointments booked</div></div>
-    <div class="impact-stat"><div class="num icount" data-to="96" data-suffix="%">0</div><div class="lbl" data-edit="impact_l4">Client retention</div></div>
+    <div class="impact-stat"><div class="im-ic">👀</div><div class="im-name" data-edit="mz1_n">Reach &amp; link clicks</div><div class="im-src" data-edit="mz1_s">Straight from Meta Ads Manager</div></div>
+    <div class="impact-stat"><div class="im-ic">📞</div><div class="im-name" data-edit="mz2_n">Calls from your ads</div><div class="im-src" data-edit="mz2_s">Tracked call reporting</div></div>
+    <div class="impact-stat"><div class="im-ic">💬</div><div class="im-name" data-edit="mz3_n">Conversations &amp; appointments</div><div class="im-src" data-edit="mz3_s">Logged in your CRM</div></div>
+    <div class="impact-stat"><div class="im-ic">🌱</div><div class="im-name" data-edit="mz4_n">Seeds planted, then booked</div><div class="im-src" data-edit="mz4_s">Counted, never guessed</div></div>
    </div>
   </div>
  </div>
