@@ -225,13 +225,13 @@ from html import escape as _esc
 
 SCORECARDS_PATH = os.path.join(BASE, "scorecards.json")
 SCORE_METRICS = [
-    ("reached", "People reached", "\U0001F440"),
-    ("clicks", "Link clicks", "\U0001F446"),
-    ("calls", "Calls from ads", "\U0001F4DE"),
-    ("conversations", "Conversations started", "\U0001F4AC"),
-    ("seeds", "Seeds planted", "\U0001F331"),
-    ("appointments", "Appointments booked", "\U0001F4C5"),
-    ("followers", "New followers", "\U0001F33F"),
+    ("reached", "People reached", "\U0001F440", "Meta Ads Manager → Reach (+ Business Suite for organic)"),
+    ("clicks", "Link clicks", "\U0001F446", "Meta Ads Manager → Link clicks"),
+    ("calls", "Calls from ads", "\U0001F4DE", "Meta Ads Manager (call ads) or your tracked number"),
+    ("conversations", "Conversations started", "\U0001F4AC", "Meta Ads Manager → Messaging conversations started"),
+    ("seeds", "Seeds planted", "\U0001F331", "New leads you added to nurture this month (your CRM)"),
+    ("appointments", "Appointments booked", "\U0001F4C5", "Your CRM or calendar"),
+    ("followers", "New followers", "\U0001F33F", "Meta Business Suite → Insights → Follows"),
 ]
 CAL_URL = "https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"
 
@@ -263,11 +263,12 @@ def admin_scorecards():
     if not rows:
         rows = '<tr><td colspan="4" style="opacity:.55">No scorecards yet, create your first above.</td></tr>'
     fields = ""
-    for key, label, icon in SCORE_METRICS:
+    for key, label, icon, src in SCORE_METRICS:
         fields += ('<label class="fld"><span>%s %s</span>'
-                   '<input type="number" min="0" name="%s" value="0"></label>') % (icon, _esc(label), key)
+                   '<input type="number" min="0" name="%s" value="0">'
+                   '<small class="src">%s</small></label>') % (icon, _esc(label), key, _esc(src))
     html = (BUILDER_HTML.replace("__ROWS__", rows).replace("__FIELDS__", fields)
-            .replace("__METRIC_KEYS__", json.dumps([k for k, _, _ in SCORE_METRICS])))
+            .replace("__METRIC_KEYS__", json.dumps([m[0] for m in SCORE_METRICS])))
     return Response(html, mimetype="text/html")
 
 
@@ -278,7 +279,7 @@ def api_scorecard():
     data = request.get_json(silent=True) or {}
     metrics = {}
     src = data.get("metrics") or {}
-    for key, _, _ in SCORE_METRICS:
+    for key, *_ in SCORE_METRICS:
         try:
             metrics[key] = max(0, int(float(src.get(key, 0) or 0)))
         except Exception:
@@ -316,7 +317,7 @@ def public_scorecard(sid):
         return ("Scorecard not found", 404)
     m = sc.get("metrics") or {}
     tiles = ""
-    for key, label, icon in SCORE_METRICS:
+    for key, label, icon, _src in SCORE_METRICS:
         tiles += ('<div class="sc-tile"><div class="sc-ic">%s</div>'
                   '<div class="sc-num" data-to="%d">0</div><div class="sc-lbl">%s</div></div>') % (
                   icon, int(m.get(key, 0) or 0), _esc(label))
@@ -345,6 +346,9 @@ a.back{font-size:13px;color:#5c635e;text-decoration:none}
 .fld{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:600;color:#234F3D;flex:1 1 46%;margin-bottom:12px}
 .fld.full{flex:1 1 100%}
 .fld input,.fld textarea{font-family:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(35,79,61,.2);border-radius:9px;font-weight:400;color:#2D2D2D}
+.fld .src{font-weight:400;font-size:11px;color:#8a8f88;margin-top:1px;line-height:1.35}
+.guide ol{margin:0 0 0 18px;font-size:13.5px;line-height:1.7;color:#3a4038}
+.guide li{margin-bottom:7px}.guide b{color:#234F3D}.guide .src2{color:#a97f2a;font-weight:600}
 button.go{background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;border:none;font-weight:700;font-size:15px;padding:13px 26px;border-radius:11px;cursor:pointer}
 #result{margin-top:16px;display:none;background:rgba(35,79,61,.06);border-radius:12px;padding:16px;font-size:14px}
 #result a{color:#a97f2a;font-weight:700;word-break:break-all}
@@ -365,6 +369,16 @@ th{color:#5c635e;font-weight:600}
   <label class="fld full"><span>Next month's focus (optional)</span><textarea id="note" rows="2" placeholder="What you're prioritizing next"></textarea></label>
   <button class="go" id="create">Create scorecard</button>
   <div id="result"></div>
+</div>
+<div class="panel guide">
+  <h1 style="font-size:17px;margin-bottom:6px">&#128203; Pull your numbers in ~10 minutes</h1>
+  <div class="sub" style="margin-bottom:12px">Where to grab each number every month, no guessing.</div>
+  <ol>
+    <li><b>Meta Ads Manager</b> (set the date range to last month): <span class="src2">Reach</span> &rarr; People reached &middot; <span class="src2">Link clicks</span> &rarr; Link clicks &middot; <span class="src2">Messaging conversations started</span> &rarr; Conversations &middot; <span class="src2">Calls</span> (if running call ads) &rarr; Calls from ads.</li>
+    <li><b>Meta Business Suite &rarr; Insights</b>: organic <span class="src2">Reach</span> &rarr; add to People reached &middot; <span class="src2">Follows</span> &rarr; New followers.</li>
+    <li><b>Your CRM / calendar</b>: new leads added to nurture &rarr; <span class="src2">Seeds planted</span> &middot; booked calls &rarr; <span class="src2">Appointments booked</span>.</li>
+    <li>Type them into the form above &rarr; <b>Create scorecard</b> &rarr; send the client the link. Done.</li>
+  </ol>
 </div>
 <div class="panel">
   <h1 style="font-size:17px;margin-bottom:12px">Your scorecards</h1>
