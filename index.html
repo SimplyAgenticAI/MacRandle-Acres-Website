@@ -488,6 +488,24 @@ footer{position:relative}
 .impact-stat .im-ic{font-size:26px;margin-bottom:8px}
 .impact-stat .im-name{font-weight:700;font-size:16px;color:var(--cream);margin-bottom:4px;line-height:1.25}
 .impact-stat .im-src{font-size:12.5px;color:rgba(246,244,236,.72);line-height:1.4}
+
+/* Growth Audit form */
+.audit-form{max-width:720px;margin:0 auto;background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:30px;box-shadow:var(--shadow)}
+.af-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+.af{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--green)}
+.af.full{grid-column:1/-1}
+.af em{color:var(--ink3);font-weight:400;font-style:normal}
+.af input,.af select,.af textarea{font-family:inherit;font-size:14.5px;padding:11px 13px;border:1px solid var(--bd);border-radius:10px;background:#fff;color:var(--ink);font-weight:400;outline:none;transition:border-color .2s}
+.af input:focus,.af select:focus,.af textarea:focus{border-color:var(--gold)}
+.af-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.af-foot{display:flex;align-items:center;gap:16px;margin-top:22px;flex-wrap:wrap}
+.af-foot .btn{padding:15px 30px}
+.af-msg{font-size:13.5px;color:#b23}
+.af-done{text-align:center;padding:22px 10px}
+.af-done .af-ic{font-size:40px;margin-bottom:10px}
+.af-done h3{font-size:24px;color:var(--green);margin-bottom:8px}
+.af-done p{color:var(--ink2);font-size:16px;max-width:440px;margin:0 auto}
+@media(max-width:600px){.af-grid{grid-template-columns:1fr}.audit-form{padding:22px}}
 @media(max-width:700px){.impact-grid{grid-template-columns:1fr 1fr;gap:26px 18px}}
 </style>
 </head>
@@ -530,7 +548,7 @@ footer{position:relative}
    <a href="#outcomes">What you get</a>
    <a href="#scorecard">Growth Scorecard</a>
    <a href="#pricing">Pricing</a>
-   <a class="btn btn-primary nav-cta" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="nav_cta">Book a Growth Audit</span></a>
+   <a class="btn btn-primary nav-cta" href="#audit"><span data-edit="nav_cta">Book a Growth Audit</span></a>
   </div>
   <button class="hamb" id="hamb" aria-label="Menu">☰</button>
  </div>
@@ -548,7 +566,7 @@ footer{position:relative}
   <h1 class="reveal in"><span class="accent-text shimmer" data-edit="hero_h1a">Remove Friction.</span><br><span data-edit="hero_h1b">Accelerate Growth.</span></h1>
   <p class="promise reveal in" data-edit="hero_promise">Every month I find hidden opportunities to make your real estate business <b>more profitable</b>, then I implement the systems to capture them.</p>
   <div class="hero-cta reveal in">
-   <a class="btn btn-primary" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="hero_cta1">Book a Growth Audit</span></a>
+   <a class="btn btn-primary" href="#audit"><span data-edit="hero_cta1">Book a Growth Audit</span></a>
    <a class="btn btn-ghost" href="#scorecard"><span data-edit="hero_cta2">See how it works</span></a>
   </div>
   <div class="reveal in" style="display:flex;justify-content:center">
@@ -685,7 +703,7 @@ footer{position:relative}
      <span class="kicker" data-edit="score_kicker">The signature deliverable</span>
      <h2 style="margin-top:10px">Your monthly <span style="color:var(--gold-l)" data-edit="score_h2hi">Growth Scorecard</span></h2>
      <p class="sub" data-edit="score_sub">You're not paying for Facebook posts. You're paying for measurable business growth, and every month you see exactly what that growth looks like, in plain numbers.</p>
-     <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="score_cta">Get your first Scorecard</span></a>
+     <a class="btn btn-gold" href="#audit"><span data-edit="score_cta">Get your first Scorecard</span></a>
     </div>
     <div class="report" aria-label="Example Growth Scorecard (illustrative)">
      <div class="report-top">
@@ -743,7 +761,7 @@ footer{position:relative}
      <li><span class="ck">✓</span><span data-edit="t1_li3">Clear, prioritized recommendations</span></li>
      <li><span class="ck">✓</span><span data-edit="t1_li4">I implement the highest-ROI fixes</span></li>
     </ul>
-    <a class="btn btn-ghost fx-start" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t1_btn">Start here</span></a>
+    <a class="btn btn-ghost fx-start" href="#audit"><span data-edit="t1_btn">Start here</span></a>
    </div>
    <div class="tier feature reveal d2">
     <span class="tag" data-edit="t2_tag">Most popular</span>
@@ -756,7 +774,7 @@ footer{position:relative}
      <li><span class="ck">✓</span><span data-edit="t2_li3">Continuous monthly optimization</span></li>
      <li><span class="ck">✓</span><span data-edit="t2_li4">Priority support</span></li>
     </ul>
-    <a class="btn btn-gold fx-gleam" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t2_btn">Become a partner</span></a>
+    <a class="btn btn-gold fx-gleam" href="#audit"><span data-edit="t2_btn">Become a partner</span></a>
    </div>
    <div class="tier reveal d3">
     <div class="tname" data-edit="t3_name">Rainmaker Elite</div>
@@ -769,7 +787,7 @@ footer{position:relative}
      <li><span class="ck">✓</span><span data-edit="t3_li4">Recruiting & expansion systems</span></li>
      <li><span class="ck">✓</span><span data-edit="t3_li5">Quarterly planning</span></li>
     </ul>
-    <a class="btn btn-ghost fx-elite" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="t3_btn">Apply for Elite</span></a>
+    <a class="btn btn-ghost fx-elite" href="#audit"><span data-edit="t3_btn">Apply for Elite</span></a>
    </div>
   </div>
  </div>
@@ -787,13 +805,39 @@ footer{position:relative}
 </section>
 
 <!-- FINAL CTA -->
+<!-- GROWTH AUDIT LEAD FORM -->
+<section id="audit">
+ <div class="wrap">
+  <div class="sec-head">
+   <span class="eyebrow reveal">Free · no obligation</span>
+   <h2 class="reveal">Request your <span class="accent-text">Growth Audit</span></h2>
+   <p class="reveal">Six quick questions. I'll review your answers and show you where your business is leaking growth, on a free call.</p>
+  </div>
+  <form id="auditForm" class="audit-form reveal" novalidate>
+   <div class="af-grid">
+    <label class="af"><span>Your name *</span><input name="name" autocomplete="name" required></label>
+    <label class="af"><span>Email *</span><input name="email" type="email" autocomplete="email" required></label>
+    <label class="af"><span>Phone <em>(optional)</em></span><input name="phone" autocomplete="tel"></label>
+    <label class="af"><span>Your role</span><select name="role"><option value="">Choose…</option><option>Solo agent</option><option>Team leader</option><option>Broker-owner</option><option>Other</option></select></label>
+    <label class="af"><span>Team size</span><select name="team"><option value="">Choose…</option><option>Just me</option><option>2–5</option><option>6–15</option><option>15+</option></select></label>
+    <label class="af"><span>How fast do new leads get a response today?</span><select name="response"><option value="">Choose…</option><option>Within minutes</option><option>Within an hour</option><option>Same day</option><option>Honestly, not sure</option></select></label>
+    <label class="af"><span>Running Facebook / Instagram ads?</span><select name="ads"><option value="">Choose…</option><option>Yes, actively</option><option>On and off</option><option>Not yet</option></select></label>
+    <label class="af"><span>Biggest frustration right now?</span><select name="pain"><option value="">Choose…</option><option>Leads slipping through</option><option>Wasting ad spend</option><option>No time to manage it</option><option>Not enough appointments</option><option>Not sure what's working</option></select></label>
+    <label class="af full"><span>What would a big win in the next 90 days look like?</span><textarea name="goal" rows="2" placeholder="In your words…"></textarea></label>
+   </div>
+   <input type="text" name="website" class="af-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+   <div class="af-foot"><button type="submit" class="btn btn-primary" id="afSubmit">Send my Growth Audit request</button><span id="afMsg" class="af-msg"></span></div>
+  </form>
+ </div>
+</section>
+
 <section class="final">
  <div class="wrap">
   <div class="band-green final-box reveal">
    <h2>Where are you <span style="color:var(--gold-l)" data-edit="final_h2hi">leaking growth?</span></h2>
    <p data-edit="final_p">Let's find out. Book a Growth Audit and I'll show you the opportunities hiding in your business right now.</p>
    <div class="hero-cta" style="justify-content:center">
-    <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="final_cta1">Book a Growth Audit</span></a>
+    <a class="btn btn-gold" href="#audit"><span data-edit="final_cta1">Book a Growth Audit</span></a>
     <a class="btn btn-ghost-l" href="mailto:Macrandleacres@gmail.com"><span data-edit="final_cta2">Email Jeff</span></a>
     <a class="btn btn-cream" href="tel:+18622547839"><span data-edit="final_cta3">Call Now</span></a>
    </div>
@@ -825,6 +869,7 @@ footer{position:relative}
  <button class="ab-edit" type="button">✎ Edit page</button>
  <a class="ab-logout" href="/admin/scorecards">📊 Scorecards</a>
  <a class="ab-logout" href="/admin/analytics">📈 Visits</a>
+ <a class="ab-logout" href="/admin/leads">📥 Leads</a>
  <a class="ab-logout" href="/admin/logout">Log out</a>
 </div>
 <div id="editBanner">
@@ -845,6 +890,22 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
   if((a.getAttribute('href')||'').indexOf('calendar.')>-1){
     if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','book_call_click');}
 });
+
+/* Growth Audit form -> /api/lead */
+(function(){var f=document.getElementById('auditForm');if(!f)return;
+  f.addEventListener('submit',function(e){e.preventDefault();
+    var b=document.getElementById('afSubmit'),msg=document.getElementById('afMsg');
+    var d={};['name','email','phone','role','team','response','ads','pain','goal','website'].forEach(function(k){var el=f.elements[k];d[k]=el?el.value.trim():'';});
+    if(!d.name||d.email.indexOf('@')<0){msg.textContent='Please add your name and a valid email.';return;}
+    msg.textContent='';b.disabled=true;b.textContent='Sending…';
+    fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)})
+      .then(function(r){return r.json();}).then(function(j){
+        if(j.ok){if(window.fbq)fbq('track','Lead');if(window.gtag)gtag('event','audit_request');
+          f.innerHTML='<div class="af-done"><div class="af-ic">🌱</div><h3>Thanks, '+(d.name.split(' ')[0]||'there')+'!</h3><p>I will personally review your answers and reach out within one business day.</p></div>';}
+        else{b.disabled=false;b.textContent='Send my Growth Audit request';msg.textContent=j.error||'Something went wrong, please try again.';}
+      }).catch(function(){b.disabled=false;b.textContent='Send my Growth Audit request';msg.textContent='Network error, please try again.';});
+  });
+})();
 
 document.getElementById('hamb').addEventListener('click',function(){
  var nl=document.querySelector('.nav-links');

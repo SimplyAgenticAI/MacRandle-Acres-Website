@@ -27,7 +27,7 @@ PAGES = {
     "hub":  {"html": "hub.html",   "content": "hub_content.json"},
 }
 BLOCKED_FILES = {"app.py", "requirements.txt", ".gitignore", "render.yaml", "README.md",
-                 "index.html", "content.json", "hub_content.json", "scorecards.json", "visits.json"}
+                 "index.html", "content.json", "hub_content.json", "scorecards.json", "visits.json", "leads.json"}
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
@@ -584,6 +584,98 @@ td{padding:8px 6px;border-bottom:1px solid rgba(35,79,61,.08)}td:last-child{text
 </div>
 <div class="panel"><h2>Devices</h2><div class="dev"><span>&#128241; Mobile: <b>__MOB__</b></span><span>&#128187; Desktop: <b>__DESK__</b></span></div>
 <div class="note">Cookieless &amp; privacy-friendly, no personal data stored. Counts reset if the server redeploys (free tier). Want permanent, richer tracking (traffic sources, ad conversions)? Ask me to add Google Analytics or your Meta Pixel.</div></div>
+</div></body></html>"""
+
+
+# ========== Growth Audit lead capture ==========
+LEADS_PATH = os.path.join(BASE, "leads.json")
+_leads_lock = threading.Lock()
+LEAD_QS = [("role", "Role"), ("team", "Team size"), ("response", "Lead response time"),
+           ("ads", "Running ads"), ("pain", "Biggest frustration"), ("goal", "90-day win")]
+
+
+def load_leads():
+    try:
+        with open(LEADS_PATH, encoding="utf-8") as f:
+            d = json.load(f)
+            return d if isinstance(d, list) else []
+    except Exception:
+        return []
+
+
+@app.route("/api/lead", methods=["POST"])
+def api_lead():
+    data = request.get_json(silent=True) or {}
+    if str(data.get("website", "")).strip():          # honeypot -> silently drop bots
+        return jsonify(ok=True)
+    name = str(data.get("name", "")).strip()[:120]
+    email = str(data.get("email", "")).strip()[:160]
+    if not name or "@" not in email or "." not in email:
+        return jsonify(ok=False, error="Please add your name and a valid email."), 400
+    rec = {"t": datetime.datetime.utcnow().isoformat(timespec="seconds"),
+           "name": name, "email": email, "phone": str(data.get("phone", "")).strip()[:40]}
+    for key, _ in LEAD_QS:
+        rec[key] = str(data.get(key, "")).strip()[:600]
+    with _leads_lock:
+        v = load_leads()
+        v.append(rec)
+        if len(v) > 2000:
+            v = v[-2000:]
+        try:
+            with open(LEADS_PATH, "w", encoding="utf-8") as f:
+                json.dump(v, f, ensure_ascii=False)
+        except Exception:
+            pass
+    return jsonify(ok=True)
+
+
+@app.route("/admin/leads")
+def admin_leads():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/leads")
+    v = load_leads()
+    cards = ""
+    for r in reversed(v):
+        ans = ""
+        for key, lbl in LEAD_QS:
+            val = r.get(key, "")
+            if val:
+                ans += "<div class='ans'><b>%s:</b> %s</div>" % (lbl, _esc(val))
+        phone = ""
+        if r.get("phone"):
+            phone = " &middot; <a class='le' href='tel:%s'>%s</a>" % (_esc(r["phone"]), _esc(r["phone"]))
+        cards += ("<div class='lead'><div class='lh'><div class='lhl'>"
+                  "<span class='ln'>%s</span><a class='le' href='mailto:%s'>%s</a>%s</div>"
+                  "<span class='lt'>%s</span></div>%s</div>") % (
+                  _esc(r.get("name", "")), _esc(r.get("email", "")), _esc(r.get("email", "")),
+                  phone, _esc(r.get("t", "")[:16].replace("T", " ")), ans)
+    if not cards:
+        cards = "<div style='opacity:.5;padding:24px 4px'>No leads yet. They'll appear here the moment someone submits the Growth Audit form.</div>"
+    return Response(LEADS_HTML.replace("__COUNT__", str(len(v))).replace("__CARDS__", cards), mimetype="text/html")
+
+
+LEADS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Leads</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:26px 16px}
+.wrap{max-width:720px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decoration:none}
+.count{font-size:13px;color:#5c635e;margin-bottom:16px}
+.lead{background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:14px;padding:18px 20px;box-shadow:0 8px 22px rgba(35,49,40,.06);margin-bottom:14px}
+.lh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.lhl{display:flex;flex-direction:column;gap:2px}
+.ln{font-weight:800;font-size:17px;color:#234F3D}
+.le{font-size:13px;color:#a97f2a;font-weight:600;text-decoration:none}
+.lt{font-size:11.5px;color:#8a8f88;white-space:nowrap}
+.ans{font-size:13.5px;color:#3a4038;padding:4px 0;border-top:1px solid rgba(35,79,61,.07)}
+.ans b{color:#234F3D}
+</style></head><body><div class="wrap">
+<div class="top"><h1>Growth Audit leads</h1><a class="back" href="/">&larr; Site</a></div>
+<div class="count">__COUNT__ total</div>
+__CARDS__
 </div></body></html>"""
 
 
