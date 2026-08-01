@@ -22,6 +22,14 @@ from flask import (Flask, request, session, redirect, jsonify,
                    send_from_directory, Response)
 
 BASE = os.path.dirname(os.path.abspath(__file__))
+# Data lives in DATA_DIR when a persistent disk is mounted (survives redeploys);
+# falls back to the app folder otherwise.
+DATA = (os.getenv("DATA_DIR") or "").strip() or BASE
+try:
+    os.makedirs(DATA, exist_ok=True)
+except Exception:
+    DATA = BASE
+SITE = (os.getenv("SITE_URL") or "https://macrandleacres.com").rstrip("/")
 PAGES = {
     "main": {"html": "index.html", "content": "content.json"},
     "hub":  {"html": "hub.html",   "content": "hub_content.json"},
@@ -33,10 +41,66 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
 ADMIN_PASSWORD = (os.getenv("ADMIN_PASSWORD") or "").strip()
 
+import time as _time
+
+
+@app.after_request
+def _security_headers(resp):
+    resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    resp.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    resp.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+    return resp
+
+
+def client_ip():
+    xff = request.headers.get("X-Forwarded-For", "")
+    return (xff.split(",")[0].strip() if xff else request.remote_addr) or "?"
+
+
+_RL = {}
+
+
+def rate_ok(bucket, key, limit, window):
+    """Simple in-memory rate limit: <=limit events per window seconds per key."""
+    now = _time.time()
+    d = _RL.setdefault(bucket, {})
+    hits = [t for t in d.get(key, []) if now - t < window]
+    if len(hits) >= limit:
+        d[key] = hits
+        return False
+    hits.append(now)
+    d[key] = hits
+    if len(d) > 4000:
+        for k in list(d):
+            if not d[k] or now - d[k][-1] > window:
+                d.pop(k, None)
+    return True
+
+
+@app.route("/robots.txt")
+def robots_txt():
+    return Response("User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: %s/sitemap.xml\n" % SITE,
+                    mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    urls = "".join("<url><loc>%s%s</loc></url>" % (SITE, u) for u in ("/", "/hub", "/privacy"))
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
+    return Response(xml, mimetype="application/xml")
+
+
+@app.route("/privacy")
+def privacy():
+    return Response(PRIVACY_HTML.replace("__SITE__", SITE), mimetype="text/html")
+
 
 # ---------- content store ----------
 def _content_path(page):
-    return os.path.join(BASE, PAGES[page]["content"])
+    return os.path.join(DATA, PAGES[page]["content"])
 
 
 def load_content(page="main"):
@@ -162,6 +226,8 @@ def admin_login():
     if not ADMIN_PASSWORD:
         return _login_page("Editing isn't configured yet — set the ADMIN_PASSWORD environment variable.", nxt), 200
     if request.method == "POST":
+        if not rate_ok("login", client_ip(), 8, 900):
+            return _login_page("Too many attempts. Please wait a few minutes and try again.", nxt), 429
         if request.form.get("password", "") == ADMIN_PASSWORD:
             session["admin"] = True
             return redirect(nxt)
@@ -223,7 +289,7 @@ a{color:#e0b862;font-size:12px;display:inline-block;margin-top:16px;text-decorat
 import datetime
 from html import escape as _esc
 
-SCORECARDS_PATH = os.path.join(BASE, "scorecards.json")
+SCORECARDS_PATH = os.path.join(DATA, "scorecards.json")
 SCORE_METRICS = [
     ("reached", "People reached", "\U0001F440", "Meta Ads Manager → Reach (+ Business Suite for organic)"),
     ("clicks", "Link clicks", "\U0001F446", "Meta Ads Manager → Link clicks"),
@@ -454,7 +520,7 @@ document.querySelectorAll('.sc-num').forEach(function(el){
 import threading
 from urllib.parse import urlparse as _urlparse
 
-VISITS_PATH = os.path.join(BASE, "visits.json")
+VISITS_PATH = os.path.join(DATA, "visits.json")
 _visits_lock = threading.Lock()
 _BOT_RE = re.compile(r"bot|crawl|spider|slurp|bing|preview|monitor|curl|wget|python-requests|facebookexternalhit|headless|render|uptime", re.I)
 _TRACK_EXACT = {"/", "/hub"}
@@ -588,7 +654,7 @@ td{padding:8px 6px;border-bottom:1px solid rgba(35,79,61,.08)}td:last-child{text
 
 
 # ========== Growth Audit lead capture ==========
-LEADS_PATH = os.path.join(BASE, "leads.json")
+LEADS_PATH = os.path.join(DATA, "leads.json")
 _leads_lock = threading.Lock()
 LEAD_QS = [("role", "Role"), ("team", "Team size"), ("response", "Lead response time"),
            ("ads", "Running ads"), ("pain", "Biggest frustration"), ("goal", "90-day win")]
@@ -603,8 +669,42 @@ def load_leads():
         return []
 
 
+def send_lead_email(rec):
+    """Email the new lead to LEAD_EMAIL when SMTP is configured (else no-op)."""
+    host = os.getenv("SMTP_HOST", "").strip()
+    user = os.getenv("SMTP_USER", "").strip()
+    pw = os.getenv("SMTP_PASS", "").strip()
+    if not (host and user and pw):
+        return
+    to = os.getenv("LEAD_EMAIL", "").strip() or user
+    try:
+        import smtplib
+        from email.message import EmailMessage
+        m = EmailMessage()
+        m["Subject"] = "New Growth Audit lead: %s" % rec.get("name", "")
+        m["From"] = user
+        m["To"] = to
+        lines = ["New lead from macrandleacres.com", "",
+                 "Name:  %s" % rec.get("name", ""),
+                 "Email: %s" % rec.get("email", ""),
+                 "Phone: %s" % rec.get("phone", "")]
+        for key, lbl in LEAD_QS:
+            if rec.get(key):
+                lines.append("%s: %s" % (lbl, rec[key]))
+        lines += ["", "See all leads: %s/admin/leads" % SITE]
+        m.set_content("\n".join(lines))
+        with smtplib.SMTP(host, int(os.getenv("SMTP_PORT", "587")), timeout=15) as s:
+            s.starttls()
+            s.login(user, pw)
+            s.send_message(m)
+    except Exception:
+        pass
+
+
 @app.route("/api/lead", methods=["POST"])
 def api_lead():
+    if not rate_ok("lead", client_ip(), 6, 600):
+        return jsonify(ok=False, error="Too many submissions, please try again in a few minutes."), 429
     data = request.get_json(silent=True) or {}
     if str(data.get("website", "")).strip():          # honeypot -> silently drop bots
         return jsonify(ok=True)
@@ -626,6 +726,7 @@ def api_lead():
                 json.dump(v, f, ensure_ascii=False)
         except Exception:
             pass
+    threading.Thread(target=send_lead_email, args=(rec,), daemon=True).start()
     return jsonify(ok=True)
 
 
@@ -673,9 +774,47 @@ h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decorat
 .ans{font-size:13.5px;color:#3a4038;padding:4px 0;border-top:1px solid rgba(35,79,61,.07)}
 .ans b{color:#234F3D}
 </style></head><body><div class="wrap">
-<div class="top"><h1>Growth Audit leads</h1><a class="back" href="/">&larr; Site</a></div>
+<div class="top"><h1>Growth Audit leads</h1><div><a class="back" href="/admin/leads/export.csv" style="margin-right:16px;font-weight:700">&#11015; Export CSV</a><a class="back" href="/">&larr; Site</a></div></div>
 <div class="count">__COUNT__ total</div>
 __CARDS__
+</div></body></html>"""
+
+
+@app.route("/admin/leads/export.csv")
+def admin_leads_csv():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/leads")
+    import csv
+    import io
+    out = io.StringIO()
+    w = csv.writer(out)
+    w.writerow(["date", "name", "email", "phone"] + [lbl for _, lbl in LEAD_QS])
+    for r in load_leads():
+        w.writerow([r.get("t", ""), r.get("name", ""), r.get("email", ""), r.get("phone", "")]
+                   + [r.get(k, "") for k, _ in LEAD_QS])
+    resp = Response(out.getvalue(), mimetype="text/csv")
+    resp.headers["Content-Disposition"] = "attachment; filename=leads.csv"
+    return resp
+
+
+PRIVACY_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Privacy Policy, MacRandle Acres</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.7;padding:40px 18px}
+.wrap{max-width:680px;margin:0 auto}h1{color:#234F3D;font-size:28px;margin-bottom:6px}.sub{color:#8a8f88;font-size:13px;margin-bottom:24px}
+h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size:15px}a{color:#a97f2a;font-weight:600}
+.back{display:inline-block;margin-top:26px;font-size:14px}</style></head><body><div class="wrap">
+<h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle</div>
+<p>This site is operated by Jeff Randle (MacRandle Acres). We respect your privacy and keep things simple.</p>
+<h2>What we collect</h2>
+<p>If you submit the Growth Audit form, we collect the name, email, phone, and answers you provide. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
+<h2>How we use it</h2>
+<p>Only to respond to your request, prepare your growth audit, and improve the site. We do not sell your information.</p>
+<h2>Your choices</h2>
+<p>To access, correct, or delete your information, email <a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> and we will take care of it.</p>
+<h2>Contact</h2>
+<p><a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> &middot; Salisbury, MD.</p>
+<a class="back" href="/">&larr; Back to site</a>
 </div></body></html>"""
 
 
