@@ -1020,6 +1020,53 @@ def admin_bookings():
     return Response(BOOKINGS_HTML.replace("__ROWS__", rows), mimetype="text/html")
 
 
+@app.route("/admin/smtp-test")
+def admin_smtp_test():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/smtp-test")
+    host = os.getenv("SMTP_HOST", "").strip()
+    user = os.getenv("SMTP_USER", "").strip()
+    pw = os.getenv("SMTP_PASS", "")
+    port = os.getenv("SMTP_PORT", "587").strip()
+    frm = os.getenv("SMTP_FROM", "").strip() or user
+    ssl_env = os.getenv("SMTP_SSL", "").strip()
+    lines = ["MacRandle Acres - SMTP diagnostic", "=" * 34,
+             "SMTP_HOST   = %r" % host,
+             "SMTP_USER   = %r" % user,
+             "SMTP_PORT   = %r" % port,
+             "SMTP_FROM   = %r" % frm,
+             "SMTP_SSL    = %r" % ssl_env,
+             "LEAD_EMAIL  = %r  (alert goes here)" % ORG_EMAIL,
+             "SMTP_PASS   set=%s  length=%d  contains_space=%s"
+             % (bool(pw.strip()), len(pw), (" " in pw.strip()))]
+    if not (host and user and pw.strip()):
+        lines.append("\nRESULT: One of HOST/USER/PASS is missing -> emails are OFF.")
+        return Response("\n".join(lines), mimetype="text/plain")
+    try:
+        import smtplib
+        from email.message import EmailMessage
+        p = int(port)
+        use_ssl = ssl_env.lower() in ("1", "true", "yes") or p == 465
+        m = EmailMessage()
+        m["From"] = frm
+        m["To"] = ORG_EMAIL
+        m["Subject"] = "MacRandle SMTP test - it works"
+        m.set_content("If you can read this, your booking emails are working.")
+        if use_ssl:
+            s = smtplib.SMTP_SSL(host, p, timeout=20)
+        else:
+            s = smtplib.SMTP(host, p, timeout=20)
+            s.starttls()
+        s.login(user, pw.strip())
+        s.send_message(m)
+        s.quit()
+        lines.append("\nRESULT: OK - test email sent to %s. Check inbox + spam." % ORG_EMAIL)
+    except Exception as e:
+        lines.append("\nRESULT: FAILED")
+        lines.append("%s: %s" % (type(e).__name__, e))
+    return Response("\n".join(lines), mimetype="text/plain")
+
+
 @app.route("/admin/bookings/delete", methods=["POST"])
 def admin_bookings_delete():
     if not session.get("admin"):
