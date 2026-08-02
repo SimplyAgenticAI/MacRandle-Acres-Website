@@ -17,6 +17,8 @@ Environment variables (set these on Render → Environment):
 import os
 import re
 import json
+import hmac
+import hashlib
 
 from flask import (Flask, request, session, redirect, jsonify,
                    send_from_directory, Response)
@@ -872,6 +874,12 @@ def gen_slots():
     return out
 
 
+@app.route("/healthz")
+def healthz():
+    # Lightweight, untracked endpoint for uptime pings (keeps the free instance warm).
+    return Response("ok", mimetype="text/plain")
+
+
 @app.route("/api/slots")
 def api_slots():
     return jsonify(ok=True, tz=BOOK_TZ_LABEL, days=gen_slots())
@@ -903,6 +911,20 @@ def make_ics(bk):
         "ORGANIZER;CN=Jeff Randle:mailto:" + ORG_EMAIL,
         "ATTENDEE;CN=%s;RSVP=TRUE:mailto:%s" % (_ics_esc(bk.get("name", "")), _ics_esc(bk.get("email", ""))),
         "END:VEVENT", "END:VCALENDAR"])
+
+
+def _cancel_token(slot, email):
+    key = app.secret_key
+    if isinstance(key, str):
+        key = key.encode("utf-8")
+    return hmac.new(key, ("%s|%s" % (slot, email or "")).encode("utf-8"),
+                    hashlib.sha256).hexdigest()[:32]
+
+
+def _cancel_url(bk):
+    from urllib.parse import quote
+    return "%s/book/cancel?s=%s&t=%s" % (
+        SITE, quote(bk.get("slot", "")), _cancel_token(bk.get("slot", ""), bk.get("email", "")))
 
 
 def google_cal_link(bk):
@@ -952,7 +974,8 @@ def send_booking_emails(bk):
                 m.set_content(
                     "Hi %s,\n\nYour Growth Audit call with Jeff Randle is booked for %s.\n\n"
                     "The calendar invite is attached. Prefer one click? Add it here:\n%s\n\n"
-                    "Talk soon!\nMacRandle Acres" % (first, when, gcal))
+                    "Need to reschedule or cancel? Use this link:\n%s\n\n"
+                    "Talk soon!\nMacRandle Acres" % (first, when, gcal, _cancel_url(bk)))
             m.add_attachment(ics, maintype="text", subtype="calendar",
                              filename="invite.ics", params={"method": "REQUEST"})
             if use_ssl:
@@ -964,6 +987,41 @@ def send_booking_emails(bk):
                     s.starttls()
                     s.login(user, pw)
                     s.send_message(m)
+    except Exception:
+        pass
+
+
+def send_cancel_notice(bk):
+    """Notify Jeff that a client cancelled (best-effort, no-op without SMTP)."""
+    host = os.getenv("SMTP_HOST", "").strip()
+    user = os.getenv("SMTP_USER", "").strip()
+    pw = "".join(os.getenv("SMTP_PASS", "").split())
+    if not (host and user and pw):
+        return
+    sender = os.getenv("SMTP_FROM", "").strip() or user
+    port = int(os.getenv("SMTP_PORT", "587"))
+    use_ssl = os.getenv("SMTP_SSL", "").strip().lower() in ("1", "true", "yes") or port == 465
+    try:
+        import smtplib
+        from email.message import EmailMessage
+        when = _fmt_when(datetime.datetime.fromisoformat(bk["slot"]))
+        m = EmailMessage()
+        m["From"] = sender
+        m["To"] = ORG_EMAIL
+        m["Reply-To"] = bk.get("email", ORG_EMAIL)
+        m["Subject"] = "Call CANCELLED: %s (%s)" % (bk.get("name", ""), when)
+        m.set_content("A client cancelled their Growth Audit call. The time is now open again.\n\n"
+                      "Name:  %s\nEmail: %s\nPhone: %s\nWas:   %s\n"
+                      % (bk.get("name", ""), bk.get("email", ""), bk.get("phone", "") or "-", when))
+        if use_ssl:
+            with smtplib.SMTP_SSL(host, port, timeout=15) as s:
+                s.login(user, pw)
+                s.send_message(m)
+        else:
+            with smtplib.SMTP(host, port, timeout=15) as s:
+                s.starttls()
+                s.login(user, pw)
+                s.send_message(m)
     except Exception:
         pass
 
@@ -997,7 +1055,7 @@ def api_book():
             pass
     threading.Thread(target=send_booking_emails, args=(bk,), daemon=True).start()
     return jsonify(ok=True, when=_fmt_when(datetime.datetime.fromisoformat(slot)),
-                   gcal=google_cal_link(bk), ics=make_ics(bk))
+                   gcal=google_cal_link(bk), ics=make_ics(bk), cancel=_cancel_url(bk))
 
 
 @app.route("/book")
@@ -1005,6 +1063,41 @@ def book_page():
     resp = Response(BOOK_HTML, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
     return resp
+
+
+@app.route("/book/cancel", methods=["GET", "POST"])
+def book_cancel():
+    slot = _clean_line(request.values.get("s", ""))
+    token = _clean_line(request.values.get("t", ""))
+    bk = next((b for b in load_bookings() if b.get("slot") == slot), None)
+    valid = bk is not None and hmac.compare_digest(token, _cancel_token(slot, bk.get("email", "")))
+
+    def page(msg, btn=""):
+        html = CANCEL_HTML.replace("__MSG__", msg).replace("__BTN__", btn)
+        return Response(html, mimetype="text/html")
+
+    if not valid:
+        return page("This cancellation link is invalid, or the booking has already been cancelled. "
+                    "Need a time? <a href='/book'>Book a call</a>.")
+    if request.method == "POST":
+        with _leads_lock:
+            remaining = [b for b in load_bookings() if b.get("slot") != slot]
+            try:
+                with open(BOOKINGS_PATH, "w", encoding="utf-8") as f:
+                    json.dump(remaining, f, ensure_ascii=False)
+            except Exception:
+                pass
+        threading.Thread(target=send_cancel_notice, args=(bk,), daemon=True).start()
+        return page("Your call has been cancelled and the time is freed up. Thanks for letting us know.",
+                    "<a class='btn' href='/book'>Book a new time</a>")
+    when = _fmt_when(datetime.datetime.fromisoformat(slot))
+    btn = ("<form method='post'>"
+           "<input type='hidden' name='s' value='%s'>"
+           "<input type='hidden' name='t' value='%s'>"
+           "<button class='btn danger' type='submit'>Yes, cancel my call</button></form>"
+           "<a class='sub' href='/book'>No, keep it &amp; pick a different time instead</a>"
+           % (_esc(slot), _esc(token)))
+    return page("You're about to cancel your Growth Audit call on <b>%s</b>." % _esc(when), btn)
 
 
 @app.route("/admin/bookings")
@@ -1059,6 +1152,12 @@ def admin_smtp_test():
              % (len(pw), len(pw_norm))]
     if not (host and user and pw_norm):
         lines.append("\nRESULT: One of HOST/USER/PASS is missing -> emails are OFF.")
+        return Response("\n".join(lines), mimetype="text/plain")
+
+    if request.args.get("send") != "1":
+        lines.append("\nConfig looks complete. No test email sent (safe view).")
+        lines.append("To actually send a live test email to %s, load:" % ORG_EMAIL)
+        lines.append("    /admin/smtp-test?send=1")
         return Response("\n".join(lines), mimetype="text/plain")
 
     def _attempt(mode):
@@ -1201,7 +1300,7 @@ function wireForm(){
             '<div class="cal-btns">'+
             '<a class="cbtn g" href="'+esc(j.gcal||'#')+'" target="_blank" rel="noopener">📅 Add to Google Calendar</a>'+
             '<a class="cbtn i" href="'+icsHref+'" download="growth-audit.ics">⬇ Apple / Outlook (.ics)</a>'+
-            '</div><p class="cn">Talk soon!</p></div>';
+            '</div><p class="cn">Talk soon! Need to change it? <a href="'+esc(j.cancel||'#')+'">Reschedule or cancel</a>.</p></div>';
           window.scrollTo({top:0,behavior:'smooth'});
         } else { b.disabled=false;b.textContent='Confirm booking';
           if(j.error&&j.error.indexOf('available')>-1||j.error&&j.error.indexOf('taken')>-1){m.textContent=j.error+' Refreshing times…';setTimeout(function(){location.reload();},1500);}
@@ -1232,6 +1331,29 @@ tr.upcoming .tg{background:rgba(35,79,61,.1);color:#234F3D}tr.past .tg{backgroun
 <div class="top"><h1>Booked calls</h1><a class="back" href="/">&larr; Site</a></div>
 <table><thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Calendar</th></tr></thead><tbody>__ROWS__</tbody></table>
 </div></body></html>"""
+
+
+CANCEL_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Manage your call - MacRandle Acres</title>
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:40px 16px;
+  background-image:radial-gradient(900px 500px at 50% -10%,rgba(199,154,59,.12),transparent 60%)}
+.card{max-width:480px;margin:0 auto;background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:22px;
+  box-shadow:0 22px 55px rgba(35,49,40,.14);padding:34px 30px;text-align:center}
+.mark{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fbf7ea,#d8cfb0);
+  display:grid;place-items:center;font-weight:800;color:#234F3D;margin:0 auto 16px}
+h1{font-size:22px;color:#234F3D;margin-bottom:10px}p.m{color:#5c635e;font-size:16px;margin-bottom:22px}
+.btn{display:inline-block;padding:13px 22px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;
+  text-decoration:none;border:none;color:#f6f4ec;background:linear-gradient(135deg,#2a5c47,#1a3b2d)}
+.btn.danger{background:linear-gradient(135deg,#c0392b,#8e2a20)}
+.sub{display:block;margin-top:16px;font-size:13.5px;color:#8a918b}
+a{color:#a97f2a;font-weight:600}
+</style></head><body>
+<div class="card"><div class="mark">M</div><h1>MacRandle Acres</h1>
+<p class="m">__MSG__</p>__BTN__</div>
+</body></html>"""
 
 
 if __name__ == "__main__":
