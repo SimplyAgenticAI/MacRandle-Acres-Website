@@ -19,6 +19,7 @@ import re
 import json
 import hmac
 import hashlib
+import secrets
 
 from flask import (Flask, request, session, redirect, jsonify,
                    send_from_directory, Response)
@@ -901,16 +902,24 @@ def make_ics(bk):
     end = start + datetime.timedelta(minutes=BOOK_SLOT_MIN)
     def z(dt):
         return dt.astimezone(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    return "\r\n".join([
+    join = meeting_url(bk)
+    desc = "Growth Audit call with Jeff Randle (MacRandle Acres)."
+    if join:
+        desc += " Join the video call: " + join
+    parts = [
         "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//MacRandle Acres//Booking//EN", "METHOD:REQUEST",
         "BEGIN:VEVENT", "UID:%s@macrandleacres.com" % bk.get("slot", ""),
         "DTSTAMP:" + z(datetime.datetime.now(datetime.timezone.utc)),
         "DTSTART:" + z(start), "DTEND:" + z(end),
         "SUMMARY:Growth Audit Call - MacRandle Acres",
-        "DESCRIPTION:Growth Audit call with Jeff Randle (MacRandle Acres).",
+        "DESCRIPTION:" + _ics_esc(desc),
         "ORGANIZER;CN=Jeff Randle:mailto:" + ORG_EMAIL,
         "ATTENDEE;CN=%s;RSVP=TRUE:mailto:%s" % (_ics_esc(bk.get("name", "")), _ics_esc(bk.get("email", ""))),
-        "END:VEVENT", "END:VCALENDAR"])
+    ]
+    if join:
+        parts += ["LOCATION:" + _ics_esc(join), "URL:" + join]
+    parts += ["END:VEVENT", "END:VCALENDAR"]
+    return "\r\n".join(parts)
 
 
 def _cancel_token(slot, email):
@@ -927,18 +936,29 @@ def _cancel_url(bk):
         SITE, quote(bk.get("slot", "")), _cancel_token(bk.get("slot", ""), bk.get("email", "")))
 
 
+def meeting_url(bk):
+    room = bk.get("room", "")
+    return ("%s/m/%s" % (SITE, room)) if room else ""
+
+
 def google_cal_link(bk):
     from urllib.parse import quote
     start = datetime.datetime.fromisoformat(bk["slot"])
     end = start + datetime.timedelta(minutes=BOOK_SLOT_MIN)
     def z(dt):
         return dt.astimezone(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    join = meeting_url(bk)
     details = "Growth Audit call with Jeff Randle (MacRandle Acres). Guest: %s <%s>" % (
         bk.get("name", ""), bk.get("email", ""))
-    return ("https://calendar.google.com/calendar/render?action=TEMPLATE"
-            "&text=" + quote("Growth Audit Call - MacRandle Acres")
-            + "&dates=" + z(start) + "/" + z(end)
-            + "&details=" + quote(details))
+    if join:
+        details += "\nJoin the video call: " + join
+    url = ("https://calendar.google.com/calendar/render?action=TEMPLATE"
+           "&text=" + quote("Growth Audit Call - MacRandle Acres")
+           + "&dates=" + z(start) + "/" + z(end)
+           + "&details=" + quote(details))
+    if join:
+        url += "&location=" + quote(join)
+    return url
 
 
 def send_booking_emails(bk):
@@ -964,18 +984,23 @@ def send_booking_emails(bk):
             m["Reply-To"] = bk["email"] if mine else ORG_EMAIL
             if mine:
                 m["Subject"] = "New call booked: %s (%s)" % (bk["name"], when)
+                join = meeting_url(bk)
                 m.set_content(
                     "New Growth Audit call booked.\n\n"
                     "Name:  %s\nEmail: %s\nPhone: %s\nWhen:  %s\n\n"
+                    "Join the video call:\n%s\n\n"
                     "Add it to your calendar:\n%s\n"
-                    % (bk["name"], bk["email"], bk.get("phone", "") or "-", when, gcal))
+                    % (bk["name"], bk["email"], bk.get("phone", "") or "-", when, join or "(n/a)", gcal))
             else:
                 m["Subject"] = "Your Growth Audit call is booked"
+                join = meeting_url(bk)
+                join_line = ("Join the video call here (works right in your browser):\n%s\n\n" % join) if join else ""
                 m.set_content(
                     "Hi %s,\n\nYour Growth Audit call with Jeff Randle is booked for %s.\n\n"
+                    "%s"
                     "The calendar invite is attached. Prefer one click? Add it here:\n%s\n\n"
                     "Need to reschedule or cancel? Use this link:\n%s\n\n"
-                    "Talk soon!\nMacRandle Acres" % (first, when, gcal, _cancel_url(bk)))
+                    "Talk soon!\nMacRandle Acres" % (first, when, join_line, gcal, _cancel_url(bk)))
             m.add_attachment(ics, maintype="text", subtype="calendar",
                              filename="invite.ics", params={"method": "REQUEST"})
             if use_ssl:
@@ -1042,7 +1067,8 @@ def api_book():
     if not any(slot == s["iso"] for day in gen_slots() for s in day["slots"]):
         return jsonify(ok=False, error="That time isn't available, please pick another."), 409
     bk = {"t": datetime.datetime.utcnow().isoformat(timespec="seconds"), "slot": slot,
-          "name": name, "email": email, "phone": phone}
+          "name": name, "email": email, "phone": phone,
+          "room": "MacRandleAcres-" + secrets.token_urlsafe(9)}
     with _leads_lock:
         v = load_bookings()
         if any(b.get("slot") == slot for b in v):
@@ -1055,13 +1081,37 @@ def api_book():
             pass
     threading.Thread(target=send_booking_emails, args=(bk,), daemon=True).start()
     return jsonify(ok=True, when=_fmt_when(datetime.datetime.fromisoformat(slot)),
-                   gcal=google_cal_link(bk), ics=make_ics(bk), cancel=_cancel_url(bk))
+                   gcal=google_cal_link(bk), ics=make_ics(bk), cancel=_cancel_url(bk),
+                   meet=meeting_url(bk))
 
 
 @app.route("/book")
 def book_page():
     resp = Response(BOOK_HTML, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/m/<room>")
+def meeting_page(room):
+    room = re.sub(r"[^A-Za-z0-9_-]", "", room)[:80]
+    if not room:
+        return redirect("/book")
+    bk = next((b for b in load_bookings() if b.get("room") == room), None)
+    when = ""
+    if bk and bk.get("slot"):
+        try:
+            when = _fmt_when(datetime.datetime.fromisoformat(bk["slot"]))
+        except Exception:
+            when = ""
+    html = (MEET_HTML.replace("__ROOM__", room)
+            .replace("__WHEN__", _esc(when) or "Growth Audit call"))
+    resp = Response(html, mimetype="text/html")
+    resp.headers["Cache-Control"] = "no-store"
+    # This page must be allowed to use the camera/mic (the global policy blocks them).
+    resp.headers["Permissions-Policy"] = (
+        'camera=(self "https://meet.jit.si"), microphone=(self "https://meet.jit.si"), '
+        'display-capture=(self "https://meet.jit.si"), fullscreen=(self "https://meet.jit.si"), autoplay=*')
     return resp
 
 
@@ -1114,15 +1164,18 @@ def admin_bookings():
             gl = google_cal_link(b) if b.get("slot") else "#"
         except Exception:
             gl = "#"
+        join = meeting_url(b)
+        join_html = ("<a class='join' href='%s' target='_blank' rel='noopener'>&#127909; Join</a>"
+                     % _esc(join)) if join else ""
         rows += ("<tr class='%s'><td>%s <span class='tg'>%s</span></td><td>%s</td>"
                  "<td><a href='mailto:%s'>%s</a></td><td>%s</td>"
-                 "<td class='act'><a class='addcal' href='%s' target='_blank' rel='noopener'>Add &#8599;</a>"
+                 "<td class='act'>%s<a class='addcal' href='%s' target='_blank' rel='noopener'>Add &#8599;</a>"
                  "<form method='post' action='/admin/bookings/delete' class='delf' "
                  "onsubmit=\"return confirm('Remove this booking? This frees the time slot.')\">"
                  "<input type='hidden' name='slot' value='%s'>"
                  "<button class='del' title='Delete booking'>&#10005;</button></form></td></tr>") % (
                  tag, _esc(when), tag, _esc(b.get("name", "")), _esc(b.get("email", "")),
-                 _esc(b.get("email", "")), _esc(b.get("phone", "")), _esc(gl), _esc(b.get("slot", "")))
+                 _esc(b.get("email", "")), _esc(b.get("phone", "")), join_html, _esc(gl), _esc(b.get("slot", "")))
     if not rows:
         rows = "<tr><td colspan=5 style='opacity:.5'>No calls booked yet.</td></tr>"
     return Response(BOOKINGS_HTML.replace("__ROWS__", rows), mimetype="text/html")
@@ -1246,6 +1299,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .cbtn:hover{transform:translateY(-1px)}
 .cbtn.g{background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;box-shadow:0 6px 18px rgba(26,59,45,.25)}
 .cbtn.i{background:#fff;color:#234F3D;border:1.5px solid #d7ddd6}
+.cbtn.join{background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;box-shadow:0 6px 18px rgba(169,127,42,.3);font-size:15.5px;padding:15px 16px}
 .done .cn{margin-top:16px;font-size:14px;color:#8a918b}
 .empty{padding:26px 4px;color:#5c635e;font-size:15px}
 @media(max-width:560px){.fg{grid-template-columns:1fr}}
@@ -1296,11 +1350,13 @@ function wireForm(){
       .then(function(r){return r.json();}).then(function(j){
         if(j.ok){ if(window.fbq)fbq('track','Schedule'); if(window.gtag)gtag('event','book_call');
           var icsHref='data:text/calendar;charset=utf-8,'+encodeURIComponent(j.ics||'');
-          body.innerHTML='<div class="done"><div class="ic">🌱</div><h2>You\\'re booked!</h2><p>'+esc(j.when)+'. Add it to your calendar so you don\\'t miss it:</p>'+
+          var joinBtn = j.meet ? '<a class="cbtn join" href="'+esc(j.meet)+'" target="_blank" rel="noopener">🎥 Join the video call</a>' : '';
+          body.innerHTML='<div class="done"><div class="ic">🌱</div><h2>You\\'re booked!</h2><p>'+esc(j.when)+'. Your call happens right here on the site \\u2014 no downloads. Save the link:</p>'+
             '<div class="cal-btns">'+
+            joinBtn+
             '<a class="cbtn g" href="'+esc(j.gcal||'#')+'" target="_blank" rel="noopener">📅 Add to Google Calendar</a>'+
             '<a class="cbtn i" href="'+icsHref+'" download="growth-audit.ics">⬇ Apple / Outlook (.ics)</a>'+
-            '</div><p class="cn">Talk soon! Need to change it? <a href="'+esc(j.cancel||'#')+'">Reschedule or cancel</a>.</p></div>';
+            '</div><p class="cn">The join link is also in your email and calendar invite. Need to change it? <a href="'+esc(j.cancel||'#')+'">Reschedule or cancel</a>.</p></div>';
           window.scrollTo({top:0,behavior:'smooth'});
         } else { b.disabled=false;b.textContent='Confirm booking';
           if(j.error&&j.error.indexOf('available')>-1||j.error&&j.error.indexOf('taken')>-1){m.textContent=j.error+' Refreshing times…';setTimeout(function(){location.reload();},1500);}
@@ -1322,6 +1378,8 @@ td,th{text-align:left;padding:12px 14px;border-bottom:1px solid rgba(35,79,61,.0
 a{color:#a97f2a;font-weight:600;text-decoration:none}
 a.addcal{display:inline-block;padding:5px 11px;border:1px solid rgba(35,79,61,.2);border-radius:100px;font-size:12.5px;color:#234F3D}
 a.addcal:hover{background:rgba(35,79,61,.06);border-color:#c79a3b}
+a.join{display:inline-block;padding:5px 12px;border-radius:100px;font-size:12.5px;font-weight:700;color:#2a2005;background:linear-gradient(135deg,#e0b862,#a97f2a);margin-right:8px}
+a.join:hover{filter:brightness(1.05)}
 td.act{white-space:nowrap}.delf{display:inline;margin-left:8px}
 .del{border:none;background:none;color:#c0392b;font-size:14px;cursor:pointer;padding:4px 6px;border-radius:8px;opacity:.55}
 .del:hover{opacity:1;background:rgba(192,57,43,.08)}
@@ -1353,6 +1411,43 @@ a{color:#a97f2a;font-weight:600}
 </style></head><body>
 <div class="card"><div class="mark">M</div><h1>MacRandle Acres</h1>
 <p class="m">__MSG__</p>__BTN__</div>
+</body></html>"""
+
+
+MEET_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Growth Audit call - MacRandle Acres</title>
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:#12261d;color:#f6f4ec;display:flex;flex-direction:column}
+#bar{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:12px 18px;background:linear-gradient(160deg,#26543f,#1a3b2d);border-bottom:1px solid rgba(199,154,59,.25)}
+#bar .mk{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fbf7ea,#d8cfb0);display:grid;place-items:center;font-weight:800;color:#234F3D}
+#bar .t{font-weight:800;font-size:15px;line-height:1.15}#bar .s{font-size:12px;color:#e0b862;font-weight:600}
+#bar .sp{margin-left:auto}#bar a{color:#cfe0d6;font-size:12.5px;text-decoration:none;font-weight:600}#bar a:hover{color:#fff}
+#meet{flex:1 1 auto;min-height:0}
+#fallback{position:absolute;inset:auto 0 0 0;top:58px;display:grid;place-items:center;padding:30px;text-align:center}
+#fallback a{color:#e0b862;font-weight:700}
+</style></head><body>
+<div id="bar"><div class="mk">M</div><div><div class="t">MacRandle Acres</div><div class="s">Growth Audit call &middot; __WHEN__</div></div>
+<div class="sp"></div><a href="https://meet.jit.si/__ROOM__" target="_blank" rel="noopener">Open in new tab &#8599;</a></div>
+<div id="meet"><div id="fallback"><p>Loading your secure video room&hellip;<br><br>If it doesn't appear, <a href="https://meet.jit.si/__ROOM__" target="_blank" rel="noopener">click here to join in a new tab</a>.</p></div></div>
+<script src="https://meet.jit.si/external_api.js"></script>
+<script>
+(function(){
+  try{
+    if(typeof JitsiMeetExternalAPI!=='function'){return;}
+    var mount=document.getElementById('meet'); mount.innerHTML='';
+    var api=new JitsiMeetExternalAPI('meet.jit.si',{
+      roomName:'__ROOM__',
+      parentNode:mount,
+      width:'100%',height:'100%',
+      configOverwrite:{prejoinPageEnabled:true,disableDeepLinking:true,subject:'Growth Audit call'},
+      interfaceConfigOverwrite:{MOBILE_APP_PROMO:false,SHOW_JITSI_WATERMARK:false,SHOW_CHROME_EXTENSION_BANNER:false,DEFAULT_BACKGROUND:'#12261d'}
+    });
+    api.addEventListener('readyToClose',function(){window.location.href='/';});
+  }catch(e){/* fallback link stays visible */}
+})();
+</script>
 </body></html>"""
 
 
