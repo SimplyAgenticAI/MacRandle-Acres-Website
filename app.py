@@ -1008,12 +1008,32 @@ def admin_bookings():
         gl = google_cal_link(b) if b.get("slot") else "#"
         rows += ("<tr class='%s'><td>%s <span class='tg'>%s</span></td><td>%s</td>"
                  "<td><a href='mailto:%s'>%s</a></td><td>%s</td>"
-                 "<td><a class='addcal' href='%s' target='_blank' rel='noopener'>Add &#8599;</a></td></tr>") % (
+                 "<td class='act'><a class='addcal' href='%s' target='_blank' rel='noopener'>Add &#8599;</a>"
+                 "<form method='post' action='/admin/bookings/delete' class='delf' "
+                 "onsubmit=\"return confirm('Remove this booking? This frees the time slot.')\">"
+                 "<input type='hidden' name='slot' value='%s'>"
+                 "<button class='del' title='Delete booking'>&#10005;</button></form></td></tr>") % (
                  tag, _esc(when), tag, _esc(b.get("name", "")), _esc(b.get("email", "")),
-                 _esc(b.get("email", "")), _esc(b.get("phone", "")), _esc(gl))
+                 _esc(b.get("email", "")), _esc(b.get("phone", "")), _esc(gl), _esc(b.get("slot", "")))
     if not rows:
         rows = "<tr><td colspan=5 style='opacity:.5'>No calls booked yet.</td></tr>"
     return Response(BOOKINGS_HTML.replace("__ROWS__", rows), mimetype="text/html")
+
+
+@app.route("/admin/bookings/delete", methods=["POST"])
+def admin_bookings_delete():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/bookings")
+    slot = str(request.form.get("slot", "")).strip()
+    if slot:
+        with _leads_lock:
+            v = [b for b in load_bookings() if b.get("slot") != slot]
+            try:
+                with open(BOOKINGS_PATH, "w", encoding="utf-8") as f:
+                    json.dump(v, f, ensure_ascii=False)
+            except Exception:
+                pass
+    return redirect("/admin/bookings")
 
 
 BOOK_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
@@ -1129,6 +1149,9 @@ td,th{text-align:left;padding:12px 14px;border-bottom:1px solid rgba(35,79,61,.0
 a{color:#a97f2a;font-weight:600;text-decoration:none}
 a.addcal{display:inline-block;padding:5px 11px;border:1px solid rgba(35,79,61,.2);border-radius:100px;font-size:12.5px;color:#234F3D}
 a.addcal:hover{background:rgba(35,79,61,.06);border-color:#c79a3b}
+td.act{white-space:nowrap}.delf{display:inline;margin-left:8px}
+.del{border:none;background:none;color:#c0392b;font-size:14px;cursor:pointer;padding:4px 6px;border-radius:8px;opacity:.55}
+.del:hover{opacity:1;background:rgba(192,57,43,.08)}
 tr.past{opacity:.5}.tg{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:100px;margin-left:6px}
 tr.upcoming .tg{background:rgba(35,79,61,.1);color:#234F3D}tr.past .tg{background:rgba(0,0,0,.06);color:#888}
 </style></head><body><div class="wrap">
