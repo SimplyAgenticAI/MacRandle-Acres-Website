@@ -35,7 +35,8 @@ PAGES = {
     "hub":  {"html": "hub.html",   "content": "hub_content.json"},
 }
 BLOCKED_FILES = {"app.py", "requirements.txt", ".gitignore", "render.yaml", "README.md",
-                 "index.html", "content.json", "hub_content.json", "scorecards.json", "visits.json", "leads.json"}
+                 "index.html", "content.json", "hub_content.json", "scorecards.json", "visits.json",
+                 "leads.json", "bookings.json"}
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
@@ -299,7 +300,7 @@ SCORE_METRICS = [
     ("appointments", "Appointments booked", "\U0001F4C5", "Your CRM or calendar"),
     ("followers", "New followers", "\U0001F33F", "Meta Business Suite → Insights → Follows"),
 ]
-CAL_URL = "https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"
+CAL_URL = "/book"
 
 
 def load_scorecards():
@@ -815,6 +816,278 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 <h2>Contact</h2>
 <p><a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> &middot; Salisbury, MD.</p>
 <a class="back" href="/">&larr; Back to site</a>
+</div></body></html>"""
+
+
+# ========== Native branded booking ==========
+try:
+    from zoneinfo import ZoneInfo
+    BOOK_TZ = ZoneInfo(os.getenv("BOOK_TZ", "America/New_York"))
+except Exception:
+    BOOK_TZ = datetime.timezone(datetime.timedelta(hours=-4))  # Eastern fallback
+BOOK_TZ_LABEL = os.getenv("BOOK_TZ_LABEL", "Eastern")
+BOOKINGS_PATH = os.path.join(DATA, "bookings.json")
+BOOK_SLOT_MIN = int(os.getenv("BOOK_SLOT_MIN", "30"))
+BOOK_DAYS_AHEAD = 14
+BOOK_MIN_NOTICE_H = 3
+# weekday (Mon=0) -> list of (start_hour, end_hour), Eastern
+BOOK_WINDOWS = {0: [(10, 16)], 1: [(10, 16)], 2: [(10, 16)], 3: [(10, 16)], 4: [(10, 15)]}
+ORG_EMAIL = (os.getenv("LEAD_EMAIL") or "Macrandleacres@gmail.com").strip()
+
+
+def load_bookings():
+    try:
+        with open(BOOKINGS_PATH, encoding="utf-8") as f:
+            d = json.load(f)
+            return d if isinstance(d, list) else []
+    except Exception:
+        return []
+
+
+def _fmt_when(dt):
+    return dt.strftime("%A, %B ") + str(dt.day) + dt.strftime(" at %I:%M %p").replace(" 0", " ") + " " + BOOK_TZ_LABEL
+
+
+def gen_slots():
+    now = datetime.datetime.now(BOOK_TZ)
+    cutoff = now + datetime.timedelta(hours=BOOK_MIN_NOTICE_H)
+    booked = {b.get("slot") for b in load_bookings()}
+    out = []
+    for dd in range(BOOK_DAYS_AHEAD + 1):
+        day = (now + datetime.timedelta(days=dd)).date()
+        wins = BOOK_WINDOWS.get(day.weekday())
+        if not wins:
+            continue
+        slots = []
+        for sh, eh in wins:
+            t = datetime.datetime(day.year, day.month, day.day, sh, 0, tzinfo=BOOK_TZ)
+            end = datetime.datetime(day.year, day.month, day.day, eh, 0, tzinfo=BOOK_TZ)
+            while t < end:
+                iso = t.isoformat()
+                if t >= cutoff and iso not in booked:
+                    slots.append({"iso": iso, "label": t.strftime("%I:%M %p").lstrip("0")})
+                t += datetime.timedelta(minutes=BOOK_SLOT_MIN)
+        if slots:
+            out.append({"date": day.isoformat(), "label": day.strftime("%a, %b ") + str(day.day), "slots": slots})
+    return out
+
+
+@app.route("/api/slots")
+def api_slots():
+    return jsonify(ok=True, tz=BOOK_TZ_LABEL, days=gen_slots())
+
+
+def make_ics(bk):
+    start = datetime.datetime.fromisoformat(bk["slot"])
+    end = start + datetime.timedelta(minutes=BOOK_SLOT_MIN)
+    def z(dt):
+        return dt.astimezone(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    return "\r\n".join([
+        "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//MacRandle Acres//Booking//EN", "METHOD:REQUEST",
+        "BEGIN:VEVENT", "UID:%s@macrandleacres.com" % bk.get("slot", ""),
+        "DTSTAMP:" + z(datetime.datetime.now(datetime.timezone.utc)),
+        "DTSTART:" + z(start), "DTEND:" + z(end),
+        "SUMMARY:Growth Audit Call - MacRandle Acres",
+        "DESCRIPTION:Growth Audit call with Jeff Randle (MacRandle Acres).",
+        "ORGANIZER;CN=Jeff Randle:mailto:" + ORG_EMAIL,
+        "ATTENDEE;CN=%s;RSVP=TRUE:mailto:%s" % (bk.get("name", ""), bk.get("email", "")),
+        "END:VEVENT", "END:VCALENDAR"])
+
+
+def send_booking_emails(bk):
+    host = os.getenv("SMTP_HOST", "").strip()
+    user = os.getenv("SMTP_USER", "").strip()
+    pw = os.getenv("SMTP_PASS", "").strip()
+    if not (host and user and pw):
+        return
+    try:
+        import smtplib
+        from email.message import EmailMessage
+        when = _fmt_when(datetime.datetime.fromisoformat(bk["slot"]))
+        ics = make_ics(bk).encode("utf-8")
+        for to, mine in ((ORG_EMAIL, True), (bk["email"], False)):
+            m = EmailMessage()
+            m["From"] = user
+            m["To"] = to
+            if mine:
+                m["Subject"] = "New call booked: %s (%s)" % (bk["name"], when)
+                m.set_content("New Growth Audit call booked.\n\nName:  %s\nEmail: %s\nPhone: %s\nWhen:  %s\n"
+                              % (bk["name"], bk["email"], bk.get("phone", ""), when))
+            else:
+                m["Subject"] = "Your Growth Audit call is booked"
+                m.set_content("Hi %s,\n\nYour Growth Audit call with Jeff Randle is booked for %s.\n"
+                              "The calendar invite is attached. Talk soon!\n\nMacRandle Acres"
+                              % ((bk["name"].split(" ") or [""])[0], when))
+            m.add_attachment(ics, maintype="text", subtype="calendar", filename="invite.ics")
+            with smtplib.SMTP(host, int(os.getenv("SMTP_PORT", "587")), timeout=15) as s:
+                s.starttls()
+                s.login(user, pw)
+                s.send_message(m)
+    except Exception:
+        pass
+
+
+@app.route("/api/book", methods=["POST"])
+def api_book():
+    if not rate_ok("book", client_ip(), 8, 600):
+        return jsonify(ok=False, error="Too many attempts, please try again shortly."), 429
+    data = request.get_json(silent=True) or {}
+    if str(data.get("website", "")).strip():
+        return jsonify(ok=True)
+    slot = str(data.get("slot", "")).strip()
+    name = str(data.get("name", "")).strip()[:120]
+    email = str(data.get("email", "")).strip()[:160]
+    if not name or "@" not in email or "." not in email:
+        return jsonify(ok=False, error="Please add your name and a valid email."), 400
+    if not any(slot == s["iso"] for day in gen_slots() for s in day["slots"]):
+        return jsonify(ok=False, error="That time isn't available, please pick another."), 409
+    bk = {"t": datetime.datetime.utcnow().isoformat(timespec="seconds"), "slot": slot,
+          "name": name, "email": email, "phone": str(data.get("phone", "")).strip()[:40]}
+    with _leads_lock:
+        v = load_bookings()
+        if any(b.get("slot") == slot for b in v):
+            return jsonify(ok=False, error="That time was just taken, please pick another."), 409
+        v.append(bk)
+        try:
+            with open(BOOKINGS_PATH, "w", encoding="utf-8") as f:
+                json.dump(v, f, ensure_ascii=False)
+        except Exception:
+            pass
+    threading.Thread(target=send_booking_emails, args=(bk,), daemon=True).start()
+    return jsonify(ok=True, when=_fmt_when(datetime.datetime.fromisoformat(slot)))
+
+
+@app.route("/book")
+def book_page():
+    resp = Response(BOOK_HTML, mimetype="text/html")
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/admin/bookings")
+def admin_bookings():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/bookings")
+    now_iso = datetime.datetime.now(BOOK_TZ).isoformat()
+    rows = ""
+    for b in sorted(load_bookings(), key=lambda x: x.get("slot", ""), reverse=True):
+        s = datetime.datetime.fromisoformat(b["slot"]) if b.get("slot") else None
+        when = (s.strftime("%a, %b ") + str(s.day) + s.strftime(", %I:%M %p").replace(" 0", " ")) if s else ""
+        tag = "upcoming" if b.get("slot", "") >= now_iso else "past"
+        rows += ("<tr class='%s'><td>%s <span class='tg'>%s</span></td><td>%s</td>"
+                 "<td><a href='mailto:%s'>%s</a></td><td>%s</td></tr>") % (
+                 tag, _esc(when), tag, _esc(b.get("name", "")), _esc(b.get("email", "")),
+                 _esc(b.get("email", "")), _esc(b.get("phone", "")))
+    if not rows:
+        rows = "<tr><td colspan=4 style='opacity:.5'>No calls booked yet.</td></tr>"
+    return Response(BOOKINGS_HTML.replace("__ROWS__", rows), mimetype="text/html")
+
+
+BOOK_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Book a Growth Audit call - MacRandle Acres</title>
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:30px 16px;
+  background-image:radial-gradient(900px 500px at 50% -10%,rgba(199,154,59,.12),transparent 60%)}
+.card{max-width:640px;margin:0 auto;background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:22px;overflow:hidden;box-shadow:0 22px 55px rgba(35,49,40,.14)}
+.head{background:linear-gradient(160deg,#26543f,#1a3b2d);color:#f6f4ec;padding:30px}
+.head .mark{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fbf7ea,#d8cfb0);display:grid;place-items:center;font-weight:800;color:#234F3D;margin-bottom:14px}
+.head .brand{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#e0b862;font-weight:700}
+.head h1{font-size:25px;font-weight:800;margin:4px 0 4px}
+.head p{opacity:.85;font-size:14px}
+.body{padding:24px 26px 28px}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#5c635e;margin:6px 0 10px}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.day{flex:0 0 auto;padding:10px 14px;border:1px solid rgba(35,79,61,.18);border-radius:11px;background:#fff;cursor:pointer;font-size:13.5px;font-weight:600;color:#234F3D;white-space:nowrap;transition:.15s}
+.day:hover{border-color:#c79a3b}.day.on{background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;border-color:transparent}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:18px}
+.slot{padding:11px 8px;border:1px solid rgba(35,79,61,.18);border-radius:10px;background:#fff;cursor:pointer;font-size:14px;font-weight:600;color:#234F3D;text-align:center;transition:.15s}
+.slot:hover{border-color:#c79a3b;background:rgba(199,154,59,.06)}.slot.on{background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;border-color:transparent}
+.form{margin-top:22px;display:none}.form.show{display:block}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:600;color:#234F3D}.fld.full{grid-column:1/-1}
+.fld input{font-family:inherit;font-size:14.5px;padding:11px 13px;border:1px solid rgba(35,79,61,.2);border-radius:10px;color:#2D2D2D;font-weight:400;outline:none}
+.fld input:focus{border-color:#c79a3b}
+.pick{margin-top:14px;font-size:14px;color:#234F3D;font-weight:600}
+.confirm{margin-top:16px;width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:700;font-size:15px;cursor:pointer}
+.msg{font-size:13.5px;color:#b23;margin-top:8px}
+.hp{position:absolute;left:-9999px}
+.done{text-align:center;padding:26px 10px}.done .ic{font-size:44px;margin-bottom:12px}.done h2{font-size:25px;color:#234F3D;margin-bottom:8px}.done p{color:#5c635e;font-size:16px;max-width:420px;margin:0 auto}
+.empty{padding:26px 4px;color:#5c635e;font-size:15px}
+@media(max-width:560px){.fg{grid-template-columns:1fr}}
+</style></head><body>
+<div class="card">
+  <div class="head"><div class="mark">M</div><div class="brand">MacRandle Acres</div><h1>Book your Growth Audit call</h1><p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p></div>
+  <div class="body" id="body"><div class="empty">Loading available times…</div></div>
+</div>
+<script>
+var TZ='', DAYS=[], di=0, slot=null, body=document.getElementById('body');
+fetch('/api/slots').then(function(r){return r.json();}).then(function(j){
+  TZ=j.tz||''; DAYS=j.days||[];
+  document.getElementById('sub').textContent='30 minutes with Jeff Randle. All times '+TZ+'.';
+  render();
+}).catch(function(){body.innerHTML='<div class="empty">Could not load times. Please email Macrandleacres@gmail.com.</div>';});
+function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function render(){
+  if(!DAYS.length){body.innerHTML='<div class="empty">No open times in the next couple of weeks. Please email <a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> and we\\'ll find a time.</div>';return;}
+  var h='<div class="lbl">Choose a day</div><div class="days">';
+  DAYS.forEach(function(d,i){h+='<div class="day'+(i===di?' on':'')+'" data-d="'+i+'">'+esc(d.label)+'</div>';});
+  h+='</div><div class="lbl" style="margin-top:20px">Choose a time ('+esc(TZ)+')</div><div class="slots">';
+  DAYS[di].slots.forEach(function(s){h+='<div class="slot'+(slot===s.iso?' on':'')+'" data-s="'+s.iso+'">'+esc(s.label)+'</div>';});
+  h+='</div>'+formHtml();
+  body.innerHTML=h;
+  body.querySelectorAll('.day').forEach(function(el){el.onclick=function(){di=+el.getAttribute('data-d');slot=null;render();};});
+  body.querySelectorAll('.slot').forEach(function(el){el.onclick=function(){slot=el.getAttribute('data-s');render();var f=document.querySelector('.form');if(f)f.classList.add('show');window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});};});
+  wireForm();
+}
+function slotLabel(){for(var i=0;i<DAYS.length;i++){for(var k=0;k<DAYS[i].slots.length;k++){if(DAYS[i].slots[k].iso===slot)return DAYS[i].label+' at '+DAYS[i].slots[k].label;}}return '';}
+function formHtml(){
+  if(!slot)return '';
+  return '<div class="form show"><div class="pick">📅 '+esc(slotLabel())+' '+esc(TZ)+'</div>'+
+    '<div class="fg" style="margin-top:12px">'+
+    '<label class="fld"><span>Your name *</span><input id="bn" autocomplete="name"></label>'+
+    '<label class="fld"><span>Email *</span><input id="be" type="email" autocomplete="email"></label>'+
+    '<label class="fld full"><span>Phone (optional)</span><input id="bp" autocomplete="tel"></label></div>'+
+    '<input type="text" id="bw" class="hp" tabindex="-1" autocomplete="off">'+
+    '<button class="confirm" id="bc">Confirm booking</button><div id="bm" class="msg"></div></div>';
+}
+function wireForm(){
+  var b=document.getElementById('bc'); if(!b)return;
+  b.onclick=function(){
+    var name=(document.getElementById('bn').value||'').trim(), email=(document.getElementById('be').value||'').trim(),
+        phone=(document.getElementById('bp').value||'').trim(), hp=(document.getElementById('bw').value||'').trim(), m=document.getElementById('bm');
+    if(!name||email.indexOf('@')<0){m.textContent='Please add your name and a valid email.';return;}
+    m.textContent='';b.disabled=true;b.textContent='Booking…';
+    fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot:slot,name:name,email:email,phone:phone,website:hp})})
+      .then(function(r){return r.json();}).then(function(j){
+        if(j.ok){ if(window.fbq)fbq('track','Schedule'); if(window.gtag)gtag('event','book_call');
+          body.innerHTML='<div class="done"><div class="ic">🌱</div><h2>You\\'re booked!</h2><p>'+esc(j.when)+'. A calendar invite is on its way to your inbox. Talk soon!</p></div>';
+          window.scrollTo({top:0,behavior:'smooth'});
+        } else { b.disabled=false;b.textContent='Confirm booking';
+          if(j.error&&j.error.indexOf('available')>-1||j.error&&j.error.indexOf('taken')>-1){m.textContent=j.error+' Refreshing times…';setTimeout(function(){location.reload();},1500);}
+          else m.textContent=j.error||'Something went wrong, please try again.'; }
+      }).catch(function(){b.disabled=false;b.textContent='Confirm booking';m.textContent='Network error, please try again.';});
+  };
+}
+</script></body></html>"""
+
+
+BOOKINGS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Booked calls</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:26px 16px}
+.wrap{max-width:720px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decoration:none}
+table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 22px rgba(35,49,40,.06)}
+td,th{text-align:left;padding:12px 14px;border-bottom:1px solid rgba(35,79,61,.09)}th{color:#5c635e;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+a{color:#a97f2a;font-weight:600;text-decoration:none}
+tr.past{opacity:.5}.tg{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:100px;margin-left:6px}
+tr.upcoming .tg{background:rgba(35,79,61,.1);color:#234F3D}tr.past .tg{background:rgba(0,0,0,.06);color:#888}
+</style></head><body><div class="wrap">
+<div class="top"><h1>Booked calls</h1><a class="back" href="/">&larr; Site</a></div>
+<table><thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th></tr></thead><tbody>__ROWS__</tbody></table>
 </div></body></html>"""
 
 
