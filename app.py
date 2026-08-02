@@ -1027,43 +1027,55 @@ def admin_smtp_test():
     host = os.getenv("SMTP_HOST", "").strip()
     user = os.getenv("SMTP_USER", "").strip()
     pw = os.getenv("SMTP_PASS", "")
+    pw_norm = "".join(pw.split())
     port = os.getenv("SMTP_PORT", "587").strip()
     frm = os.getenv("SMTP_FROM", "").strip() or user
     ssl_env = os.getenv("SMTP_SSL", "").strip()
-    lines = ["MacRandle Acres - SMTP diagnostic", "=" * 34,
+    lines = ["MacRandle Acres - SMTP diagnostic",
+             "build: DIAG-v4 (space-strip + dual-port)",
+             "=" * 40,
              "SMTP_HOST   = %r" % host,
              "SMTP_USER   = %r" % user,
              "SMTP_PORT   = %r" % port,
              "SMTP_FROM   = %r" % frm,
              "SMTP_SSL    = %r" % ssl_env,
              "LEAD_EMAIL  = %r  (alert goes here)" % ORG_EMAIL,
-             "SMTP_PASS   set=%s  length=%d  contains_space=%s"
-             % (bool(pw.strip()), len(pw), (" " in pw.strip()))]
-    if not (host and user and pw.strip()):
+             "SMTP_PASS   raw_len=%d  login_len=%d  (login strips spaces)"
+             % (len(pw), len(pw_norm))]
+    if not (host and user and pw_norm):
         lines.append("\nRESULT: One of HOST/USER/PASS is missing -> emails are OFF.")
         return Response("\n".join(lines), mimetype="text/plain")
-    try:
+
+    def _attempt(mode):
         import smtplib
         from email.message import EmailMessage
-        p = int(port)
-        use_ssl = ssl_env.lower() in ("1", "true", "yes") or p == 465
         m = EmailMessage()
         m["From"] = frm
         m["To"] = ORG_EMAIL
-        m["Subject"] = "MacRandle SMTP test - it works"
-        m.set_content("If you can read this, your booking emails are working.")
-        if use_ssl:
-            s = smtplib.SMTP_SSL(host, p, timeout=20)
+        m["Subject"] = "MacRandle SMTP test - it works (%s)" % mode
+        m.set_content("If you can read this, your booking emails are working via %s." % mode)
+        if mode == "ssl465":
+            s = smtplib.SMTP_SSL(host, 465, timeout=20)
         else:
-            s = smtplib.SMTP(host, p, timeout=20)
+            s = smtplib.SMTP(host, 587, timeout=20)
             s.starttls()
-        s.login(user, "".join(pw.split()))
+        s.login(user, pw_norm)
         s.send_message(m)
         s.quit()
-        lines.append("\nRESULT: OK - test email sent to %s. Check inbox + spam." % ORG_EMAIL)
-    except Exception as e:
-        lines.append("\nRESULT: FAILED")
-        lines.append("%s: %s" % (type(e).__name__, e))
+
+    ok = False
+    for mode in ("starttls587", "ssl465"):
+        try:
+            _attempt(mode)
+            lines.append("\nRESULT[%s]: OK - test email sent to %s. Check inbox + spam."
+                         % (mode, ORG_EMAIL))
+            ok = True
+            break
+        except Exception as e:
+            lines.append("RESULT[%s]: FAILED -> %s: %s" % (mode, type(e).__name__, e))
+    if not ok:
+        lines.append("\nBoth ports failed. If this is 'BadCredentials', the app password itself "
+                     "is wrong/revoked -> generate a fresh one at myaccount.google.com/apppasswords.")
     return Response("\n".join(lines), mimetype="text/plain")
 
 
