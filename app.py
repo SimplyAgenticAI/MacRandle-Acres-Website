@@ -877,6 +877,17 @@ def api_slots():
     return jsonify(ok=True, tz=BOOK_TZ_LABEL, days=gen_slots())
 
 
+def _clean_line(s):
+    """Collapse control chars/newlines to spaces so user input can't break email headers or ICS/JSON lines."""
+    return re.sub(r"[\x00-\x1f\x7f]+", " ", str(s)).strip()
+
+
+def _ics_esc(s):
+    """Escape a value for an RFC 5545 text field (backslash, semicolon, comma, newline)."""
+    s = str(s).replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,")
+    return s.replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "\\n")
+
+
 def make_ics(bk):
     start = datetime.datetime.fromisoformat(bk["slot"])
     end = start + datetime.timedelta(minutes=BOOK_SLOT_MIN)
@@ -890,7 +901,7 @@ def make_ics(bk):
         "SUMMARY:Growth Audit Call - MacRandle Acres",
         "DESCRIPTION:Growth Audit call with Jeff Randle (MacRandle Acres).",
         "ORGANIZER;CN=Jeff Randle:mailto:" + ORG_EMAIL,
-        "ATTENDEE;CN=%s;RSVP=TRUE:mailto:%s" % (bk.get("name", ""), bk.get("email", "")),
+        "ATTENDEE;CN=%s;RSVP=TRUE:mailto:%s" % (_ics_esc(bk.get("name", "")), _ics_esc(bk.get("email", ""))),
         "END:VEVENT", "END:VCALENDAR"])
 
 
@@ -964,15 +975,16 @@ def api_book():
     data = request.get_json(silent=True) or {}
     if str(data.get("website", "")).strip():
         return jsonify(ok=True)
-    slot = str(data.get("slot", "")).strip()
-    name = str(data.get("name", "")).strip()[:120]
-    email = str(data.get("email", "")).strip()[:160]
-    if not name or "@" not in email or "." not in email:
+    slot = _clean_line(data.get("slot", ""))
+    name = _clean_line(data.get("name", ""))[:120]
+    email = _clean_line(data.get("email", ""))[:160]
+    phone = _clean_line(data.get("phone", ""))[:40]
+    if not name or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
         return jsonify(ok=False, error="Please add your name and a valid email."), 400
     if not any(slot == s["iso"] for day in gen_slots() for s in day["slots"]):
         return jsonify(ok=False, error="That time isn't available, please pick another."), 409
     bk = {"t": datetime.datetime.utcnow().isoformat(timespec="seconds"), "slot": slot,
-          "name": name, "email": email, "phone": str(data.get("phone", "")).strip()[:40]}
+          "name": name, "email": email, "phone": phone}
     with _leads_lock:
         v = load_bookings()
         if any(b.get("slot") == slot for b in v):
@@ -1005,7 +1017,10 @@ def admin_bookings():
         s = datetime.datetime.fromisoformat(b["slot"]) if b.get("slot") else None
         when = (s.strftime("%a, %b ") + str(s.day) + s.strftime(", %I:%M %p").replace(" 0", " ")) if s else ""
         tag = "upcoming" if b.get("slot", "") >= now_iso else "past"
-        gl = google_cal_link(b) if b.get("slot") else "#"
+        try:
+            gl = google_cal_link(b) if b.get("slot") else "#"
+        except Exception:
+            gl = "#"
         rows += ("<tr class='%s'><td>%s <span class='tg'>%s</span></td><td>%s</td>"
                  "<td><a href='mailto:%s'>%s</a></td><td>%s</td>"
                  "<td class='act'><a class='addcal' href='%s' target='_blank' rel='noopener'>Add &#8599;</a>"
