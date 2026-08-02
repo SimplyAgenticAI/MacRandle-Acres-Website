@@ -894,6 +894,20 @@ def make_ics(bk):
         "END:VEVENT", "END:VCALENDAR"])
 
 
+def google_cal_link(bk):
+    from urllib.parse import quote
+    start = datetime.datetime.fromisoformat(bk["slot"])
+    end = start + datetime.timedelta(minutes=BOOK_SLOT_MIN)
+    def z(dt):
+        return dt.astimezone(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    details = "Growth Audit call with Jeff Randle (MacRandle Acres). Guest: %s <%s>" % (
+        bk.get("name", ""), bk.get("email", ""))
+    return ("https://calendar.google.com/calendar/render?action=TEMPLATE"
+            "&text=" + quote("Growth Audit Call - MacRandle Acres")
+            + "&dates=" + z(start) + "/" + z(end)
+            + "&details=" + quote(details))
+
+
 def send_booking_emails(bk):
     host = os.getenv("SMTP_HOST", "").strip()
     user = os.getenv("SMTP_USER", "").strip()
@@ -954,7 +968,8 @@ def api_book():
         except Exception:
             pass
     threading.Thread(target=send_booking_emails, args=(bk,), daemon=True).start()
-    return jsonify(ok=True, when=_fmt_when(datetime.datetime.fromisoformat(slot)))
+    return jsonify(ok=True, when=_fmt_when(datetime.datetime.fromisoformat(slot)),
+                   gcal=google_cal_link(bk), ics=make_ics(bk))
 
 
 @app.route("/book")
@@ -974,12 +989,14 @@ def admin_bookings():
         s = datetime.datetime.fromisoformat(b["slot"]) if b.get("slot") else None
         when = (s.strftime("%a, %b ") + str(s.day) + s.strftime(", %I:%M %p").replace(" 0", " ")) if s else ""
         tag = "upcoming" if b.get("slot", "") >= now_iso else "past"
+        gl = google_cal_link(b) if b.get("slot") else "#"
         rows += ("<tr class='%s'><td>%s <span class='tg'>%s</span></td><td>%s</td>"
-                 "<td><a href='mailto:%s'>%s</a></td><td>%s</td></tr>") % (
+                 "<td><a href='mailto:%s'>%s</a></td><td>%s</td>"
+                 "<td><a class='addcal' href='%s' target='_blank' rel='noopener'>Add &#8599;</a></td></tr>") % (
                  tag, _esc(when), tag, _esc(b.get("name", "")), _esc(b.get("email", "")),
-                 _esc(b.get("email", "")), _esc(b.get("phone", "")))
+                 _esc(b.get("email", "")), _esc(b.get("phone", "")), _esc(gl))
     if not rows:
-        rows = "<tr><td colspan=4 style='opacity:.5'>No calls booked yet.</td></tr>"
+        rows = "<tr><td colspan=5 style='opacity:.5'>No calls booked yet.</td></tr>"
     return Response(BOOKINGS_HTML.replace("__ROWS__", rows), mimetype="text/html")
 
 
@@ -1015,6 +1032,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .msg{font-size:13.5px;color:#b23;margin-top:8px}
 .hp{position:absolute;left:-9999px}
 .done{text-align:center;padding:26px 10px}.done .ic{font-size:44px;margin-bottom:12px}.done h2{font-size:25px;color:#234F3D;margin-bottom:8px}.done p{color:#5c635e;font-size:16px;max-width:420px;margin:0 auto}
+.cal-btns{display:flex;flex-direction:column;gap:10px;max-width:300px;margin:20px auto 0}
+.cbtn{display:block;padding:13px 16px;border-radius:12px;font-weight:700;font-size:14.5px;text-decoration:none;transition:transform .12s,box-shadow .12s}
+.cbtn:hover{transform:translateY(-1px)}
+.cbtn.g{background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;box-shadow:0 6px 18px rgba(26,59,45,.25)}
+.cbtn.i{background:#fff;color:#234F3D;border:1.5px solid #d7ddd6}
+.done .cn{margin-top:16px;font-size:14px;color:#8a918b}
 .empty{padding:26px 4px;color:#5c635e;font-size:15px}
 @media(max-width:560px){.fg{grid-template-columns:1fr}}
 </style></head><body>
@@ -1063,7 +1086,12 @@ function wireForm(){
     fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot:slot,name:name,email:email,phone:phone,website:hp})})
       .then(function(r){return r.json();}).then(function(j){
         if(j.ok){ if(window.fbq)fbq('track','Schedule'); if(window.gtag)gtag('event','book_call');
-          body.innerHTML='<div class="done"><div class="ic">🌱</div><h2>You\\'re booked!</h2><p>'+esc(j.when)+'. A calendar invite is on its way to your inbox. Talk soon!</p></div>';
+          var icsHref='data:text/calendar;charset=utf-8,'+encodeURIComponent(j.ics||'');
+          body.innerHTML='<div class="done"><div class="ic">🌱</div><h2>You\\'re booked!</h2><p>'+esc(j.when)+'. Add it to your calendar so you don\\'t miss it:</p>'+
+            '<div class="cal-btns">'+
+            '<a class="cbtn g" href="'+esc(j.gcal||'#')+'" target="_blank" rel="noopener">📅 Add to Google Calendar</a>'+
+            '<a class="cbtn i" href="'+icsHref+'" download="growth-audit.ics">⬇ Apple / Outlook (.ics)</a>'+
+            '</div><p class="cn">Talk soon!</p></div>';
           window.scrollTo({top:0,behavior:'smooth'});
         } else { b.disabled=false;b.textContent='Confirm booking';
           if(j.error&&j.error.indexOf('available')>-1||j.error&&j.error.indexOf('taken')>-1){m.textContent=j.error+' Refreshing times…';setTimeout(function(){location.reload();},1500);}
@@ -1083,11 +1111,13 @@ h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decorat
 table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 22px rgba(35,49,40,.06)}
 td,th{text-align:left;padding:12px 14px;border-bottom:1px solid rgba(35,79,61,.09)}th{color:#5c635e;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
 a{color:#a97f2a;font-weight:600;text-decoration:none}
+a.addcal{display:inline-block;padding:5px 11px;border:1px solid rgba(35,79,61,.2);border-radius:100px;font-size:12.5px;color:#234F3D}
+a.addcal:hover{background:rgba(35,79,61,.06);border-color:#c79a3b}
 tr.past{opacity:.5}.tg{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:100px;margin-left:6px}
 tr.upcoming .tg{background:rgba(35,79,61,.1);color:#234F3D}tr.past .tg{background:rgba(0,0,0,.06);color:#888}
 </style></head><body><div class="wrap">
 <div class="top"><h1>Booked calls</h1><a class="back" href="/">&larr; Site</a></div>
-<table><thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th></tr></thead><tbody>__ROWS__</tbody></table>
+<table><thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Calendar</th></tr></thead><tbody>__ROWS__</tbody></table>
 </div></body></html>"""
 
 
