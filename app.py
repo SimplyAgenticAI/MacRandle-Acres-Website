@@ -914,29 +914,45 @@ def send_booking_emails(bk):
     pw = os.getenv("SMTP_PASS", "").strip()
     if not (host and user and pw):
         return
+    sender = os.getenv("SMTP_FROM", "").strip() or user
+    port = int(os.getenv("SMTP_PORT", "587"))
+    use_ssl = os.getenv("SMTP_SSL", "").strip().lower() in ("1", "true", "yes") or port == 465
     try:
         import smtplib
         from email.message import EmailMessage
         when = _fmt_when(datetime.datetime.fromisoformat(bk["slot"]))
+        gcal = google_cal_link(bk)
         ics = make_ics(bk).encode("utf-8")
+        first = (bk.get("name", "").split(" ") or [""])[0] or "there"
         for to, mine in ((ORG_EMAIL, True), (bk["email"], False)):
             m = EmailMessage()
-            m["From"] = user
+            m["From"] = sender
             m["To"] = to
+            m["Reply-To"] = bk["email"] if mine else ORG_EMAIL
             if mine:
                 m["Subject"] = "New call booked: %s (%s)" % (bk["name"], when)
-                m.set_content("New Growth Audit call booked.\n\nName:  %s\nEmail: %s\nPhone: %s\nWhen:  %s\n"
-                              % (bk["name"], bk["email"], bk.get("phone", ""), when))
+                m.set_content(
+                    "New Growth Audit call booked.\n\n"
+                    "Name:  %s\nEmail: %s\nPhone: %s\nWhen:  %s\n\n"
+                    "Add it to your calendar:\n%s\n"
+                    % (bk["name"], bk["email"], bk.get("phone", "") or "-", when, gcal))
             else:
                 m["Subject"] = "Your Growth Audit call is booked"
-                m.set_content("Hi %s,\n\nYour Growth Audit call with Jeff Randle is booked for %s.\n"
-                              "The calendar invite is attached. Talk soon!\n\nMacRandle Acres"
-                              % ((bk["name"].split(" ") or [""])[0], when))
-            m.add_attachment(ics, maintype="text", subtype="calendar", filename="invite.ics")
-            with smtplib.SMTP(host, int(os.getenv("SMTP_PORT", "587")), timeout=15) as s:
-                s.starttls()
-                s.login(user, pw)
-                s.send_message(m)
+                m.set_content(
+                    "Hi %s,\n\nYour Growth Audit call with Jeff Randle is booked for %s.\n\n"
+                    "The calendar invite is attached. Prefer one click? Add it here:\n%s\n\n"
+                    "Talk soon!\nMacRandle Acres" % (first, when, gcal))
+            m.add_attachment(ics, maintype="text", subtype="calendar",
+                             filename="invite.ics", params={"method": "REQUEST"})
+            if use_ssl:
+                with smtplib.SMTP_SSL(host, port, timeout=15) as s:
+                    s.login(user, pw)
+                    s.send_message(m)
+            else:
+                with smtplib.SMTP(host, port, timeout=15) as s:
+                    s.starttls()
+                    s.login(user, pw)
+                    s.send_message(m)
     except Exception:
         pass
 
