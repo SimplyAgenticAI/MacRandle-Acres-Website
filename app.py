@@ -674,7 +674,7 @@ def send_lead_email(rec):
     """Email the new lead to LEAD_EMAIL when SMTP is configured (else no-op)."""
     host = os.getenv("SMTP_HOST", "").strip()
     user = os.getenv("SMTP_USER", "").strip()
-    pw = os.getenv("SMTP_PASS", "").strip()
+    pw = "".join(os.getenv("SMTP_PASS", "").split())  # Gmail shows app pw with spaces; they aren't part of it
     if not (host and user and pw):
         return
     to = os.getenv("LEAD_EMAIL", "").strip() or user
@@ -911,7 +911,7 @@ def google_cal_link(bk):
 def send_booking_emails(bk):
     host = os.getenv("SMTP_HOST", "").strip()
     user = os.getenv("SMTP_USER", "").strip()
-    pw = os.getenv("SMTP_PASS", "").strip()
+    pw = "".join(os.getenv("SMTP_PASS", "").split())  # Gmail shows app pw with spaces; they aren't part of it
     if not (host and user and pw):
         return
     sender = os.getenv("SMTP_FROM", "").strip() or user
@@ -1057,7 +1057,7 @@ def admin_smtp_test():
         else:
             s = smtplib.SMTP(host, p, timeout=20)
             s.starttls()
-        s.login(user, pw.strip())
+        s.login(user, "".join(pw.split()))
         s.send_message(m)
         s.quit()
         lines.append("\nRESULT: OK - test email sent to %s. Check inbox + spam." % ORG_EMAIL)
