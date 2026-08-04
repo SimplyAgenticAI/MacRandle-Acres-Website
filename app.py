@@ -1051,6 +1051,112 @@ def send_cancel_notice(bk):
         pass
 
 
+def _smtp_send(msg):
+    """Connect + deliver one message. Returns True on success, False if SMTP unset or send fails."""
+    host = os.getenv("SMTP_HOST", "").strip()
+    user = os.getenv("SMTP_USER", "").strip()
+    pw = "".join(os.getenv("SMTP_PASS", "").split())
+    if not (host and user and pw):
+        return False
+    port = int(os.getenv("SMTP_PORT", "587"))
+    use_ssl = os.getenv("SMTP_SSL", "").strip().lower() in ("1", "true", "yes") or port == 465
+    try:
+        import smtplib
+        if use_ssl:
+            with smtplib.SMTP_SSL(host, port, timeout=15) as s:
+                s.login(user, pw)
+                s.send_message(msg)
+        else:
+            with smtplib.SMTP(host, port, timeout=15) as s:
+                s.starttls()
+                s.login(user, pw)
+                s.send_message(msg)
+        return True
+    except Exception:
+        return False
+
+
+# Minutes-before-call -> internal label. First scheduler tick past a threshold fires it once.
+REMIND_OFFSETS = [(24 * 60, "24h"), (60, "1h")]
+
+
+def _reminder_phrase(st, now):
+    mins = (st - now).total_seconds() / 60.0
+    if mins <= 90:
+        return "in about an hour"
+    if st.date() == now.date():
+        return "later today"
+    if st.date() == (now + datetime.timedelta(days=1)).date():
+        return "tomorrow"
+    return "coming up"
+
+
+def _send_reminder(bk, now):
+    from email.message import EmailMessage
+    st = datetime.datetime.fromisoformat(bk["slot"])
+    when = _fmt_when(st)
+    phrase = _reminder_phrase(st, now)
+    first = (bk.get("name", "").split(" ") or [""])[0] or "there"
+    join = meeting_url(bk)
+    m = EmailMessage()
+    m["From"] = os.getenv("SMTP_FROM", "").strip() or os.getenv("SMTP_USER", "").strip()
+    m["To"] = bk.get("email", "")
+    m["Reply-To"] = ORG_EMAIL
+    m["Subject"] = "Reminder: your Growth Audit call %s" % phrase
+    body = ("Hi %s,\n\nA quick reminder that your Growth Audit call with Jeff Randle is %s "
+            "(%s).\n\n" % (first, phrase, when))
+    if join:
+        body += "Join the video call here (right in your browser):\n%s\n\n" % join
+    body += ("Can't make it? Reschedule or cancel:\n%s\n\nSee you soon!\nMacRandle Acres"
+             % _cancel_url(bk))
+    m.set_content(body)
+    return _smtp_send(m)
+
+
+def process_reminders(now=None):
+    """Fire any due 24h/1h reminders exactly once each. Safe to call every few minutes."""
+    now = now or datetime.datetime.now(BOOK_TZ)
+    sent = 0
+    with _leads_lock:
+        v = load_bookings()
+        changed = False
+        for b in v:
+            slot = b.get("slot")
+            if not slot:
+                continue
+            try:
+                st = datetime.datetime.fromisoformat(slot)
+            except Exception:
+                continue
+            if st <= now:
+                continue
+            done = b.setdefault("reminders", [])
+            for mins, label in REMIND_OFFSETS:
+                if label in done:
+                    continue
+                if now >= st - datetime.timedelta(minutes=mins):
+                    if _send_reminder(b, now):
+                        sent += 1
+                    done.append(label)  # fire once even if SMTP is momentarily down
+                    changed = True
+        if changed:
+            try:
+                with open(BOOKINGS_PATH, "w", encoding="utf-8") as f:
+                    json.dump(v, f, ensure_ascii=False)
+            except Exception:
+                pass
+    return sent
+
+
+def _reminder_loop():
+    while True:
+        try:
+            process_reminders()
+        except Exception:
+            pass
+        _time.sleep(300)
+
+
 @app.route("/api/book", methods=["POST"])
 def api_book():
     if not rate_ok("book", client_ip(), 8, 600):
@@ -1244,6 +1350,18 @@ def admin_smtp_test():
         lines.append("\nBoth ports failed. If this is 'BadCredentials', the app password itself "
                      "is wrong/revoked -> generate a fresh one at myaccount.google.com/apppasswords.")
     return Response("\n".join(lines), mimetype="text/plain")
+
+
+@app.route("/admin/reminders/run")
+def admin_reminders_run():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/bookings")
+    n = process_reminders()
+    smtp_on = bool(os.getenv("SMTP_HOST", "").strip() and os.getenv("SMTP_PASS", "").strip())
+    msg = ("Reminder check ran. Sent %d reminder email(s) this pass.\n"
+           "(Reminders also run automatically every ~5 minutes while the site is awake.)\n"
+           "SMTP configured: %s") % (n, "yes" if smtp_on else "NO - reminders won't send until SMTP is set")
+    return Response(msg, mimetype="text/plain")
 
 
 @app.route("/admin/bookings/delete", methods=["POST"])
@@ -1449,6 +1567,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:#12261d;color:#f6f4ec;d
 })();
 </script>
 </body></html>"""
+
+
+# Background reminder scheduler (single gunicorn worker -> one thread, no dupes).
+# Set RUN_REMINDERS=0 to disable (used by tests).
+if os.getenv("RUN_REMINDERS", "1") != "0":
+    threading.Thread(target=_reminder_loop, daemon=True).start()
 
 
 if __name__ == "__main__":
