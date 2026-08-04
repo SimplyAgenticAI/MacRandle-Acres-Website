@@ -1193,7 +1193,10 @@ def api_book():
 
 @app.route("/book")
 def book_page():
-    resp = Response(BOOK_HTML, mimetype="text/html")
+    # Inject GA/Pixel so the booking conversion (book_call / Schedule) actually fires.
+    head = "" if session.get("admin") else tracking_head()
+    html = BOOK_HTML.replace("</head>", head + "\n</head>", 1)
+    resp = Response(html, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
     return resp
 
