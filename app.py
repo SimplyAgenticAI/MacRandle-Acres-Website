@@ -1572,6 +1572,415 @@ body{font-family:'Inter',system-ui,sans-serif;background:#12261d;color:#f6f4ec;d
 </body></html>"""
 
 
+# ---------------------------------------------------------------------------
+# Facebook profile audit tool (admin) — per-client checklist with live scoring
+# ---------------------------------------------------------------------------
+AUDITS_PATH = os.path.join(DATA, "audits.json")
+
+AUDIT_SECTIONS = [
+    {"name": "Cover Photo", "icon": "\U0001F5BC️", "items": [
+        {"id": "cover_size", "t": "Sized right — nothing important cut off",
+         "h": "Check the desktop AND mobile crop. No heads, faces, or key words chopped off."},
+        {"id": "cover_quality", "t": "High quality, not blurry or stretched",
+         "h": "Sharp and correctly proportioned — not pixelated or squished."},
+        {"id": "cover_brand", "t": "On-brand and professional",
+         "h": "Colors, headshot/logo, and style match the rest of their brand."},
+        {"id": "cover_cta", "t": "Has a clear value prop or call-to-action",
+         "h": "Tells visitors who they help + what to do next (call, DM, visit site)."},
+        {"id": "cover_contact", "t": "Contact or website shown (where appropriate)",
+         "h": "Phone, website, or handle visible so people can act right away."},
+    ]},
+    {"name": "Profile Photo", "icon": "\U0001F464", "items": [
+        {"id": "pfp_headshot", "t": "Clear, current professional headshot",
+         "h": "A real photo of them — not a logo, group shot, or a property."},
+        {"id": "pfp_framing", "t": "Well-lit, centered, face fills the frame",
+         "h": "Recognizable even as a tiny thumbnail; good lighting; face not tiny."},
+        {"id": "pfp_consistent", "t": "Consistent across their platforms",
+         "h": "Same headshot on FB, IG, LinkedIn so they're instantly recognizable."},
+    ]},
+    {"name": "Bio / Intro", "icon": "\U0001F4DD", "items": [
+        {"id": "bio_full", "t": "Uses the full ~101-character bio",
+         "h": "Prime real estate — don't leave characters on the table."},
+        {"id": "bio_keywords", "t": "Has 'Realtor'/'Real Estate' + area keywords",
+         "h": "Their city/area plus the words people actually search, so they're findable."},
+        {"id": "bio_positioning", "t": "Says who they help + the outcome",
+         "h": "Not just a title — the value (e.g. 'Helping Salisbury families find home')."},
+        {"id": "bio_clean", "t": "No typos, professional tone",
+         "h": "Spelling, grammar, and capitalization are clean."},
+    ]},
+    {"name": "Links & Contact", "icon": "\U0001F517", "items": [
+        {"id": "link_bio", "t": "Clickable link in the bio/link field",
+         "h": "A working link to their site, landing page, or link-in-bio."},
+        {"id": "link_dest", "t": "Link points to the right place",
+         "h": "Goes to a lead magnet, booking page, or listings — not a dead/generic page."},
+        {"id": "link_about", "t": "Website + contact filled in the About section",
+         "h": "Website, email, and phone completed everywhere FB allows."},
+        {"id": "link_vanity", "t": "Clean vanity URL claimed",
+         "h": "facebook.com/TheirName — no random numbers."},
+        {"id": "link_public", "t": "The contact info they want used is public",
+         "h": "Not hidden from non-friends who might become clients."},
+    ]},
+    {"name": "Featured & Pinned", "icon": "\U0001F4CC", "items": [
+        {"id": "feat_pinned", "t": "Has a pinned intro post at the top",
+         "h": "Introduces them + how they help, with a clear call-to-action."},
+        {"id": "feat_current", "t": "Pinned post is current",
+         "h": "Not an outdated listing or an old promo."},
+        {"id": "feat_photos", "t": "Featured Photos section is used",
+         "h": "Highlights: testimonials, sold homes, awards, community involvement."},
+    ]},
+    {"name": "Content Strategy", "icon": "\U0001F4C8", "items": [
+        {"id": "content_nolinks", "t": "Links kept OUT of post text",
+         "h": "Put the link in the first comment instead — outbound links in a post suppress reach."},
+        {"id": "content_recent", "t": "Posted within the last 7 days",
+         "h": "The profile looks active and alive, not abandoned."},
+        {"id": "content_mix", "t": "Value-driven mix, not all 'Just Listed/Sold'",
+         "h": "Tips, local info, story, personality — not only listings."},
+        {"id": "content_local", "t": "Local / community content present",
+         "h": "Neighborhood spotlights, local events, market updates for their area."},
+        {"id": "content_video", "t": "Uses native video / Reels",
+         "h": "Facebook favors native video; realtors who use it get more reach."},
+        {"id": "content_quality", "t": "Photos are high quality + tastefully branded",
+         "h": "Good images, consistent look, subtle watermark/branding."},
+    ]},
+    {"name": "Engagement & Proof", "icon": "\U0001F4AC", "items": [
+        {"id": "eng_replies", "t": "Replies to comments & messages",
+         "h": "Timely responses; conversations aren't left hanging."},
+        {"id": "eng_reviews", "t": "Recommendations / testimonials visible",
+         "h": "Social proof featured, or a Page with Recommendations turned on."},
+        {"id": "eng_groups", "t": "Active in local Facebook Groups",
+         "h": "Showing up where their community already spends time."},
+    ]},
+    {"name": "Settings & Discoverability", "icon": "⚙️", "items": [
+        {"id": "set_follow", "t": "'Follow' enabled for non-friends",
+         "h": "Public can follow their public posts (Professional Mode / Follow on)."},
+        {"id": "set_page", "t": "Separate Business Page exists & is linked",
+         "h": "For ads, reviews, and a CTA button — connected to the personal profile."},
+        {"id": "set_cta", "t": "Page has a CTA button",
+         "h": "'Contact Us' / 'Book Now' / 'Send Message' if they run a Page."},
+        {"id": "set_mobile", "t": "Looks great on mobile",
+         "h": "Most people view on a phone — check crops, readability, and taps there."},
+    ]},
+]
+AUDIT_ITEM_IDS = [it["id"] for sec in AUDIT_SECTIONS for it in sec["items"]]
+
+
+def load_audits():
+    try:
+        with open(AUDITS_PATH, encoding="utf-8") as f:
+            d = json.load(f)
+            return d if isinstance(d, list) else []
+    except Exception:
+        return []
+
+
+def save_audits(v):
+    try:
+        with open(AUDITS_PATH, "w", encoding="utf-8") as f:
+            json.dump(v, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+def _audit_progress(a):
+    it = a.get("items", {})
+    total = len(AUDIT_ITEM_IDS)
+    reviewed = sum(1 for k in AUDIT_ITEM_IDS if it.get(k, {}).get("status"))
+    fixes = sum(1 for k in AUDIT_ITEM_IDS if it.get(k, {}).get("status") == "fix")
+    passes = sum(1 for k in AUDIT_ITEM_IDS if it.get(k, {}).get("status") == "pass")
+    return {"total": total, "reviewed": reviewed, "fixes": fixes, "passes": passes,
+            "pct": round(100.0 * reviewed / total) if total else 0}
+
+
+@app.route("/admin/audits")
+def admin_audits():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/audits")
+    rows = ""
+    for a in sorted(load_audits(), key=lambda x: x.get("updated", ""), reverse=True):
+        p = _audit_progress(a)
+        created = (a.get("created", "") or "")[:10]
+        flag = (" <span class='pill fix'>%d to fix</span>" % p["fixes"]) if p["fixes"] else ""
+        rows += ("<tr><td><a href='/admin/audits/%s'>%s</a></td><td>%s</td>"
+                 "<td><div class='mini'><span style='width:%d%%'></span></div>"
+                 "<span class='pc'>%d%%</span>%s</td>"
+                 "<td class='act'><a class='open' href='/admin/audits/%s'>Open</a>"
+                 "<form method='post' action='/admin/audits/%s/delete' class='delf' "
+                 "onsubmit=\"return confirm('Delete this audit?')\">"
+                 "<button class='del' title='Delete'>&#10005;</button></form></td></tr>") % (
+                 _esc(a.get("id", "")), _esc(a.get("client", "") or "Untitled"), _esc(created),
+                 p["pct"], p["pct"], flag, _esc(a.get("id", "")), _esc(a.get("id", "")))
+    if not rows:
+        rows = "<tr><td colspan=4 style='opacity:.5'>No audits yet. Create your first one above.</td></tr>"
+    return Response(AUDITS_LIST_HTML.replace("__ROWS__", rows), mimetype="text/html")
+
+
+@app.route("/admin/audits/new", methods=["POST"])
+def admin_audit_new():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/audits")
+    client = _clean_line(request.form.get("client", ""))[:120] or "Untitled client"
+    aid = secrets.token_urlsafe(6)
+    now = datetime.datetime.utcnow().isoformat(timespec="seconds")
+    with _leads_lock:
+        v = load_audits()
+        v.append({"id": aid, "client": client, "created": now, "updated": now, "items": {}})
+        save_audits(v)
+    return redirect("/admin/audits/" + aid)
+
+
+@app.route("/admin/audits/<aid>")
+def admin_audit_view(aid):
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/audits")
+    a = next((x for x in load_audits() if x.get("id") == aid), None)
+    if not a:
+        return redirect("/admin/audits")
+    sections = json.dumps(AUDIT_SECTIONS, ensure_ascii=False).replace("</", "<\\/")
+    payload = json.dumps({"id": a["id"], "client": a.get("client", ""),
+                          "items": a.get("items", {})}, ensure_ascii=False).replace("</", "<\\/")
+    html = (AUDIT_HTML.replace("__SECTIONS__", sections)
+            .replace("__AUDIT__", payload).replace("__AID__", _esc(aid)))
+    return Response(html, mimetype="text/html")
+
+
+@app.route("/admin/audits/<aid>", methods=["POST"])
+def admin_audit_save(aid):
+    if not session.get("admin"):
+        return jsonify(ok=False), 403
+    data = request.get_json(silent=True) or {}
+    incoming = data.get("items", {})
+    clean_items = {}
+    if isinstance(incoming, dict):
+        for k, val in incoming.items():
+            if k in AUDIT_ITEM_IDS and isinstance(val, dict):
+                st = val.get("status", "")
+                st = st if st in ("pass", "fix", "na") else ""
+                note = _clean_line(val.get("note", ""))[:400]
+                if st or note:
+                    clean_items[k] = {"status": st, "note": note}
+    client = _clean_line(data.get("client", ""))[:120]
+    with _leads_lock:
+        v = load_audits()
+        a = next((x for x in v if x.get("id") == aid), None)
+        if not a:
+            return jsonify(ok=False), 404
+        a["items"] = clean_items
+        if client:
+            a["client"] = client
+        a["updated"] = datetime.datetime.utcnow().isoformat(timespec="seconds")
+        save_audits(v)
+        prog = _audit_progress(a)
+    return jsonify(ok=True, progress=prog)
+
+
+@app.route("/admin/audits/<aid>/delete", methods=["POST"])
+def admin_audit_delete(aid):
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/audits")
+    with _leads_lock:
+        v = [x for x in load_audits() if x.get("id") != aid]
+        save_audits(v)
+    return redirect("/admin/audits")
+
+
+AUDITS_LIST_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>FB Profile Audits</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:26px 16px}
+.wrap{max-width:760px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decoration:none}
+.sub{color:#5c635e;font-size:14px;margin-bottom:18px}
+.new{display:flex;gap:10px;margin-bottom:22px}
+.new input{flex:1;padding:12px 14px;border:1px solid rgba(35,79,61,.2);border-radius:11px;font-size:15px}
+.new button{padding:12px 18px;border:none;border-radius:11px;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:700;font-size:15px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 22px rgba(35,49,40,.06)}
+td,th{text-align:left;padding:12px 14px;border-bottom:1px solid rgba(35,79,61,.09);vertical-align:middle}
+th{color:#5c635e;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+a{color:#a97f2a;font-weight:600;text-decoration:none}
+.mini{display:inline-block;width:120px;height:8px;border-radius:100px;background:rgba(35,79,61,.12);overflow:hidden;vertical-align:middle;margin-right:8px}
+.mini span{display:block;height:100%;background:linear-gradient(90deg,#2a5c47,#c79a3b)}
+.pc{font-size:12.5px;color:#5c635e;font-weight:700}
+.pill{font-size:10.5px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:100px;margin-left:8px}
+.pill.fix{background:rgba(199,80,43,.12);color:#b23}
+td.act{white-space:nowrap;text-align:right}a.open{margin-right:8px}
+.delf{display:inline}.del{border:none;background:none;color:#c0392b;font-size:14px;cursor:pointer;padding:4px 6px;border-radius:8px;opacity:.55}.del:hover{opacity:1;background:rgba(192,57,43,.08)}
+</style></head><body><div class="wrap">
+<div class="top"><h1>Facebook Profile Audits</h1><a class="back" href="/">&larr; Site</a></div>
+<p class="sub">Run a branded profile audit for each client, track what needs work, and hand them the fix list.</p>
+<form class="new" method="post" action="/admin/audits/new">
+<input name="client" placeholder="Client name (e.g. Jane Smith — Keller Williams)" autocomplete="off" required>
+<button type="submit">+ New audit</button></form>
+<table><thead><tr><th>Client</th><th>Started</th><th>Progress</th><th></th></tr></thead>
+<tbody>__ROWS__</tbody></table>
+</div></body></html>"""
+
+
+AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Profile audit</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:0 0 60px}
+.bar{position:sticky;top:0;z-index:20;background:rgba(248,247,243,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(35,79,61,.12);padding:14px 18px}
+.bwrap{max-width:820px;margin:0 auto}
+.brow{display:flex;align-items:center;gap:12px}
+.brow a.back{font-size:13px;color:#5c635e;text-decoration:none;white-space:nowrap}
+.cli{flex:1;font-size:18px;font-weight:800;color:#234F3D;border:none;background:none;padding:4px 6px;border-radius:8px}
+.cli:focus{outline:2px solid rgba(199,154,59,.5);background:#fff}
+.saved{font-size:12px;color:#2a7d4f;opacity:0;transition:.2s;white-space:nowrap}.saved.on{opacity:1}
+.prog{display:flex;align-items:center;gap:12px;margin-top:10px}
+.track{flex:1;height:10px;border-radius:100px;background:rgba(35,79,61,.12);overflow:hidden}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#2a5c47,#c79a3b);transition:width .3s}
+.stat{font-size:12.5px;color:#5c635e;font-weight:700;white-space:nowrap}
+.wrap{max-width:820px;margin:0 auto;padding:22px 18px 0}
+.sec{margin-bottom:22px}
+.sec-h{display:flex;align-items:center;gap:9px;margin:0 2px 10px}
+.sec-h .ic{font-size:19px}.sec-h .sec-t{font-size:15px;font-weight:800;color:#234F3D;letter-spacing:.01em}
+.item{background:#fff;border:1px solid rgba(35,79,61,.1);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 4px 14px rgba(35,49,40,.04)}
+.item.flag{border-color:rgba(199,80,43,.4);box-shadow:0 4px 14px rgba(199,80,43,.08)}
+.it-t{font-size:15px;font-weight:700;color:#2D2D2D}
+.it-h{font-size:13px;color:#6a716b;margin-top:3px;line-height:1.5}
+.btns{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.st{border:1.5px solid rgba(35,79,61,.18);background:#fff;color:#5c635e;font-weight:700;font-size:13px;padding:7px 13px;border-radius:100px;cursor:pointer;transition:.12s}
+.st:hover{border-color:#c79a3b}
+.st-pass.on{background:#e8f3ec;border-color:#2a7d4f;color:#1c6b40}
+.st-fix.on{background:#fbece7;border-color:#c0502b;color:#a83b1d}
+.st-na.on{background:#eee;border-color:#aaa;color:#666}
+.note{width:100%;margin-top:10px;padding:9px 12px;border:1px solid rgba(35,79,61,.15);border-radius:10px;font-size:13.5px;font-family:inherit}
+.note:focus{outline:2px solid rgba(199,154,59,.4)}
+.summary{max-width:820px;margin:8px auto 0;padding:0 18px}
+.sumbox{background:#2a1f14;color:#f6f0e4;border-radius:16px;padding:20px 22px}
+.sumbox h3{font-size:15px;margin-bottom:4px;color:#e0b862}
+.sumbox .m{font-size:13px;color:#c9bfad;opacity:.8;margin-bottom:14px}
+.sumbox ol{margin:0 0 16px 18px;font-size:14px;line-height:1.6}
+.sumbox li{margin-bottom:7px}.sumbox li .n{display:block;font-size:12.5px;color:#d8c79b}
+.sumbox .none{opacity:.7;font-size:14px}
+.copy{border:none;background:#e0b862;color:#2a2005;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:10px;cursor:pointer}
+</style></head><body>
+<div class="bar"><div class="bwrap">
+  <div class="brow"><a class="back" href="/admin/audits">&larr; All audits</a>
+    <input class="cli" id="cli" value="" placeholder="Client name">
+    <span class="saved" id="saved">Saved &#10003;</span></div>
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div>
+    <span class="stat" id="stat">0 of 0 reviewed</span></div>
+</div></div>
+<div class="wrap" id="sections"></div>
+<div class="summary"><div class="sumbox">
+  <h3>&#128295; Fix list for this client</h3>
+  <div class="m">Everything you marked &ldquo;Needs work&rdquo; &mdash; copy it straight into a message or report.</div>
+  <ol id="fixlist"></ol><div class="none" id="fixnone">Nothing flagged yet.</div>
+  <button class="copy" id="copy" type="button">Copy fix list</button>
+</div></div>
+<script>
+var SECTIONS=__SECTIONS__, A=__AUDIT__, AID="__AID__";
+var items=(A&&A.items)||{};
+var root=document.getElementById('sections');
+var cli=document.getElementById('cli'); cli.value=(A&&A.client)||'';
+var savedInd=document.getElementById('saved'), fillEl=document.getElementById('fill'), statEl=document.getElementById('stat');
+var fixOl=document.getElementById('fixlist'), fixNone=document.getElementById('fixnone');
+var timer=null;
+
+function lbl(st){return st==='pass'?'\\u2713 Looks good':st==='fix'?'\\u26A0 Needs work':'N/A';}
+
+function render(){
+  root.innerHTML='';
+  SECTIONS.forEach(function(sec){
+    var se=document.createElement('div'); se.className='sec';
+    var h=document.createElement('div'); h.className='sec-h';
+    var ic=document.createElement('span'); ic.className='ic'; ic.textContent=sec.icon||''; h.appendChild(ic);
+    var st=document.createElement('span'); st.className='sec-t'; st.textContent=sec.name; h.appendChild(st);
+    se.appendChild(h);
+    sec.items.forEach(function(it){
+      var cur=items[it.id]||{};
+      var row=document.createElement('div'); row.className='item'+(cur.status==='fix'?' flag':'');
+      var t=document.createElement('div'); t.className='it-t'; t.textContent=it.t; row.appendChild(t);
+      var hh=document.createElement('div'); hh.className='it-h'; hh.textContent=it.h; row.appendChild(hh);
+      var btns=document.createElement('div'); btns.className='btns';
+      ['pass','fix','na'].forEach(function(s){
+        var b=document.createElement('button'); b.type='button';
+        b.className='st st-'+s+(cur.status===s?' on':''); b.textContent=lbl(s);
+        b.onclick=function(){ setStatus(it.id, cur.status===s?'':s); };
+        btns.appendChild(b);
+      });
+      row.appendChild(btns);
+      var note=document.createElement('input'); note.type='text'; note.className='note';
+      note.placeholder='Notes for this item (optional)'; note.value=cur.note||'';
+      note.oninput=function(){ setNote(it.id, note.value); };
+      row.appendChild(note);
+      se.appendChild(row);
+    });
+    root.appendChild(se);
+  });
+  updateBar(); renderFix();
+}
+function setStatus(id, s){
+  var o=items[id]||{}; if(s){o.status=s;}else{delete o.status;}
+  if(o.status||o.note){items[id]=o;}else{delete items[id];}
+  render(); scheduleSave();
+}
+function setNote(id, v){
+  var o=items[id]||{}; o.note=v;
+  if(o.status||o.note){items[id]=o;}else{delete items[id];}
+  renderFix(); scheduleSave();
+}
+function counts(){
+  var total=0,rev=0,fix=0,pass=0;
+  SECTIONS.forEach(function(sec){sec.items.forEach(function(it){total++;var s=(items[it.id]||{}).status;if(s)rev++;if(s==='fix')fix++;if(s==='pass')pass++;});});
+  return {total:total,rev:rev,fix:fix,pass:pass};
+}
+function updateBar(){
+  var c=counts(); var pct=c.total?Math.round(100*c.rev/c.total):0;
+  fillEl.style.width=pct+'%';
+  statEl.textContent=c.rev+' of '+c.total+' reviewed \\u00B7 '+c.pass+' good \\u00B7 '+c.fix+' to fix';
+}
+function renderFix(){
+  updateBar();
+  fixOl.innerHTML='';
+  var any=false;
+  SECTIONS.forEach(function(sec){sec.items.forEach(function(it){
+    var cur=items[it.id]||{};
+    if(cur.status==='fix'){
+      any=true;
+      var li=document.createElement('li');
+      li.appendChild(document.createTextNode(sec.name+': '+it.t));
+      if(cur.note){var n=document.createElement('span'); n.className='n'; n.textContent='\\u21B3 '+cur.note; li.appendChild(n);}
+      fixOl.appendChild(li);
+    }
+  });});
+  fixNone.style.display=any?'none':'block';
+}
+function scheduleSave(){
+  if(timer)clearTimeout(timer);
+  timer=setTimeout(save, 650);
+}
+function save(){
+  fetch('/admin/audits/'+AID,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({client:cli.value, items:items})})
+   .then(function(r){return r.json();}).then(function(j){
+     if(j&&j.ok){savedInd.classList.add('on'); setTimeout(function(){savedInd.classList.remove('on');},1200);}
+   }).catch(function(){});
+}
+cli.oninput=function(){ scheduleSave(); };
+document.getElementById('copy').onclick=function(){
+  var lines=['Facebook profile audit \\u2014 '+(cli.value||'client'),''];
+  var any=false;
+  SECTIONS.forEach(function(sec){sec.items.forEach(function(it){
+    var cur=items[it.id]||{};
+    if(cur.status==='fix'){any=true; lines.push('\\u2022 '+sec.name+': '+it.t+(cur.note?' ('+cur.note+')':''));}
+  });});
+  if(!any)lines.push('Everything looks good \\u2014 no changes needed!');
+  var txt=lines.join('\\n');
+  var btn=this;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){btn.textContent='Copied \\u2713';setTimeout(function(){btn.textContent='Copy fix list';},1400);});
+  }else{
+    var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);
+    btn.textContent='Copied \\u2713';setTimeout(function(){btn.textContent='Copy fix list';},1400);
+  }
+};
+render();
+</script>
+</body></html>"""
+
+
 # Background reminder scheduler (single gunicorn worker -> one thread, no dupes).
 # Set RUN_REMINDERS=0 to disable (used by tests).
 if os.getenv("RUN_REMINDERS", "1") != "0":

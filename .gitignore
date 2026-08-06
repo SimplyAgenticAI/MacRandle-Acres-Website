@@ -9,3 +9,4 @@ venv/
 visits.json
 leads.json
 bookings.json
+audits.json
