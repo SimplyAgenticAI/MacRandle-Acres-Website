@@ -1738,8 +1738,10 @@ def admin_audit_view(aid):
     sections = json.dumps(AUDIT_SECTIONS, ensure_ascii=False).replace("</", "<\\/")
     payload = json.dumps({"id": a["id"], "client": a.get("client", ""),
                           "items": a.get("items", {})}, ensure_ascii=False).replace("</", "<\\/")
+    share_url = "%s/audit/%s" % (SITE, aid)
     html = (AUDIT_HTML.replace("__SECTIONS__", sections)
-            .replace("__AUDIT__", payload).replace("__AID__", _esc(aid)))
+            .replace("__AUDIT__", payload).replace("__AID__", _esc(aid))
+            .replace("__SHAREURL__", _esc(share_url)))
     return Response(html, mimetype="text/html")
 
 
@@ -1781,6 +1783,83 @@ def admin_audit_delete(aid):
         v = [x for x in load_audits() if x.get("id") != aid]
         save_audits(v)
     return redirect("/admin/audits")
+
+
+def _audit_grade(pct):
+    if pct is None:
+        return ("Audit in progress", "#8a918b")
+    if pct >= 85:
+        return ("Strong profile", "#2a7d4f")
+    if pct >= 65:
+        return ("Solid, with room to grow", "#2a5c47")
+    if pct >= 40:
+        return ("Needs attention", "#b8862b")
+    return ("Big opportunities here", "#c0502b")
+
+
+@app.route("/audit/<aid>")
+def audit_report(aid):
+    a = next((x for x in load_audits() if x.get("id") == aid), None)
+    if not a:
+        return Response(AUDIT_NOTFOUND_HTML, mimetype="text/html", status=404)
+    items = a.get("items", {})
+    passes, fixes = [], []
+    for sec in AUDIT_SECTIONS:
+        for it in sec["items"]:
+            st = items.get(it["id"], {})
+            if st.get("status") == "pass":
+                passes.append((sec["name"], it))
+            elif st.get("status") == "fix":
+                fixes.append((sec["name"], it, st.get("note", "")))
+    applicable = len(passes) + len(fixes)
+    pct = round(100.0 * len(passes) / applicable) if applicable else None
+    grade, gcolor = _audit_grade(pct)
+    score_disp = ("%d%%" % pct) if pct is not None else "&mdash;"
+    ring = ("conic-gradient(%s %d%%, rgba(35,79,61,.12) 0)" % (gcolor, pct)) if pct is not None \
+        else "conic-gradient(rgba(35,79,61,.12) 0 100%)"
+
+    if applicable == 0:
+        summary = "This audit hasn't been scored yet."
+    elif not fixes:
+        summary = "Great news &mdash; your profile is in excellent shape across the board."
+    else:
+        summary = ("We reviewed %d areas of your Facebook presence. %d are working well, and "
+                   "%d have a clear opportunity to bring in more of the right clients." %
+                   (applicable, len(passes), len(fixes)))
+
+    strengths = ""
+    for name, it in passes:
+        strengths += ("<li><span class='ok'>&#10003;</span><span class='st'>%s</span>"
+                      "<span class='tag'>%s</span></li>") % (_esc(it["t"]), _esc(name))
+    if not strengths:
+        strengths = "<li class='none'>Strengths will appear here as the audit is completed.</li>"
+
+    fixes_html = ""
+    for i, (name, it, note) in enumerate(fixes, 1):
+        rec = _esc(note) if note else "Update this so it follows the best practice below."
+        fixes_html += (
+            "<div class='fix'><div class='fh'><span class='num'>%d</span>"
+            "<span class='ftag'>%s</span></div><div class='ft'>%s</div>"
+            "<div class='frec'>%s</div><div class='fhint'>&#9432; %s</div></div>") % (
+            i, _esc(name), _esc(it["t"]), rec, _esc(it["h"]))
+    if not fixes_html:
+        fixes_html = "<div class='allgood'>&#127881; Nothing to fix right now &mdash; nicely done!</div>"
+
+    html = (AUDIT_REPORT_HTML
+            .replace("__CLIENT__", _esc(a.get("client", "") or "Your"))
+            .replace("__DATE__", _esc((a.get("updated", "") or a.get("created", "") or "")[:10]))
+            .replace("__SCORE__", score_disp)
+            .replace("__RING__", ring)
+            .replace("__GRADE__", _esc(grade))
+            .replace("__GCOLOR__", gcolor)
+            .replace("__SUMMARY__", summary)
+            .replace("__PASSN__", str(len(passes)))
+            .replace("__FIXN__", str(len(fixes)))
+            .replace("__STRENGTHS__", strengths)
+            .replace("__FIXES__", fixes_html))
+    resp = Response(html, mimetype="text/html")
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 AUDITS_LIST_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
@@ -1854,6 +1933,12 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 .sumbox li{margin-bottom:7px}.sumbox li .n{display:block;font-size:12.5px;color:#d8c79b}
 .sumbox .none{opacity:.7;font-size:14px}
 .copy{border:none;background:#e0b862;color:#2a2005;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:10px;cursor:pointer}
+.sharebar{background:#eef4f0;border-bottom:1px solid rgba(35,79,61,.12)}
+.swrap{max-width:820px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:#5c635e}
+.swrap .lk{font-weight:700;color:#234F3D}
+.swrap .url{flex:1;min-width:180px;color:#2a5c47;font-weight:600;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.swrap .scopy{border:none;background:#234F3D;color:#f6f4ec;font-weight:700;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer}
+.swrap .sprev{color:#a97f2a;font-weight:700;text-decoration:none;white-space:nowrap}
 </style></head><body>
 <div class="bar"><div class="bwrap">
   <div class="brow"><a class="back" href="/admin/audits">&larr; All audits</a>
@@ -1862,6 +1947,10 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
   <div class="prog"><div class="track"><div class="fill" id="fill"></div></div>
     <span class="stat" id="stat">0 of 0 reviewed</span></div>
 </div></div>
+<div class="sharebar"><div class="swrap"><span class="lk">&#128279; Client report:</span>
+  <a class="url" id="surl" href="__SHAREURL__" target="_blank" rel="noopener">__SHAREURL__</a>
+  <button class="scopy" id="scopy" type="button">Copy link</button>
+  <a class="sprev" href="__SHAREURL__" target="_blank" rel="noopener">Preview &#8599;</a></div></div>
 <div class="wrap" id="sections"></div>
 <div class="summary"><div class="sumbox">
   <h3>&#128295; Fix list for this client</h3>
@@ -1976,8 +2065,84 @@ document.getElementById('copy').onclick=function(){
     btn.textContent='Copied \\u2713';setTimeout(function(){btn.textContent='Copy fix list';},1400);
   }
 };
+document.getElementById('scopy').onclick=function(){
+  var url=document.getElementById('surl').href, btn=this;
+  function done(){btn.textContent='Copied \\u2713';setTimeout(function(){btn.textContent='Copy link';},1400);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done);}
+  else{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}
+};
 render();
 </script>
+</body></html>"""
+
+
+AUDIT_NOTFOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Audit not found</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;display:grid;place-items:center;min-height:100vh;padding:24px;text-align:center}
+.c{max-width:420px}h1{font-size:22px;color:#234F3D;margin-bottom:8px}p{color:#5c635e}a{color:#a97f2a;font-weight:700}</style></head>
+<body><div class="c"><h1>This audit link isn't available</h1><p>It may have been removed. Visit <a href="/">MacRandle Acres</a>.</p></div></body></html>"""
+
+
+AUDIT_REPORT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Your Facebook Profile Audit - MacRandle Acres</title>
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:0 0 60px;
+  background-image:radial-gradient(900px 500px at 50% -10%,rgba(199,154,59,.1),transparent 60%)}
+.wrap{max-width:720px;margin:0 auto;padding:0 18px}
+.head{background:linear-gradient(160deg,#26543f,#1a3b2d);color:#f6f4ec;border-radius:0 0 26px 26px;padding:30px 24px 34px;text-align:center}
+.mark{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fbf7ea,#d8cfb0);display:grid;place-items:center;font-weight:800;color:#234F3D;margin:0 auto 12px}
+.brand{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#e0b862;font-weight:700}
+.head h1{font-size:23px;font-weight:800;margin:6px 0 2px}
+.head .who{opacity:.85;font-size:14px}
+.ring{width:132px;height:132px;border-radius:50%;background:__RING__;display:grid;place-items:center;margin:20px auto 8px}
+.ring .in{width:104px;height:104px;border-radius:50%;background:#1e4535;display:grid;place-items:center;flex-direction:column}
+.ring .in b{font-size:30px;color:#fff;line-height:1}.ring .in span{font-size:10.5px;color:#cfe0d6;text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+.grade{font-weight:800;font-size:16px;color:#fff}
+.summary{max-width:560px;margin:16px auto 0;font-size:15px;color:#eaf1ec;opacity:.92}
+.sec{margin-top:26px}
+.sec h2{font-size:16px;color:#234F3D;margin:0 2px 12px;display:flex;align-items:center;gap:8px}
+.card{background:#fff;border:1px solid rgba(35,79,61,.1);border-radius:16px;box-shadow:0 6px 18px rgba(35,49,40,.05);overflow:hidden}
+ul.str{list-style:none;padding:6px 4px}
+ul.str li{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(35,79,61,.07);font-size:14.5px}
+ul.str li:last-child{border-bottom:none}
+ul.str .ok{width:22px;height:22px;border-radius:50%;background:#e8f3ec;color:#1c6b40;display:grid;place-items:center;font-size:13px;font-weight:800;flex:0 0 auto}
+ul.str .st{flex:1;font-weight:600;color:#2D2D2D}
+ul.str .tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:#8a918b;font-weight:700}
+ul.str .none{opacity:.6;font-weight:500}
+.fix{background:#fff;border:1px solid rgba(35,79,61,.1);border-left:4px solid #c79a3b;border-radius:14px;padding:16px 18px;margin-bottom:12px;box-shadow:0 6px 18px rgba(35,49,40,.05)}
+.fix .fh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.fix .num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;font-weight:800;font-size:13px;display:grid;place-items:center;flex:0 0 auto}
+.fix .ftag{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#a97f2a;font-weight:800}
+.fix .ft{font-size:16px;font-weight:800;color:#234F3D}
+.fix .frec{font-size:14.5px;color:#2D2D2D;margin-top:5px}
+.fix .fhint{font-size:13px;color:#6a716b;margin-top:8px;background:#f6f4ec;border-radius:9px;padding:8px 11px}
+.allgood{background:#e8f3ec;border-radius:14px;padding:20px;text-align:center;font-size:15px;color:#1c6b40;font-weight:600}
+.cta{margin-top:30px;background:linear-gradient(160deg,#2a5c47,#1a3b2d);border-radius:20px;padding:28px 24px;text-align:center;color:#f6f4ec}
+.cta h3{font-size:19px;margin-bottom:6px}.cta p{opacity:.88;font-size:14.5px;max-width:440px;margin:0 auto 16px}
+.cta a{display:inline-block;background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;font-weight:800;font-size:15px;padding:14px 26px;border-radius:12px;text-decoration:none}
+.foot{text-align:center;color:#8a918b;font-size:12.5px;margin-top:26px}
+</style></head><body>
+<div class="head">
+  <div class="mark">M</div><div class="brand">MacRandle Acres</div>
+  <h1>Facebook Profile Audit</h1>
+  <div class="who">Prepared for __CLIENT__ &middot; __DATE__</div>
+  <div class="ring"><div class="in"><b>__SCORE__</b><span>Profile score</span></div></div>
+  <div class="grade">__GRADE__</div>
+  <div class="summary">__SUMMARY__</div>
+</div>
+<div class="wrap">
+  <div class="sec"><h2>&#9989; What's working (__PASSN__)</h2>
+    <div class="card"><ul class="str">__STRENGTHS__</ul></div></div>
+  <div class="sec"><h2>&#128295; Priority improvements (__FIXN__)</h2>
+    __FIXES__</div>
+  <div class="cta"><h3>Want these handled for you?</h3>
+    <p>These fixes are exactly the kind of quick wins that turn a profile into a lead source. Let's walk through them together and build your growth plan.</p>
+    <a href="/book">Book a Growth Audit call</a></div>
+  <div class="foot">MacRandle Acres &middot; Growth advisory for real estate teams</div>
+</div>
 </body></html>"""
 
 
