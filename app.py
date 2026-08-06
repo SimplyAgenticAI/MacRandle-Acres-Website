@@ -2092,11 +2092,16 @@ AUDIT_REPORT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:0 0 60px;
   background-image:radial-gradient(900px 500px at 50% -10%,rgba(199,154,59,.1),transparent 60%)}
 .wrap{max-width:720px;margin:0 auto;padding:0 18px}
-.head{background:linear-gradient(160deg,#26543f,#1a3b2d);color:#f6f4ec;border-radius:0 0 26px 26px;padding:30px 24px 34px;text-align:center}
+.head{position:relative;background:linear-gradient(160deg,#26543f,#1a3b2d);color:#f6f4ec;border-radius:0 0 26px 26px;padding:30px 24px 34px;text-align:center}
 .mark{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fbf7ea,#d8cfb0);display:grid;place-items:center;font-weight:800;color:#234F3D;margin:0 auto 12px}
 .brand{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#e0b862;font-weight:700}
 .head h1{font-size:23px;font-weight:800;margin:6px 0 2px}
 .head .who{opacity:.85;font-size:14px}
+.head .adv{font-size:12.5px;color:#e0b862;font-weight:700;margin-top:3px;letter-spacing:.02em}
+.printbtn{position:absolute;top:14px;right:14px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#f6f4ec;font-weight:700;font-size:12px;padding:7px 12px;border-radius:9px;cursor:pointer}
+.printbtn:hover{background:rgba(255,255,255,.2)}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@media print{body{padding:0;background:#fff}.noprint{display:none!important}.head{border-radius:0}.cta{break-inside:avoid}.fix{break-inside:avoid}}
 .ring{width:132px;height:132px;border-radius:50%;background:__RING__;display:grid;place-items:center;margin:20px auto 8px}
 .ring .in{width:104px;height:104px;border-radius:50%;background:#1e4535;display:grid;place-items:center;flex-direction:column}
 .ring .in b{font-size:30px;color:#fff;line-height:1}.ring .in span{font-size:10.5px;color:#cfe0d6;text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
@@ -2126,9 +2131,11 @@ ul.str .none{opacity:.6;font-weight:500}
 .foot{text-align:center;color:#8a918b;font-size:12.5px;margin-top:26px}
 </style></head><body>
 <div class="head">
+  <button class="printbtn noprint" type="button" onclick="window.print()">&#128424; Save as PDF</button>
   <div class="mark">M</div><div class="brand">MacRandle Acres</div>
   <h1>Facebook Profile Audit</h1>
   <div class="who">Prepared for __CLIENT__ &middot; __DATE__</div>
+  <div class="adv">Reviewed by Jeff Randle &middot; MacRandle Acres</div>
   <div class="ring"><div class="in"><b>__SCORE__</b><span>Profile score</span></div></div>
   <div class="grade">__GRADE__</div>
   <div class="summary">__SUMMARY__</div>
