@@ -1593,8 +1593,8 @@ AUDIT_SECTIONS = [
          "h": "Recognizable even as a tiny thumbnail; good lighting; face not tiny."},
     ]},
     {"name": "Bio / Intro", "icon": "\U0001F4DD", "items": [
-        {"id": "bio_full", "t": "Uses the full ~101-character bio",
-         "h": "Prime real estate — don't leave characters on the table."},
+        {"id": "bio_full", "t": "Bio makes the most of the space",
+         "h": "The bio is prime real estate — fit the most important message in, don't leave it half-empty."},
         {"id": "bio_keywords", "t": "Has 'Realtor'/'Real Estate' + area keywords",
          "h": "Their city/area plus the words people actually search, so they're findable."},
         {"id": "bio_positioning", "t": "Says who they help + the outcome",
