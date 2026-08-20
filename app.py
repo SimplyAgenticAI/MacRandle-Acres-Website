@@ -25,13 +25,38 @@ from flask import (Flask, request, session, redirect, jsonify,
                    send_from_directory, Response)
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-# Data lives in DATA_DIR when a persistent disk is mounted (survives redeploys);
-# falls back to the app folder otherwise.
-DATA = (os.getenv("DATA_DIR") or "").strip() or BASE
+
+
+def _resolve_data_dir():
+    """Pick the most persistent writable location for our JSON stores.
+
+    Prefers DATA_DIR, then common Render/hosting persistent-disk mount points
+    (these paths only exist when a disk is actually mounted there, so their
+    presence strongly implies durability), then falls back to the app folder.
+    """
+    candidates = []
+    env = (os.getenv("DATA_DIR") or "").strip()
+    if env:
+        candidates.append(env)
+    candidates += ["/data", "/var/data", "/mnt/data", "/persistent", "/disk"]
+    for d in candidates:
+        try:
+            if d == env and not os.path.isdir(d):
+                os.makedirs(d, exist_ok=True)  # honor an explicit DATA_DIR even if not yet created
+            if os.path.isdir(d) and os.access(d, os.W_OK):
+                return d
+        except Exception:
+            continue
+    return BASE
+
+
+DATA = _resolve_data_dir()
+DATA_IS_PERSISTENT = (os.path.abspath(DATA) != os.path.abspath(BASE))
 try:
     os.makedirs(DATA, exist_ok=True)
 except Exception:
     DATA = BASE
+    DATA_IS_PERSISTENT = False
 SITE = (os.getenv("SITE_URL") or "https://macrandleacres.com").rstrip("/")
 PAGES = {
     "main": {"html": "index.html", "content": "content.json"},
@@ -1678,10 +1703,20 @@ def load_audits():
 
 def save_audits(v):
     try:
-        with open(AUDITS_PATH, "w", encoding="utf-8") as f:
+        tmp = AUDITS_PATH + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
             json.dump(v, f, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, AUDITS_PATH)  # atomic on the same filesystem
+        return True
     except Exception:
-        pass
+        try:
+            with open(AUDITS_PATH, "w", encoding="utf-8") as f:
+                json.dump(v, f, ensure_ascii=False)
+            return True
+        except Exception:
+            return False
 
 
 def _audit_ids(a):
@@ -1706,8 +1741,11 @@ def admin_audits_debug():
     if not session.get("admin"):
         return redirect("/admin/login?next=/admin/audits")
     lines = ["AUDITS PERSISTENCE DEBUG", "=" * 30,
+             "PERSISTENT STORAGE = %s" % ("YES - survives updates" if DATA_IS_PERSISTENT
+                                          else "NO - TEMPORARY, wiped on every update (a disk must be mounted)"),
              "DATA_DIR env = %r" % os.getenv("DATA_DIR", ""),
-             "DATA base    = %r" % DATA,
+             "DATA dir     = %r" % DATA,
+             "/data mounted = %s" % os.path.isdir("/data"),
              "AUDITS_PATH  = %r" % AUDITS_PATH,
              "file exists  = %s" % os.path.exists(AUDITS_PATH)]
     try:
@@ -1860,9 +1898,13 @@ def admin_audit_view(aid):
                           "hidden": a.get("hidden", [])},
                          ensure_ascii=False).replace("</", "<\\/")
     share_url = "%s/audit/%s" % (SITE, aid)
+    banner = "" if DATA_IS_PERSISTENT else (
+        "<div class='pbanner'>&#9888; Heads up: this server is on TEMPORARY storage, so audits can be lost "
+        "on the next update. Contact your developer to mount a persistent disk. "
+        "<a href='/admin/audits/debug' target='_blank'>details</a></div>")
     html = (AUDIT_HTML.replace("__SECTIONS__", sections)
             .replace("__AUDIT__", payload).replace("__AID__", _esc(aid))
-            .replace("__SHAREURL__", _esc(share_url)))
+            .replace("__SHAREURL__", _esc(share_url)).replace("__PERSISTBANNER__", banner))
     return Response(html, mimetype="text/html")
 
 
@@ -1911,10 +1953,20 @@ def admin_audit_save(aid):
         a["hidden"] = clean_hidden
         if client:
             a["client"] = client
-        a["updated"] = datetime.datetime.utcnow().isoformat(timespec="seconds")
+        stamp = datetime.datetime.utcnow().isoformat(timespec="microseconds")
+        a["updated"] = stamp
         save_audits(v)
         prog = _audit_progress(a)
-    return jsonify(ok=True, progress=prog)
+        # Read back from disk and confirm this exact save landed — never report
+        # success unless the server can actually re-read it.
+        try:
+            back = next((x for x in load_audits() if x.get("id") == aid), None)
+            persisted = bool(back and back.get("updated") == stamp)
+        except Exception:
+            persisted = False
+    if not persisted:
+        return jsonify(ok=False, error="The server could not confirm the save. Please try again."), 500
+    return jsonify(ok=True, progress=prog, persistent=DATA_IS_PERSISTENT)
 
 
 AUDIT_AI_SYSTEM = (
@@ -2138,6 +2190,8 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 .saved{font-size:12px;font-weight:700;white-space:nowrap;transition:.2s}
 .saved.saved-ok{color:#2a7d4f}.saved.saved-dirty{color:#b8862b}.saved.saved-saving{color:#8a918b}
 .saved.saved-err{color:#c0392b}
+.pbanner{background:#c0392b;color:#fff;text-align:center;font-weight:700;font-size:13.5px;padding:10px 16px}
+.pbanner a{color:#ffe;text-decoration:underline}
 .savebtn{border:none;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:700;font-size:13px;padding:8px 17px;border-radius:9px;cursor:pointer;white-space:nowrap}
 .savebtn:disabled{opacity:.7;cursor:default}
 .prog{display:flex;align-items:center;gap:12px;margin-top:10px}
@@ -2195,6 +2249,7 @@ textarea.note:focus{outline:2px solid rgba(199,154,59,.4)}
 .aibtn:disabled{opacity:.65;cursor:default}
 .aimsg{font-size:13px;color:#5c635e}.aimsg a{color:#a97f2a;font-weight:700;cursor:pointer}
 </style></head><body>
+__PERSISTBANNER__
 <div class="bar"><div class="bwrap">
   <div class="brow"><a class="back" href="/admin/audits">&larr; All audits</a>
     <input class="cli" id="cli" value="" placeholder="Client name">
