@@ -891,6 +891,12 @@ def _clean_line(s):
     return re.sub(r"[\x00-\x1f\x7f]+", " ", str(s)).strip()
 
 
+def _clean_note(s):
+    """Like _clean_line but keeps newlines (audit notes are free-text and never touch email headers)."""
+    s = str(s).replace("\r\n", "\n").replace("\r", "\n")
+    return re.sub(r"[\x00-\x09\x0b-\x1f\x7f]+", " ", s).strip()
+
+
 def _ics_esc(s):
     """Escape a value for an RFC 5545 text field (backslash, semicolon, comma, newline)."""
     s = str(s).replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,")
@@ -1653,12 +1659,18 @@ def save_audits(v):
         pass
 
 
+def _audit_ids(a):
+    return AUDIT_ITEM_IDS + [c["id"] for c in a.get("custom", [])
+                             if isinstance(c, dict) and c.get("id")]
+
+
 def _audit_progress(a):
     it = a.get("items", {})
-    total = len(AUDIT_ITEM_IDS)
-    reviewed = sum(1 for k in AUDIT_ITEM_IDS if it.get(k, {}).get("status"))
-    fixes = sum(1 for k in AUDIT_ITEM_IDS if it.get(k, {}).get("status") == "fix")
-    passes = sum(1 for k in AUDIT_ITEM_IDS if it.get(k, {}).get("status") == "pass")
+    ids = _audit_ids(a)
+    total = len(ids)
+    reviewed = sum(1 for k in ids if it.get(k, {}).get("status"))
+    fixes = sum(1 for k in ids if it.get(k, {}).get("status") == "fix")
+    passes = sum(1 for k in ids if it.get(k, {}).get("status") == "pass")
     return {"total": total, "reviewed": reviewed, "fixes": fixes, "passes": passes,
             "pct": round(100.0 * reviewed / total) if total else 0}
 
@@ -1709,7 +1721,8 @@ def admin_audit_view(aid):
         return redirect("/admin/audits")
     sections = json.dumps(AUDIT_SECTIONS, ensure_ascii=False).replace("</", "<\\/")
     payload = json.dumps({"id": a["id"], "client": a.get("client", ""),
-                          "items": a.get("items", {})}, ensure_ascii=False).replace("</", "<\\/")
+                          "items": a.get("items", {}), "custom": a.get("custom", [])},
+                         ensure_ascii=False).replace("</", "<\\/")
     share_url = "%s/audit/%s" % (SITE, aid)
     html = (AUDIT_HTML.replace("__SECTIONS__", sections)
             .replace("__AUDIT__", payload).replace("__AID__", _esc(aid))
@@ -1722,14 +1735,27 @@ def admin_audit_save(aid):
     if not session.get("admin"):
         return jsonify(ok=False), 403
     data = request.get_json(silent=True) or {}
+    # Custom (per-audit) items the user added, whitelisted by id pattern + non-empty title.
+    clean_custom, seen = [], set()
+    raw_custom = data.get("custom", [])
+    if isinstance(raw_custom, list):
+        for cc in raw_custom[:80]:
+            if not isinstance(cc, dict):
+                continue
+            cid = str(cc.get("id", ""))
+            title = _clean_line(cc.get("t", ""))[:160]
+            if re.match(r"^c_[A-Za-z0-9]{1,24}$", cid) and title and cid not in seen:
+                seen.add(cid)
+                clean_custom.append({"id": cid, "t": title})
+    valid_ids = set(AUDIT_ITEM_IDS) | seen
     incoming = data.get("items", {})
     clean_items = {}
     if isinstance(incoming, dict):
         for k, val in incoming.items():
-            if k in AUDIT_ITEM_IDS and isinstance(val, dict):
+            if k in valid_ids and isinstance(val, dict):
                 st = val.get("status", "")
                 st = st if st in ("pass", "fix", "na") else ""
-                note = _clean_line(val.get("note", ""))[:400]
+                note = _clean_note(val.get("note", ""))[:400]
                 if st or note:
                     clean_items[k] = {"status": st, "note": note}
     client = _clean_line(data.get("client", ""))[:120]
@@ -1739,6 +1765,7 @@ def admin_audit_save(aid):
         if not a:
             return jsonify(ok=False), 404
         a["items"] = clean_items
+        a["custom"] = clean_custom
         if client:
             a["client"] = client
         a["updated"] = datetime.datetime.utcnow().isoformat(timespec="seconds")
@@ -1783,6 +1810,15 @@ def audit_report(aid):
                 passes.append((sec["name"], it))
             elif st.get("status") == "fix":
                 fixes.append((sec["name"], it, st.get("note", "")))
+    for cc in a.get("custom", []):
+        if not (isinstance(cc, dict) and cc.get("t")):
+            continue
+        st = items.get(cc.get("id", ""), {})
+        it = {"t": cc["t"], "h": ""}
+        if st.get("status") == "pass":
+            passes.append(("Additional", it))
+        elif st.get("status") == "fix":
+            fixes.append(("Additional", it, st.get("note", "")))
     applicable = len(passes) + len(fixes)
     pct = round(100.0 * len(passes) / applicable) if applicable else None
     grade, gcolor = _audit_grade(pct)
@@ -1808,12 +1844,15 @@ def audit_report(aid):
 
     fixes_html = ""
     for i, (name, it, note) in enumerate(fixes, 1):
-        rec = _esc(note) if note else "Update this so it follows the best practice below."
+        has_hint = bool(it.get("h"))
+        rec = _esc(note) if note else ("Update this so it follows the best practice below."
+                                       if has_hint else "Worth improving on the profile.")
+        hint_html = ("<div class='fhint'>&#9432; %s</div>" % _esc(it["h"])) if has_hint else ""
         fixes_html += (
             "<div class='fix'><div class='fh'><span class='num'>%d</span>"
             "<span class='ftag'>%s</span></div><div class='ft'>%s</div>"
-            "<div class='frec'>%s</div><div class='fhint'>&#9432; %s</div></div>") % (
-            i, _esc(name), _esc(it["t"]), rec, _esc(it["h"]))
+            "<div class='frec'>%s</div>%s</div>") % (
+            i, _esc(name), _esc(it["t"]), rec, hint_html)
     if not fixes_html:
         fixes_html = "<div class='allgood'>&#127881; Nothing to fix right now &mdash; nicely done!</div>"
 
@@ -1885,7 +1924,7 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 .sec{margin-bottom:22px}
 .sec-h{display:flex;align-items:center;gap:9px;margin:0 2px 10px}
 .sec-h .ic{font-size:19px}.sec-h .sec-t{font-size:15px;font-weight:800;color:#234F3D;letter-spacing:.01em}
-.item{background:#fff;border:1px solid rgba(35,79,61,.1);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 4px 14px rgba(35,49,40,.04)}
+.item{position:relative;background:#fff;border:1px solid rgba(35,79,61,.1);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 4px 14px rgba(35,49,40,.04)}
 .item.flag{border-color:rgba(199,80,43,.4);box-shadow:0 4px 14px rgba(199,80,43,.08)}
 .it-t{font-size:15px;font-weight:700;color:#2D2D2D}
 .it-h{font-size:13px;color:#6a716b;margin-top:3px;line-height:1.5}
@@ -1895,14 +1934,26 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 .st-pass.on{background:#e8f3ec;border-color:#2a7d4f;color:#1c6b40}
 .st-fix.on{background:#fbece7;border-color:#c0502b;color:#a83b1d}
 .st-na.on{background:#eee;border-color:#aaa;color:#666}
-.note{width:100%;margin-top:10px;padding:9px 12px;border:1px solid rgba(35,79,61,.15);border-radius:10px;font-size:13.5px;font-family:inherit}
-.note:focus{outline:2px solid rgba(199,154,59,.4)}
+.note-btn{border-style:dashed!important;color:#8a918b}
+.note-btn.has{border-style:solid!important;background:#f6f4ec;border-color:#c79a3b;color:#a97f2a}
+.notewrap{margin-top:10px}
+textarea.note{width:100%;min-height:66px;padding:10px 12px;border:1px solid rgba(35,79,61,.15);border-radius:10px;font-size:13.5px;font-family:inherit;resize:vertical;line-height:1.5}
+textarea.note:focus{outline:2px solid rgba(199,154,59,.4)}
+.ci-title{width:100%;font-size:15px;font-weight:700;color:#2D2D2D;border:1px dashed rgba(35,79,61,.28);border-radius:8px;padding:7px 9px;font-family:inherit;background:#fff}
+.ci-title:focus{outline:2px solid rgba(199,154,59,.4);border-style:solid}
+.cidel{position:absolute;top:10px;right:10px;border:none;background:none;color:#c0392b;font-size:14px;cursor:pointer;opacity:.5;padding:2px 6px;border-radius:6px}
+.cidel:hover{opacity:1;background:rgba(192,57,43,.08)}
+.additem{display:flex;gap:8px;margin-top:4px}
+.additem input{flex:1;padding:11px 13px;border:1px solid rgba(35,79,61,.2);border-radius:10px;font-size:14px;font-family:inherit}
+.additem input:focus{outline:2px solid rgba(199,154,59,.4)}
+.additem button{border:none;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;cursor:pointer;white-space:nowrap}
+.sec-add .sec-t{color:#a97f2a}
 .summary{max-width:820px;margin:8px auto 0;padding:0 18px}
 .sumbox{background:#2a1f14;color:#f6f0e4;border-radius:16px;padding:20px 22px}
 .sumbox h3{font-size:15px;margin-bottom:4px;color:#e0b862}
 .sumbox .m{font-size:13px;color:#c9bfad;opacity:.8;margin-bottom:14px}
 .sumbox ol{margin:0 0 16px 18px;font-size:14px;line-height:1.6}
-.sumbox li{margin-bottom:7px}.sumbox li .n{display:block;font-size:12.5px;color:#d8c79b}
+.sumbox li{margin-bottom:7px}.sumbox li .n{display:block;font-size:12.5px;color:#d8c79b;white-space:pre-wrap}
 .sumbox .none{opacity:.7;font-size:14px}
 .copy{border:none;background:#e0b862;color:#2a2005;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:10px;cursor:pointer}
 .sharebar{background:#eef4f0;border-bottom:1px solid rgba(35,79,61,.12)}
@@ -1933,6 +1984,7 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <script>
 var SECTIONS=__SECTIONS__, A=__AUDIT__, AID="__AID__";
 var items=(A&&A.items)||{};
+var custom=(A&&A.custom)||[];
 var root=document.getElementById('sections');
 var cli=document.getElementById('cli'); cli.value=(A&&A.client)||'';
 var savedInd=document.getElementById('saved'), fillEl=document.getElementById('fill'), statEl=document.getElementById('stat');
@@ -1940,6 +1992,40 @@ var fixOl=document.getElementById('fixlist'), fixNone=document.getElementById('f
 var timer=null;
 
 function lbl(st){return st==='pass'?'\\u2713 Looks good':st==='fix'?'\\u26A0 Needs work':'N/A';}
+function uid(){return 'c_'+Math.random().toString(36).slice(2,10);}
+
+function makeItem(id, title, hint, isCustom){
+  var cur=items[id]||{};
+  var row=document.createElement('div'); row.className='item'+(cur.status==='fix'?' flag':'');
+  if(isCustom){
+    var del=document.createElement('button'); del.type='button'; del.className='cidel'; del.title='Remove item'; del.innerHTML='&#10005;';
+    del.onclick=function(){ removeCustom(id); };
+    row.appendChild(del);
+    var ti=document.createElement('input'); ti.className='ci-title'; ti.value=title; ti.placeholder='Item title';
+    ti.oninput=function(){ setCustomTitle(id, ti.value); };
+    row.appendChild(ti);
+  } else {
+    var t=document.createElement('div'); t.className='it-t'; t.textContent=title; row.appendChild(t);
+    if(hint){var hh=document.createElement('div'); hh.className='it-h'; hh.textContent=hint; row.appendChild(hh);}
+  }
+  var btns=document.createElement('div'); btns.className='btns';
+  ['pass','fix','na'].forEach(function(s){
+    var b=document.createElement('button'); b.type='button';
+    b.className='st st-'+s+(cur.status===s?' on':''); b.textContent=lbl(s);
+    b.onclick=function(){ setStatus(id, cur.status===s?'':s); };
+    btns.appendChild(b);
+  });
+  var nb=document.createElement('button'); nb.type='button'; nb.className='st note-btn'+(cur.note?' has':'');
+  nb.textContent=cur.note?'\\uD83D\\uDCDD Note':'\\uD83D\\uDCDD Add note';
+  btns.appendChild(nb);
+  row.appendChild(btns);
+  var wrap=document.createElement('div'); wrap.className='notewrap'; wrap.style.display=cur.note?'block':'none';
+  var ta=document.createElement('textarea'); ta.className='note'; ta.placeholder='Your notes for this item...'; ta.value=cur.note||'';
+  ta.oninput=function(){ setNote(id, ta.value); var has=!!ta.value; nb.classList.toggle('has',has); nb.textContent=has?'\\uD83D\\uDCDD Note':'\\uD83D\\uDCDD Add note'; };
+  wrap.appendChild(ta); row.appendChild(wrap);
+  nb.onclick=function(){ var show=wrap.style.display==='none'; wrap.style.display=show?'block':'none'; if(show)ta.focus(); };
+  return row;
+}
 
 function render(){
   root.innerHTML='';
@@ -1949,27 +2035,23 @@ function render(){
     var ic=document.createElement('span'); ic.className='ic'; ic.textContent=sec.icon||''; h.appendChild(ic);
     var st=document.createElement('span'); st.className='sec-t'; st.textContent=sec.name; h.appendChild(st);
     se.appendChild(h);
-    sec.items.forEach(function(it){
-      var cur=items[it.id]||{};
-      var row=document.createElement('div'); row.className='item'+(cur.status==='fix'?' flag':'');
-      var t=document.createElement('div'); t.className='it-t'; t.textContent=it.t; row.appendChild(t);
-      var hh=document.createElement('div'); hh.className='it-h'; hh.textContent=it.h; row.appendChild(hh);
-      var btns=document.createElement('div'); btns.className='btns';
-      ['pass','fix','na'].forEach(function(s){
-        var b=document.createElement('button'); b.type='button';
-        b.className='st st-'+s+(cur.status===s?' on':''); b.textContent=lbl(s);
-        b.onclick=function(){ setStatus(it.id, cur.status===s?'':s); };
-        btns.appendChild(b);
-      });
-      row.appendChild(btns);
-      var note=document.createElement('input'); note.type='text'; note.className='note';
-      note.placeholder='Notes for this item (optional)'; note.value=cur.note||'';
-      note.oninput=function(){ setNote(it.id, note.value); };
-      row.appendChild(note);
-      se.appendChild(row);
-    });
+    sec.items.forEach(function(it){ se.appendChild(makeItem(it.id, it.t, it.h, false)); });
     root.appendChild(se);
   });
+  var cs=document.createElement('div'); cs.className='sec sec-add';
+  var ch=document.createElement('div'); ch.className='sec-h';
+  var cic=document.createElement('span'); cic.className='ic'; cic.textContent='\\u2795'; ch.appendChild(cic);
+  var ct=document.createElement('span'); ct.className='sec-t'; ct.textContent='Your added items'; ch.appendChild(ct);
+  cs.appendChild(ch);
+  custom.forEach(function(cc){ cs.appendChild(makeItem(cc.id, cc.t, '', true)); });
+  var add=document.createElement('div'); add.className='additem';
+  var inp=document.createElement('input'); inp.type='text'; inp.placeholder='Add your own audit item, then press Add';
+  var addBtn=document.createElement('button'); addBtn.type='button'; addBtn.textContent='Add';
+  function doAdd(){ var v=(inp.value||'').trim(); if(!v)return; custom.push({id:uid(), t:v}); render(); scheduleSave(); var ni=root.querySelector('.additem input'); if(ni)ni.focus(); }
+  addBtn.onclick=doAdd;
+  inp.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); doAdd(); } };
+  add.appendChild(inp); add.appendChild(addBtn); cs.appendChild(add);
+  root.appendChild(cs);
   updateBar(); renderFix();
 }
 function setStatus(id, s){
@@ -1982,9 +2064,22 @@ function setNote(id, v){
   if(o.status||o.note){items[id]=o;}else{delete items[id];}
   renderFix(); scheduleSave();
 }
+function setCustomTitle(id, v){
+  for(var i=0;i<custom.length;i++){ if(custom[i].id===id){ custom[i].t=v; break; } }
+  renderFix(); scheduleSave();
+}
+function removeCustom(id){
+  custom=custom.filter(function(c){ return c.id!==id; });
+  delete items[id];
+  render(); scheduleSave();
+}
+function eachItem(cb){
+  SECTIONS.forEach(function(sec){ sec.items.forEach(function(it){ cb(sec.name, it.id, it.t); }); });
+  custom.forEach(function(cc){ cb('Additional', cc.id, cc.t); });
+}
 function counts(){
   var total=0,rev=0,fix=0,pass=0;
-  SECTIONS.forEach(function(sec){sec.items.forEach(function(it){total++;var s=(items[it.id]||{}).status;if(s)rev++;if(s==='fix')fix++;if(s==='pass')pass++;});});
+  eachItem(function(sn,id,t){ total++; var s=(items[id]||{}).status; if(s)rev++; if(s==='fix')fix++; if(s==='pass')pass++; });
   return {total:total,rev:rev,fix:fix,pass:pass};
 }
 function updateBar(){
@@ -1994,18 +2089,17 @@ function updateBar(){
 }
 function renderFix(){
   updateBar();
-  fixOl.innerHTML='';
-  var any=false;
-  SECTIONS.forEach(function(sec){sec.items.forEach(function(it){
-    var cur=items[it.id]||{};
+  fixOl.innerHTML=''; var any=false;
+  eachItem(function(sn,id,t){
+    var cur=items[id]||{};
     if(cur.status==='fix'){
       any=true;
       var li=document.createElement('li');
-      li.appendChild(document.createTextNode(sec.name+': '+it.t));
+      li.appendChild(document.createTextNode(sn+': '+(t||'(untitled)')));
       if(cur.note){var n=document.createElement('span'); n.className='n'; n.textContent='\\u21B3 '+cur.note; li.appendChild(n);}
       fixOl.appendChild(li);
     }
-  });});
+  });
   fixNone.style.display=any?'none':'block';
 }
 function scheduleSave(){
@@ -2014,7 +2108,7 @@ function scheduleSave(){
 }
 function save(){
   fetch('/admin/audits/'+AID,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({client:cli.value, items:items})})
+    body:JSON.stringify({client:cli.value, items:items, custom:custom})})
    .then(function(r){return r.json();}).then(function(j){
      if(j&&j.ok){savedInd.classList.add('on'); setTimeout(function(){savedInd.classList.remove('on');},1200);}
    }).catch(function(){});
@@ -2023,10 +2117,10 @@ cli.oninput=function(){ scheduleSave(); };
 document.getElementById('copy').onclick=function(){
   var lines=['Facebook profile audit \\u2014 '+(cli.value||'client'),''];
   var any=false;
-  SECTIONS.forEach(function(sec){sec.items.forEach(function(it){
-    var cur=items[it.id]||{};
-    if(cur.status==='fix'){any=true; lines.push('\\u2022 '+sec.name+': '+it.t+(cur.note?' ('+cur.note+')':''));}
-  });});
+  eachItem(function(sn,id,t){
+    var cur=items[id]||{};
+    if(cur.status==='fix'){any=true; lines.push('\\u2022 '+sn+': '+(t||'(untitled)')+(cur.note?' ('+cur.note+')':''));}
+  });
   if(!any)lines.push('Everything looks good \\u2014 no changes needed!');
   var txt=lines.join('\\n');
   var btn=this;
@@ -2094,7 +2188,7 @@ ul.str .none{opacity:.6;font-weight:500}
 .fix .num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;font-weight:800;font-size:13px;display:grid;place-items:center;flex:0 0 auto}
 .fix .ftag{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#a97f2a;font-weight:800}
 .fix .ft{font-size:16px;font-weight:800;color:#234F3D}
-.fix .frec{font-size:14.5px;color:#2D2D2D;margin-top:5px}
+.fix .frec{font-size:14.5px;color:#2D2D2D;margin-top:5px;white-space:pre-wrap}
 .fix .fhint{font-size:13px;color:#6a716b;margin-top:8px;background:#f6f4ec;border-radius:9px;padding:8px 11px}
 .allgood{background:#e8f3ec;border-radius:14px;padding:20px;text-align:center;font-size:15px;color:#1c6b40;font-weight:600}
 .cta{margin-top:30px;background:linear-gradient(160deg,#2a5c47,#1a3b2d);border-radius:20px;padding:28px 24px;text-align:center;color:#f6f4ec}
