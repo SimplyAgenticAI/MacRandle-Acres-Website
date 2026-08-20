@@ -1905,7 +1905,9 @@ def admin_audit_view(aid):
     html = (AUDIT_HTML.replace("__SECTIONS__", sections)
             .replace("__AUDIT__", payload).replace("__AID__", _esc(aid))
             .replace("__SHAREURL__", _esc(share_url)).replace("__PERSISTBANNER__", banner))
-    return Response(html, mimetype="text/html")
+    resp = Response(html, mimetype="text/html")
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    return resp
 
 
 @app.route("/admin/audits/<aid>", methods=["POST"])
