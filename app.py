@@ -1916,6 +1916,8 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 .cli{flex:1;font-size:18px;font-weight:800;color:#234F3D;border:none;background:none;padding:4px 6px;border-radius:8px}
 .cli:focus{outline:2px solid rgba(199,154,59,.5);background:#fff}
 .saved{font-size:12px;color:#2a7d4f;opacity:0;transition:.2s;white-space:nowrap}.saved.on{opacity:1}
+.savebtn{border:none;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:700;font-size:13px;padding:8px 17px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.savebtn:disabled{opacity:.7;cursor:default}
 .prog{display:flex;align-items:center;gap:12px;margin-top:10px}
 .track{flex:1;height:10px;border-radius:100px;background:rgba(35,79,61,.12);overflow:hidden}
 .fill{height:100%;width:0;background:linear-gradient(90deg,#2a5c47,#c79a3b);transition:width .3s}
@@ -1966,7 +1968,8 @@ textarea.note:focus{outline:2px solid rgba(199,154,59,.4)}
 <div class="bar"><div class="bwrap">
   <div class="brow"><a class="back" href="/admin/audits">&larr; All audits</a>
     <input class="cli" id="cli" value="" placeholder="Client name">
-    <span class="saved" id="saved">Saved &#10003;</span></div>
+    <span class="saved" id="saved">Saved &#10003;</span>
+    <button class="savebtn" id="savebtn" type="button">Save</button></div>
   <div class="prog"><div class="track"><div class="fill" id="fill"></div></div>
     <span class="stat" id="stat">0 of 0 reviewed</span></div>
 </div></div>
@@ -2102,18 +2105,30 @@ function renderFix(){
   });
   fixNone.style.display=any?'none':'block';
 }
+function payload(){ return JSON.stringify({client:cli.value, items:items, custom:custom}); }
 function scheduleSave(){
   if(timer)clearTimeout(timer);
   timer=setTimeout(save, 650);
 }
-function save(){
-  fetch('/admin/audits/'+AID,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({client:cli.value, items:items, custom:custom})})
+function doSave(cb){
+  if(timer){clearTimeout(timer); timer=null;}
+  return fetch('/admin/audits/'+AID,{method:'POST',headers:{'Content-Type':'application/json'},body:payload()})
    .then(function(r){return r.json();}).then(function(j){
      if(j&&j.ok){savedInd.classList.add('on'); setTimeout(function(){savedInd.classList.remove('on');},1200);}
-   }).catch(function(){});
+     if(cb)cb(j);
+   }).catch(function(){ if(cb)cb(null); });
 }
+function save(){ doSave(); }
 cli.oninput=function(){ scheduleSave(); };
+document.getElementById('savebtn').onclick=function(){
+  var btn=this; btn.disabled=true; btn.textContent='Saving\\u2026';
+  doSave(function(j){ btn.textContent=(j&&j.ok)?'Saved \\u2713':'Try again'; setTimeout(function(){btn.disabled=false; btn.textContent='Save';},1300); });
+};
+window.addEventListener('beforeunload', function(){
+  if(timer && navigator.sendBeacon){
+    try{ navigator.sendBeacon('/admin/audits/'+AID, new Blob([payload()],{type:'application/json'})); }catch(e){}
+  }
+});
 document.getElementById('copy').onclick=function(){
   var lines=['Facebook profile audit \\u2014 '+(cli.value||'client'),''];
   var any=false;
@@ -2211,9 +2226,9 @@ ul.str .none{opacity:.6;font-weight:500}
     <div class="card"><ul class="str">__STRENGTHS__</ul></div></div>
   <div class="sec"><h2>&#128295; Priority improvements (__FIXN__)</h2>
     __FIXES__</div>
-  <div class="cta"><h3>Want these handled for you?</h3>
-    <p>These fixes are exactly the kind of quick wins that turn a profile into a lead source. Let's walk through them together and build your growth plan.</p>
-    <a href="/book">Book a Growth Audit call</a></div>
+  <div class="cta"><h3>Want to walk through this together?</h3>
+    <p>Happy to hop on a quick call, go through these with you, and answer anything that comes up. No pressure &mdash; just a friendly working session.</p>
+    <a href="/book">Grab a time to chat &rarr;</a></div>
   <div class="foot">MacRandle Acres &middot; Growth advisory for real estate teams</div>
 </div>
 </body></html>"""
