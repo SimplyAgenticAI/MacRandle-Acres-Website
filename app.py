@@ -2421,19 +2421,19 @@ function renderFix(){
 }
 var dirty=false, retryT=null;
 function payload(){ return JSON.stringify({client:cli.value, items:items, custom:custom, hidden:hidden}); }
-function setStatus(state){
+function setSaveUI(state){
   var m={ok:'Saved \\u2713',dirty:'Unsaved changes\\u2026',saving:'Saving\\u2026',err:'\\u26A0 Not saved \\u2014 retrying'};
   savedInd.className='saved saved-'+state; savedInd.textContent=m[state]||'';
 }
-function scheduleSave(){ dirty=true; setStatus('dirty'); if(timer)clearTimeout(timer); timer=setTimeout(save,650); }
+function scheduleSave(){ dirty=true; setSaveUI('dirty'); if(timer)clearTimeout(timer); timer=setTimeout(save,650); }
 function doSave(cb){
   if(timer){clearTimeout(timer);timer=null;}
   if(retryT){clearTimeout(retryT);retryT=null;}
-  setStatus('saving');
+  setSaveUI('saving');
   return fetch('/admin/audits/'+AID,{method:'POST',headers:{'Content-Type':'application/json'},body:payload()})
    .then(function(r){ if(!r.ok)throw 0; return r.json(); })
-   .then(function(j){ if(j&&j.ok){ dirty=false; setStatus('ok'); if(cb)cb(j); } else { throw 0; } })
-   .catch(function(){ setStatus('err'); retryT=setTimeout(save,3000); if(cb)cb(null); });
+   .then(function(j){ if(j&&j.ok){ dirty=false; setSaveUI('ok'); if(cb)cb(j); } else { throw 0; } })
+   .catch(function(){ setSaveUI('err'); retryT=setTimeout(save,3000); if(cb)cb(null); });
 }
 function save(){ doSave(); }
 cli.oninput=function(){ scheduleSave(); };
@@ -2447,7 +2447,7 @@ window.addEventListener('beforeunload', function(e){
     e.preventDefault(); e.returnValue=''; return '';
   }
 });
-setStatus('ok');
+setSaveUI('ok');
 document.getElementById('copy').onclick=function(){
   var lines=['Facebook profile audit \\u2014 '+(cli.value||'client'),''];
   var any=false;
