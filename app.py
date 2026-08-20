@@ -902,8 +902,8 @@ def gen_slots():
 
 @app.route("/healthz")
 def healthz():
-    # Lightweight, untracked endpoint for uptime pings (keeps the free instance warm).
-    return Response("ok", mimetype="text/plain")
+    # Lightweight, untracked endpoint for uptime pings + deploy-version check.
+    return Response("ok build-DEPLOYCHECK-7", mimetype="text/plain")
 
 
 @app.route("/api/slots")
