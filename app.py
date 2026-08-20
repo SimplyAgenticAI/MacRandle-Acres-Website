@@ -1676,6 +1676,42 @@ def _audit_progress(a):
             "pct": round(100.0 * reviewed / total) if total else 0}
 
 
+@app.route("/admin/audits/debug")
+def admin_audits_debug():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/audits")
+    lines = ["AUDITS PERSISTENCE DEBUG", "=" * 30,
+             "DATA_DIR env = %r" % os.getenv("DATA_DIR", ""),
+             "DATA base    = %r" % DATA,
+             "AUDITS_PATH  = %r" % AUDITS_PATH,
+             "file exists  = %s" % os.path.exists(AUDITS_PATH)]
+    try:
+        d = os.path.dirname(AUDITS_PATH) or "."
+        lines.append("dir writable = %s" % os.access(d, os.W_OK))
+    except Exception as e:
+        lines.append("dir writable = err %s" % e)
+    try:
+        if os.path.exists(AUDITS_PATH):
+            mt = datetime.datetime.utcfromtimestamp(os.path.getmtime(AUDITS_PATH)).isoformat()
+            lines.append("file mtime   = %sZ (UTC)" % mt)
+            lines.append("file size    = %d bytes" % os.path.getsize(AUDITS_PATH))
+    except Exception as e:
+        lines.append("mtime        = err %s" % e)
+    v = load_audits()
+    lines.append("")
+    lines.append("STORED AUDITS = %d" % len(v))
+    for a in v:
+        try:
+            p = _audit_progress(a)
+            noted = sum(1 for it in a.get("items", {}).values() if isinstance(it, dict) and it.get("note"))
+            lines.append("  - id=%s | client=%r | created=%s | updated=%s | reviewed=%d/%d | notes=%d"
+                         % (a.get("id"), a.get("client"), (a.get("created", "") or "")[:19],
+                            (a.get("updated", "") or "")[:19], p["reviewed"], p["total"], noted))
+        except Exception as e:
+            lines.append("  - id=%s | (error reading: %s)" % (a.get("id"), e))
+    return Response("\n".join(lines), mimetype="text/plain")
+
+
 @app.route("/admin/audits")
 def admin_audits():
     if not session.get("admin"):
