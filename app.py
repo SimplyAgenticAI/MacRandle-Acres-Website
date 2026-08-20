@@ -1660,8 +1660,9 @@ def save_audits(v):
 
 
 def _audit_ids(a):
-    return AUDIT_ITEM_IDS + [c["id"] for c in a.get("custom", [])
-                             if isinstance(c, dict) and c.get("id")]
+    hidden = set(a.get("hidden", []) if isinstance(a.get("hidden"), list) else [])
+    return [i for i in AUDIT_ITEM_IDS if i not in hidden] + \
+           [c["id"] for c in a.get("custom", []) if isinstance(c, dict) and c.get("id")]
 
 
 def _audit_progress(a):
@@ -1721,7 +1722,8 @@ def admin_audit_view(aid):
         return redirect("/admin/audits")
     sections = json.dumps(AUDIT_SECTIONS, ensure_ascii=False).replace("</", "<\\/")
     payload = json.dumps({"id": a["id"], "client": a.get("client", ""),
-                          "items": a.get("items", {}), "custom": a.get("custom", [])},
+                          "items": a.get("items", {}), "custom": a.get("custom", []),
+                          "hidden": a.get("hidden", [])},
                          ensure_ascii=False).replace("</", "<\\/")
     share_url = "%s/audit/%s" % (SITE, aid)
     html = (AUDIT_HTML.replace("__SECTIONS__", sections)
@@ -1748,6 +1750,12 @@ def admin_audit_save(aid):
                 seen.add(cid)
                 clean_custom.append({"id": cid, "t": title})
     valid_ids = set(AUDIT_ITEM_IDS) | seen
+    raw_hidden = data.get("hidden", [])
+    clean_hidden = []
+    if isinstance(raw_hidden, list):
+        for hid in raw_hidden:
+            if hid in AUDIT_ITEM_IDS and hid not in clean_hidden:
+                clean_hidden.append(hid)
     incoming = data.get("items", {})
     clean_items = {}
     if isinstance(incoming, dict):
@@ -1766,6 +1774,7 @@ def admin_audit_save(aid):
             return jsonify(ok=False), 404
         a["items"] = clean_items
         a["custom"] = clean_custom
+        a["hidden"] = clean_hidden
         if client:
             a["client"] = client
         a["updated"] = datetime.datetime.utcnow().isoformat(timespec="seconds")
@@ -1802,9 +1811,12 @@ def audit_report(aid):
     if not a:
         return Response(AUDIT_NOTFOUND_HTML, mimetype="text/html", status=404)
     items = a.get("items", {})
+    hidden = set(a.get("hidden", []) if isinstance(a.get("hidden"), list) else [])
     passes, fixes = [], []
     for sec in AUDIT_SECTIONS:
         for it in sec["items"]:
+            if it["id"] in hidden:
+                continue
             st = items.get(it["id"], {})
             if st.get("status") == "pass":
                 passes.append((sec["name"], it))
@@ -1928,7 +1940,7 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 .sec-h .ic{font-size:19px}.sec-h .sec-t{font-size:15px;font-weight:800;color:#234F3D;letter-spacing:.01em}
 .item{position:relative;background:#fff;border:1px solid rgba(35,79,61,.1);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 4px 14px rgba(35,49,40,.04)}
 .item.flag{border-color:rgba(199,80,43,.4);box-shadow:0 4px 14px rgba(199,80,43,.08)}
-.it-t{font-size:15px;font-weight:700;color:#2D2D2D}
+.it-t{font-size:15px;font-weight:700;color:#2D2D2D;padding-right:24px}
 .it-h{font-size:13px;color:#6a716b;margin-top:3px;line-height:1.5}
 .btns{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
 .st{border:1.5px solid rgba(35,79,61,.18);background:#fff;color:#5c635e;font-weight:700;font-size:13px;padding:7px 13px;border-radius:100px;cursor:pointer;transition:.12s}
@@ -1950,6 +1962,10 @@ textarea.note:focus{outline:2px solid rgba(199,154,59,.4)}
 .additem input:focus{outline:2px solid rgba(199,154,59,.4)}
 .additem button{border:none;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;cursor:pointer;white-space:nowrap}
 .sec-add .sec-t{color:#a97f2a}
+.sec-hidden .sec-t{color:#8a918b}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f4f3ee;border:1px dashed rgba(35,79,61,.2);border-radius:10px;padding:9px 12px;margin-bottom:8px;font-size:13.5px;color:#6a716b}
+.hrow small{display:block;color:#a0a6a0;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.04em;margin-top:2px}
+.restore{border:none;background:#234F3D;color:#f6f4ec;font-weight:700;font-size:12px;padding:6px 13px;border-radius:8px;cursor:pointer;white-space:nowrap}
 .summary{max-width:820px;margin:8px auto 0;padding:0 18px}
 .sumbox{background:#2a1f14;color:#f6f0e4;border-radius:16px;padding:20px 22px}
 .sumbox h3{font-size:15px;margin-bottom:4px;color:#e0b862}
@@ -1988,6 +2004,9 @@ textarea.note:focus{outline:2px solid rgba(199,154,59,.4)}
 var SECTIONS=__SECTIONS__, A=__AUDIT__, AID="__AID__";
 var items=(A&&A.items)||{};
 var custom=(A&&A.custom)||[];
+var hidden=(A&&A.hidden)||[];
+var ITEM_BY_ID={};
+SECTIONS.forEach(function(sec){sec.items.forEach(function(it){ITEM_BY_ID[it.id]={sec:sec.name,t:it.t};});});
 var root=document.getElementById('sections');
 var cli=document.getElementById('cli'); cli.value=(A&&A.client)||'';
 var savedInd=document.getElementById('saved'), fillEl=document.getElementById('fill'), statEl=document.getElementById('stat');
@@ -2008,6 +2027,9 @@ function makeItem(id, title, hint, isCustom){
     ti.oninput=function(){ setCustomTitle(id, ti.value); };
     row.appendChild(ti);
   } else {
+    var hb=document.createElement('button'); hb.type='button'; hb.className='cidel'; hb.title='Remove from this audit'; hb.innerHTML='&#10005;';
+    hb.onclick=function(){ hideDefault(id); };
+    row.appendChild(hb);
     var t=document.createElement('div'); t.className='it-t'; t.textContent=title; row.appendChild(t);
     if(hint){var hh=document.createElement('div'); hh.className='it-h'; hh.textContent=hint; row.appendChild(hh);}
   }
@@ -2033,12 +2055,14 @@ function makeItem(id, title, hint, isCustom){
 function render(){
   root.innerHTML='';
   SECTIONS.forEach(function(sec){
+    var vis=sec.items.filter(function(it){ return hidden.indexOf(it.id)<0; });
+    if(!vis.length) return;
     var se=document.createElement('div'); se.className='sec';
     var h=document.createElement('div'); h.className='sec-h';
     var ic=document.createElement('span'); ic.className='ic'; ic.textContent=sec.icon||''; h.appendChild(ic);
     var st=document.createElement('span'); st.className='sec-t'; st.textContent=sec.name; h.appendChild(st);
     se.appendChild(h);
-    sec.items.forEach(function(it){ se.appendChild(makeItem(it.id, it.t, it.h, false)); });
+    vis.forEach(function(it){ se.appendChild(makeItem(it.id, it.t, it.h, false)); });
     root.appendChild(se);
   });
   var cs=document.createElement('div'); cs.className='sec sec-add';
@@ -2055,8 +2079,28 @@ function render(){
   inp.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); doAdd(); } };
   add.appendChild(inp); add.appendChild(addBtn); cs.appendChild(add);
   root.appendChild(cs);
+  if(hidden.length){
+    var hs=document.createElement('div'); hs.className='sec sec-hidden';
+    var hh=document.createElement('div'); hh.className='sec-h';
+    var hic=document.createElement('span'); hic.className='ic'; hic.textContent='\\uD83D\\uDC41'; hh.appendChild(hic);
+    var ht=document.createElement('span'); ht.className='sec-t'; ht.textContent='Removed from this audit ('+hidden.length+')'; hh.appendChild(ht);
+    hs.appendChild(hh);
+    hidden.forEach(function(hid){
+      var meta=ITEM_BY_ID[hid]; if(!meta)return;
+      var r=document.createElement('div'); r.className='hrow';
+      var sp=document.createElement('span'); sp.textContent=meta.t;
+      var tag=document.createElement('small'); tag.textContent=meta.sec; sp.appendChild(tag);
+      r.appendChild(sp);
+      var rb=document.createElement('button'); rb.type='button'; rb.className='restore'; rb.textContent='Restore';
+      rb.onclick=function(){ restoreDefault(hid); };
+      r.appendChild(rb); hs.appendChild(r);
+    });
+    root.appendChild(hs);
+  }
   updateBar(); renderFix();
 }
+function hideDefault(id){ if(hidden.indexOf(id)<0)hidden.push(id); render(); scheduleSave(); }
+function restoreDefault(id){ hidden=hidden.filter(function(x){ return x!==id; }); render(); scheduleSave(); }
 function setStatus(id, s){
   var o=items[id]||{}; if(s){o.status=s;}else{delete o.status;}
   if(o.status||o.note){items[id]=o;}else{delete items[id];}
@@ -2077,7 +2121,7 @@ function removeCustom(id){
   render(); scheduleSave();
 }
 function eachItem(cb){
-  SECTIONS.forEach(function(sec){ sec.items.forEach(function(it){ cb(sec.name, it.id, it.t); }); });
+  SECTIONS.forEach(function(sec){ sec.items.forEach(function(it){ if(hidden.indexOf(it.id)<0) cb(sec.name, it.id, it.t); }); });
   custom.forEach(function(cc){ cb('Additional', cc.id, cc.t); });
 }
 function counts(){
@@ -2105,7 +2149,7 @@ function renderFix(){
   });
   fixNone.style.display=any?'none':'block';
 }
-function payload(){ return JSON.stringify({client:cli.value, items:items, custom:custom}); }
+function payload(){ return JSON.stringify({client:cli.value, items:items, custom:custom, hidden:hidden}); }
 function scheduleSave(){
   if(timer)clearTimeout(timer);
   timer=setTimeout(save, 650);
