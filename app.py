@@ -1582,6 +1582,31 @@ body{font-family:'Inter',system-ui,sans-serif;background:#12261d;color:#f6f4ec;d
 # Facebook profile audit tool (admin) — per-client checklist with live scoring
 # ---------------------------------------------------------------------------
 AUDITS_PATH = os.path.join(DATA, "audits.json")
+SETTINGS_PATH = os.path.join(DATA, "settings.json")
+
+
+def load_settings():
+    try:
+        with open(SETTINGS_PATH, encoding="utf-8") as f:
+            d = json.load(f)
+            return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
+def save_settings(d):
+    try:
+        with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
+            json.dump(d, f, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+
+def get_ai_key():
+    """API key from the Render env var (preferred) or, failing that, the in-app admin setting."""
+    return (os.getenv("ANTHROPIC_API_KEY", "").strip()
+            or str(load_settings().get("anthropic_api_key", "")).strip())
 
 AUDIT_SECTIONS = [
     {"name": "Cover Photo", "icon": "\U0001F5BC️", "items": [
@@ -1710,6 +1735,79 @@ def admin_audits_debug():
         except Exception as e:
             lines.append("  - id=%s | (error reading: %s)" % (a.get("id"), e))
     return Response("\n".join(lines), mimetype="text/plain")
+
+
+@app.route("/admin/settings")
+def admin_settings():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/settings")
+    env_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+    stored = str(load_settings().get("anthropic_api_key", "")).strip()
+    if env_key:
+        status = ("<div class='ok'>&#10003; Using an API key from Render (env var). "
+                  "That takes priority; a key saved here is only used if the env var is removed.</div>")
+    elif stored:
+        tail = _esc(stored[-4:]) if len(stored) >= 4 else "&bull;&bull;&bull;&bull;"
+        status = ("<div class='ok'>&#10003; A key is saved (ends in <b>%s</b>). AI features are ready.</div>"
+                  "<form method='post' action='/admin/settings/ai-key' style='margin-top:10px'>"
+                  "<input type='hidden' name='clear' value='1'>"
+                  "<button class='rm' type='submit' onclick=\"return confirm('Remove the saved API key?')\">Remove saved key</button></form>") % tail
+    else:
+        status = "<div class='no'>No API key set yet. Paste one below to turn on the &ldquo;Optimize notes with AI&rdquo; button.</div>"
+    saved = "<div class='flash'>Saved &#10003;</div>" if request.args.get("saved") else ""
+    html = SETTINGS_HTML.replace("__STATUS__", status).replace("__FLASH__", saved)
+    return Response(html, mimetype="text/html")
+
+
+@app.route("/admin/settings/ai-key", methods=["POST"])
+def admin_settings_ai_key():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/settings")
+    s = load_settings()
+    if request.form.get("clear"):
+        s.pop("anthropic_api_key", None)
+        save_settings(s)
+        return redirect("/admin/settings?saved=1")
+    key = _clean_line(request.form.get("key", ""))[:200]
+    if key:
+        s["anthropic_api_key"] = key
+        save_settings(s)
+    return redirect("/admin/settings?saved=1")
+
+
+SETTINGS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Admin Settings - MacRandle Acres</title>
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:30px 16px}
+.wrap{max-width:560px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decoration:none}
+.card{background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:16px;padding:24px;box-shadow:0 8px 22px rgba(35,49,40,.06);margin-top:16px}
+.card h2{font-size:16px;color:#234F3D;margin-bottom:6px}
+.card p.d{font-size:13.5px;color:#5c635e;margin-bottom:14px;line-height:1.55}
+.ok{background:#e8f3ec;color:#1c6b40;border-radius:10px;padding:11px 13px;font-size:14px;font-weight:600}
+.no{background:#fbf0e7;color:#a4632a;border-radius:10px;padding:11px 13px;font-size:14px;font-weight:600}
+.flash{background:#234F3D;color:#f6f4ec;border-radius:10px;padding:9px 13px;font-size:14px;font-weight:700;margin-bottom:14px;display:inline-block}
+form.set{margin-top:16px;display:flex;gap:9px;flex-wrap:wrap}
+form.set input{flex:1;min-width:220px;padding:12px 13px;border:1px solid rgba(35,79,61,.2);border-radius:10px;font-size:14px;font-family:inherit}
+form.set input:focus{outline:2px solid rgba(199,154,59,.4)}
+form.set button{border:none;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:700;font-size:14px;padding:12px 20px;border-radius:10px;cursor:pointer}
+.rm{border:none;background:none;color:#c0392b;font-weight:700;font-size:13px;cursor:pointer;padding:6px 0;text-decoration:underline}
+.hint{font-size:12.5px;color:#8a918b;margin-top:12px;line-height:1.55}.hint a{color:#a97f2a;font-weight:700}
+</style></head><body><div class="wrap">
+<div class="top"><h1>Admin Settings</h1><a class="back" href="/admin/audits">&larr; FB Audits</a></div>
+__FLASH__
+<div class="card">
+  <h2>&#10024; AI note polishing (Anthropic API key)</h2>
+  <p class="d">Powers the &ldquo;Optimize all notes with AI&rdquo; button in the audit tool. Paste your Anthropic API key once and it's stored on your server &mdash; no need to touch Render.</p>
+  __STATUS__
+  <form class="set" method="post" action="/admin/settings/ai-key" autocomplete="off">
+    <input type="password" name="key" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+    <button type="submit">Save key</button>
+  </form>
+  <div class="hint">Get a key at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> &rarr; API Keys. It's stored on your own server and never shown again after saving. This is a paid Anthropic API (note polishing is very cheap).</div>
+</div>
+</div></body></html>"""
 
 
 @app.route("/admin/audits")
@@ -1845,9 +1943,9 @@ def _extract_json(s):
 def admin_audit_optimize(aid):
     if not session.get("admin"):
         return jsonify(ok=False), 403
-    key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+    key = get_ai_key()
     if not key:
-        return jsonify(ok=False, error="AI isn't set up yet. Add an ANTHROPIC_API_KEY env var in Render to enable this."), 400
+        return jsonify(ok=False, error="AI isn't set up yet. Add your Anthropic API key under Admin → Settings."), 400
     data = request.get_json(silent=True) or {}
     raw = data.get("notes", [])
     notes = []
@@ -2037,7 +2135,9 @@ AUDIT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 .brow a.back{font-size:13px;color:#5c635e;text-decoration:none;white-space:nowrap}
 .cli{flex:1;font-size:18px;font-weight:800;color:#234F3D;border:none;background:none;padding:4px 6px;border-radius:8px}
 .cli:focus{outline:2px solid rgba(199,154,59,.5);background:#fff}
-.saved{font-size:12px;color:#2a7d4f;opacity:0;transition:.2s;white-space:nowrap}.saved.on{opacity:1}
+.saved{font-size:12px;font-weight:700;white-space:nowrap;transition:.2s}
+.saved.saved-ok{color:#2a7d4f}.saved.saved-dirty{color:#b8862b}.saved.saved-saving{color:#8a918b}
+.saved.saved-err{color:#c0392b}
 .savebtn{border:none;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:700;font-size:13px;padding:8px 17px;border-radius:9px;cursor:pointer;white-space:nowrap}
 .savebtn:disabled{opacity:.7;cursor:default}
 .prog{display:flex;align-items:center;gap:12px;margin-top:10px}
@@ -2264,18 +2364,21 @@ function renderFix(){
   });
   fixNone.style.display=any?'none':'block';
 }
+var dirty=false, retryT=null;
 function payload(){ return JSON.stringify({client:cli.value, items:items, custom:custom, hidden:hidden}); }
-function scheduleSave(){
-  if(timer)clearTimeout(timer);
-  timer=setTimeout(save, 650);
+function setStatus(state){
+  var m={ok:'Saved \\u2713',dirty:'Unsaved changes\\u2026',saving:'Saving\\u2026',err:'\\u26A0 Not saved \\u2014 retrying'};
+  savedInd.className='saved saved-'+state; savedInd.textContent=m[state]||'';
 }
+function scheduleSave(){ dirty=true; setStatus('dirty'); if(timer)clearTimeout(timer); timer=setTimeout(save,650); }
 function doSave(cb){
-  if(timer){clearTimeout(timer); timer=null;}
+  if(timer){clearTimeout(timer);timer=null;}
+  if(retryT){clearTimeout(retryT);retryT=null;}
+  setStatus('saving');
   return fetch('/admin/audits/'+AID,{method:'POST',headers:{'Content-Type':'application/json'},body:payload()})
-   .then(function(r){return r.json();}).then(function(j){
-     if(j&&j.ok){savedInd.classList.add('on'); setTimeout(function(){savedInd.classList.remove('on');},1200);}
-     if(cb)cb(j);
-   }).catch(function(){ if(cb)cb(null); });
+   .then(function(r){ if(!r.ok)throw 0; return r.json(); })
+   .then(function(j){ if(j&&j.ok){ dirty=false; setStatus('ok'); if(cb)cb(j); } else { throw 0; } })
+   .catch(function(){ setStatus('err'); retryT=setTimeout(save,3000); if(cb)cb(null); });
 }
 function save(){ doSave(); }
 cli.oninput=function(){ scheduleSave(); };
@@ -2283,11 +2386,13 @@ document.getElementById('savebtn').onclick=function(){
   var btn=this; btn.disabled=true; btn.textContent='Saving\\u2026';
   doSave(function(j){ btn.textContent=(j&&j.ok)?'Saved \\u2713':'Try again'; setTimeout(function(){btn.disabled=false; btn.textContent='Save';},1300); });
 };
-window.addEventListener('beforeunload', function(){
-  if(timer && navigator.sendBeacon){
-    try{ navigator.sendBeacon('/admin/audits/'+AID, new Blob([payload()],{type:'application/json'})); }catch(e){}
+window.addEventListener('beforeunload', function(e){
+  if(dirty){
+    if(navigator.sendBeacon){ try{ navigator.sendBeacon('/admin/audits/'+AID, new Blob([payload()],{type:'application/json'})); }catch(_){ } }
+    e.preventDefault(); e.returnValue=''; return '';
   }
 });
+setStatus('ok');
 document.getElementById('copy').onclick=function(){
   var lines=['Facebook profile audit \\u2014 '+(cli.value||'client'),''];
   var any=false;
