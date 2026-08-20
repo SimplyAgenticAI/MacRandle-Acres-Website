@@ -1783,6 +1783,80 @@ def admin_audit_save(aid):
     return jsonify(ok=True, progress=prog)
 
 
+AUDIT_AI_SYSTEM = (
+    "You refine a real estate growth advisor's rough Facebook-profile-audit notes into clear, "
+    "professional, client-ready recommendations. These notes are shown directly to the client, so "
+    "write each as direct, encouraging, specific guidance. Rules: keep the original meaning and every "
+    "fact exactly - never invent details, numbers, names, or claims; fix grammar and tone; make each note "
+    "a smooth, constructive recommendation of 1-2 short sentences. Respond with ONLY a JSON object of the "
+    "form {\"notes\":[{\"id\":\"...\",\"note\":\"...\"}]} - no markdown, no prose, one entry per id you were given."
+)
+
+
+def _extract_json(s):
+    s = (s or "").strip()
+    if s.startswith("```"):
+        parts = s.split("```")
+        s = parts[1] if len(parts) >= 2 else s.strip("`")
+        s = re.sub(r"^\s*json\s*", "", s.strip())
+    a, b = s.find("{"), s.rfind("}")
+    if a >= 0 and b > a:
+        s = s[a:b + 1]
+    return json.loads(s)
+
+
+@app.route("/admin/audits/<aid>/optimize", methods=["POST"])
+def admin_audit_optimize(aid):
+    if not session.get("admin"):
+        return jsonify(ok=False), 403
+    key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+    if not key:
+        return jsonify(ok=False, error="AI isn't set up yet. Add an ANTHROPIC_API_KEY env var in Render to enable this."), 400
+    data = request.get_json(silent=True) or {}
+    raw = data.get("notes", [])
+    notes = []
+    if isinstance(raw, list):
+        for n in raw[:60]:
+            if not isinstance(n, dict):
+                continue
+            nid = str(n.get("id", ""))[:40]
+            note = _clean_note(n.get("note", ""))[:600]
+            if nid and note:
+                notes.append({"id": nid, "note": note,
+                              "area": _clean_line(n.get("section", ""))[:80],
+                              "item": _clean_line(n.get("title", ""))[:160]})
+    if not notes:
+        return jsonify(ok=False, error="No notes to optimize yet - add a few notes first."), 400
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=key)
+        user = ("Polish these audit notes. Return every note by its id.\n\n"
+                + json.dumps(notes, ensure_ascii=False))
+        resp = client.messages.create(
+            model=os.getenv("AUDIT_AI_MODEL", "claude-opus-5"),
+            max_tokens=4000,
+            system=AUDIT_AI_SYSTEM,
+            output_config={"effort": "low"},
+            messages=[{"role": "user", "content": user}],
+        )
+        if getattr(resp, "stop_reason", None) == "refusal":
+            return jsonify(ok=False, error="The AI declined this request."), 502
+        text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+        parsed = _extract_json(text)
+        valid = {n["id"] for n in notes}
+        out = {}
+        for it in parsed.get("notes", []):
+            iid = str(it.get("id", ""))
+            polished = _clean_note(it.get("note", ""))[:600]
+            if iid in valid and polished:
+                out[iid] = polished
+        if not out:
+            return jsonify(ok=False, error="The AI returned nothing usable, please try again."), 502
+        return jsonify(ok=True, notes=out)
+    except Exception as e:
+        return jsonify(ok=False, error="AI request failed (%s). Check the API key and try again." % type(e).__name__), 502
+
+
 @app.route("/admin/audits/<aid>/delete", methods=["POST"])
 def admin_audit_delete(aid):
     if not session.get("admin"):
@@ -1980,6 +2054,10 @@ textarea.note:focus{outline:2px solid rgba(199,154,59,.4)}
 .swrap .url{flex:1;min-width:180px;color:#2a5c47;font-weight:600;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .swrap .scopy{border:none;background:#234F3D;color:#f6f4ec;font-weight:700;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer}
 .swrap .sprev{color:#a97f2a;font-weight:700;text-decoration:none;white-space:nowrap}
+.aiwrap{max-width:820px;margin:16px auto 0;padding:0 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.aibtn{border:none;background:linear-gradient(135deg,#6f4bb0,#4a2f86);color:#f6f4ff;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px;cursor:pointer;box-shadow:0 6px 16px rgba(74,47,134,.25)}
+.aibtn:disabled{opacity:.65;cursor:default}
+.aimsg{font-size:13px;color:#5c635e}.aimsg a{color:#a97f2a;font-weight:700;cursor:pointer}
 </style></head><body>
 <div class="bar"><div class="bwrap">
   <div class="brow"><a class="back" href="/admin/audits">&larr; All audits</a>
@@ -1993,6 +2071,7 @@ textarea.note:focus{outline:2px solid rgba(199,154,59,.4)}
   <a class="url" id="surl" href="__SHAREURL__" target="_blank" rel="noopener">__SHAREURL__</a>
   <button class="scopy" id="scopy" type="button">Copy link</button>
   <a class="sprev" href="__SHAREURL__" target="_blank" rel="noopener">Preview &#8599;</a></div></div>
+<div class="aiwrap"><button class="aibtn" id="aiopt" type="button">&#10024; Optimize all notes with AI</button><span class="aimsg" id="aimsg"></span></div>
 <div class="wrap" id="sections"></div>
 <div class="summary"><div class="sumbox">
   <h3>&#128295; Fix list for this client</h3>
@@ -2195,6 +2274,25 @@ document.getElementById('scopy').onclick=function(){
   function done(){btn.textContent='Copied \\u2713';setTimeout(function(){btn.textContent='Copy link';},1400);}
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done);}
   else{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}
+};
+document.getElementById('aiopt').onclick=function(){
+  var payload=[];
+  eachItem(function(sn,id,t){ var cur=items[id]||{}; if(cur.note){ payload.push({id:id, note:cur.note, section:sn, title:t}); } });
+  var btn=this, msg=document.getElementById('aimsg');
+  if(!payload.length){ msg.textContent='Add a few notes first, then I can polish them.'; return; }
+  var backup={}; payload.forEach(function(p){ backup[p.id]=(items[p.id]||{}).note||''; });
+  btn.disabled=true; btn.textContent='\\u2728 Polishing '+payload.length+' note'+(payload.length>1?'s':'')+'\\u2026'; msg.textContent='';
+  fetch('/admin/audits/'+AID+'/optimize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({notes:payload})})
+    .then(function(r){return r.json();}).then(function(j){
+      btn.disabled=false; btn.textContent='\\u2728 Optimize all notes with AI';
+      if(j&&j.ok&&j.notes){
+        var n=0; for(var id in j.notes){ if(items[id]){ items[id].note=j.notes[id]; n++; } }
+        render(); scheduleSave();
+        msg.innerHTML='Polished '+n+' note'+(n===1?'':'s')+'. <a id="aiundo">Undo</a>';
+        var u=document.getElementById('aiundo');
+        if(u)u.onclick=function(){ for(var bid in backup){ if(items[bid]){ items[bid].note=backup[bid]; } } render(); scheduleSave(); msg.textContent='Reverted to your original notes.'; };
+      } else { msg.textContent=(j&&j.error)||'Could not optimize right now.'; }
+    }).catch(function(){ btn.disabled=false; btn.textContent='\\u2728 Optimize all notes with AI'; msg.textContent='Network error, please try again.'; });
 };
 render();
 </script>
