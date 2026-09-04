@@ -116,7 +116,7 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    urls = "".join("<url><loc>%s%s</loc></url>" % (SITE, u) for u in ("/", "/hub", "/privacy"))
+    urls = "".join("<url><loc>%s%s</loc></url>" % (SITE, u) for u in ("/", "/offer", "/hub", "/privacy"))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
     return Response(xml, mimetype="application/xml")
@@ -202,8 +202,75 @@ def render_page(page):
     return resp
 
 
+WELCOME_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>MacRandle Acres - Jeff Randle</title>
+<meta name="description" content="MacRandle Acres - Cultivating better businesses. Choose your path: growth advising for real estate teams and businesses, or explore everything Jeff Randle is building.">
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link rel="apple-touch-icon" href="/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+__TRACK__
+<style>*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:'Inter',system-ui,sans-serif;color:#f6f4ec;line-height:1.6;
+  background:radial-gradient(1100px 620px at 50% -8%,rgba(199,154,59,.18),transparent 60%),linear-gradient(165deg,#26543f,#12261d 75%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 18px;text-align:center}
+.mark{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fbf7ea,#d8cfb0);
+  display:grid;place-items:center;margin:0 auto 20px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.3),0 0 0 6px rgba(224,184,98,.12)}
+.mark img{width:100%;height:100%;object-fit:cover}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#e0b862;font-weight:700}
+h1{font-size:clamp(30px,6vw,46px);font-weight:800;margin:8px 0 6px;color:#fff;line-height:1.1}
+.tag{font-size:16px;color:#cfe0d6;opacity:.92;max-width:520px;margin:0 auto}
+.pick{margin:30px 0 16px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#e0b862;font-weight:700}
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:760px;width:100%}
+.path{display:block;text-decoration:none;color:inherit;background:rgba(255,255,255,.05);border:1px solid rgba(224,184,98,.22);
+  border-radius:20px;padding:30px 26px;transition:transform .18s,box-shadow .18s,border-color .18s,background .18s}
+.path:hover{transform:translateY(-4px);border-color:rgba(224,184,98,.55);background:rgba(255,255,255,.08);box-shadow:0 20px 46px rgba(0,0,0,.32)}
+.path .ic{font-size:38px;display:block;margin-bottom:12px}
+.path h2{font-size:21px;font-weight:800;color:#fff;margin-bottom:7px}
+.path p{font-size:14.5px;color:#cfe0d6;opacity:.9;margin-bottom:16px;min-height:44px}
+.path .go{display:inline-block;font-weight:800;font-size:14.5px;color:#2a2005;background:linear-gradient(135deg,#e0b862,#a97f2a);
+  padding:11px 20px;border-radius:11px}
+.path.alt .go{background:transparent;color:#e0b862;border:1.5px solid rgba(224,184,98,.55);padding:9.5px 18px}
+.foot{margin-top:30px;font-size:13px;color:#9fb3a6}
+.foot a{color:#e0b862;text-decoration:none;font-weight:600}
+@media(max-width:640px){.paths{grid-template-columns:1fr;gap:14px}.path p{min-height:0}}
+</style></head><body>
+<div class="mark"><img src="/logo.jpg" alt="MacRandle Acres" onerror="this.parentNode.textContent='M';this.parentNode.style.color='#234F3D';this.parentNode.style.fontWeight='800';this.parentNode.style.fontSize='40px'"></div>
+<div class="eyebrow">MacRandle Acres</div>
+<h1>Cultivating better businesses</h1>
+<p class="tag">Growth advising, AI, automation, and the ventures behind the brand. Where would you like to start?</p>
+<div class="pick">Choose your path</div>
+<div class="paths">
+  <a class="path" href="/offer">
+    <span class="ic">&#127793;</span>
+    <h2>Work With Me</h2>
+    <p>Fractional growth advising for real estate teams &amp; growth-minded businesses.</p>
+    <span class="go">See my services &rarr;</span>
+  </a>
+  <a class="path alt" href="/hub">
+    <span class="ic">&#127811;</span>
+    <h2>Meet Jeff Randle</h2>
+    <p>My ventures, content, community, and everything I'm building.</p>
+    <span class="go">Explore &rarr;</span>
+  </a>
+</div>
+<div class="foot">&#128205; Salisbury, MD &middot; <a href="/book">Book a call</a></div>
+</body></html>"""
+
+
 @app.route("/")
 def index():
+    # Friendly front door: choose the offer (services) or the personal hub.
+    head = "" if session.get("admin") else tracking_head()
+    html = WELCOME_HTML.replace("__TRACK__", head)
+    resp = Response(html, mimetype="text/html")
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/offer")
+def offer():
     return render_page("main")
 
 
@@ -552,7 +619,7 @@ from urllib.parse import urlparse as _urlparse
 VISITS_PATH = os.path.join(DATA, "visits.json")
 _visits_lock = threading.Lock()
 _BOT_RE = re.compile(r"bot|crawl|spider|slurp|bing|preview|monitor|curl|wget|python-requests|facebookexternalhit|headless|render|uptime", re.I)
-_TRACK_EXACT = {"/", "/hub"}
+_TRACK_EXACT = {"/", "/offer", "/hub"}
 _SELF_HOSTS = ("macrandleacres.com", "onrender.com")
 
 
