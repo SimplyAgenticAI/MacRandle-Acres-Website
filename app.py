@@ -2782,6 +2782,28 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .done{text-align:center;padding:20px 6px}.done .ic{font-size:46px;margin-bottom:12px}.done h2{font-size:25px;color:#234F3D;margin-bottom:8px}.done p{color:#5c635e;font-size:16px;max-width:420px;margin:0 auto}
 .foot{text-align:center;color:#8a918b;font-size:13px;margin-top:22px}.foot a{color:#a97f2a;font-weight:700;text-decoration:none}
 @media(max-width:560px){.fg{grid-template-columns:1fr}.wins{grid-template-columns:1fr 1fr}}
+.showcase{max-width:980px;margin:36px auto 0;padding:0 18px;text-align:center}
+.sc-eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#a97f2a;font-weight:700}
+.showcase h2{font-size:26px;color:#234F3D;margin:6px 0 6px}
+.sc-sub{color:#5c635e;font-size:14.5px;max-width:540px;margin:0 auto 24px}
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.shot{margin:0;border-radius:14px;overflow:hidden;background:#fff;border:1px solid rgba(35,79,61,.12);box-shadow:0 16px 40px rgba(35,49,40,.14);transition:transform .2s,box-shadow .2s}
+.shot:hover{transform:translateY(-5px);box-shadow:0 26px 58px rgba(35,49,40,.22)}
+.shot .bar{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#eee9df}
+.shot .bar i{width:9px;height:9px;border-radius:50%;background:#cfc6b6;display:inline-block}
+.shot .bar em{margin-left:10px;font-style:normal;font-size:11px;color:#9a917f;font-family:ui-monospace,monospace}
+.screen{height:212px;padding:20px;display:flex;flex-direction:column;justify-content:center;text-align:left;position:relative;overflow:hidden}
+.screen .nav{position:absolute;top:14px;left:20px;right:20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:.04em}
+.screen .brand{font-weight:800}.screen .links{opacity:.7}
+.screen h3{font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.12;margin:0 0 8px;max-width:82%}
+.screen p{font-size:11.5px;opacity:.86;max-width:74%;margin:0 0 13px}
+.screen .cta{align-self:flex-start;font-size:11px;font-weight:800;padding:8px 15px;border-radius:100px}
+.shot figcaption{font-size:12.5px;font-weight:700;color:#5c635e;padding:11px;background:#faf8f3}
+.sc-realty{background:radial-gradient(600px 200px at 82% -20%,rgba(199,154,59,.28),transparent),linear-gradient(150deg,#26543f,#12261d);color:#f6f4ec}
+.sc-realty .brand{color:#e0b862}.sc-realty .cta{background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005}
+.sc-maison{background:#f4efe6;color:#2a2620}.sc-maison h3{color:#7a3b2e}.sc-maison .cta{background:#7a3b2e;color:#fff}
+.sc-lumen{background:linear-gradient(150deg,#eef2f0,#e7edf5);color:#2b3a44}.sc-lumen h3{color:#3a5a6b}.sc-lumen .cta{background:linear-gradient(135deg,#7faec0,#4a7f96);color:#fff}
+@media(max-width:760px){.sc-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
 </style></head><body>
 <div class="head">
   <div class="mark"><img src="/logo.jpg" alt="MacRandle Acres" onerror="this.parentNode.textContent='M'"></div>
@@ -2792,6 +2814,43 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
     <div class="win"><div class="wi">&#127912;</div><div class="wt">Custom design</div></div>
     <div class="win"><div class="wi">&#9889;</div><div class="wt">Built to convert</div></div>
     <div class="win"><div class="wi">&#129309;</div><div class="wt">Done for you</div></div>
+  </div>
+</div>
+<div class="showcase">
+  <div class="sc-eyebrow">A taste of what I can build</div>
+  <h2>Sample designs</h2>
+  <p class="sc-sub">Concept pieces that show the craft your project gets. Yours is designed custom to your brand and goals.</p>
+  <div class="sc-grid">
+    <figure class="shot">
+      <div class="bar"><i></i><i></i><i></i><em>oaklinerealty.com</em></div>
+      <div class="screen sc-realty">
+        <div class="nav"><span class="brand">OAKLINE</span><span class="links">Buy &middot; Sell &middot; About</span></div>
+        <h3>Find your place on the coast.</h3>
+        <p>A boutique real estate team for the homes people dream about.</p>
+        <span class="cta">View listings</span>
+      </div>
+      <figcaption>Real estate team</figcaption>
+    </figure>
+    <figure class="shot">
+      <div class="bar"><i></i><i></i><i></i><em>maison-dine.com</em></div>
+      <div class="screen sc-maison">
+        <div class="nav"><span class="brand">MAISON</span><span class="links">Menu &middot; Story &middot; Book</span></div>
+        <h3>Seasonal. Local.<br>Unforgettable.</h3>
+        <p>A chef-driven table in the heart of downtown.</p>
+        <span class="cta">Reserve a table</span>
+      </div>
+      <figcaption>Restaurant &amp; hospitality</figcaption>
+    </figure>
+    <figure class="shot">
+      <div class="bar"><i></i><i></i><i></i><em>lumenwellness.co</em></div>
+      <div class="screen sc-lumen">
+        <div class="nav"><span class="brand">lumen</span><span class="links">Work with me &middot; Blog</span></div>
+        <h3>Feel like yourself again.</h3>
+        <p>Coaching and calm for people ready for a reset.</p>
+        <span class="cta">Start today</span>
+      </div>
+      <figcaption>Coaching &amp; wellness</figcaption>
+    </figure>
   </div>
 </div>
 <div class="card" id="pbody">
