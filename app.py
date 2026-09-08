@@ -255,7 +255,7 @@ h1{font-size:clamp(30px,6vw,46px);font-weight:800;margin:8px 0 6px;color:#fff;li
     <span class="go">Explore &rarr;</span>
   </a>
 </div>
-<div class="foot">&#128205; Salisbury, MD &middot; <a href="/book">Book a call</a></div>
+<div class="foot">&#128205; Salisbury, MD &middot; <a href="/design">Website &amp; app design</a> &middot; <a href="/book">Book a call</a></div>
 </body></html>"""
 
 
@@ -2639,6 +2639,224 @@ ul.str .none{opacity:.6;font-weight:500}
   <div class="foot">MacRandle Acres &middot; Growth advisory for real estate teams</div>
 </div>
 </body></html>"""
+
+
+# ---------------------------------------------------------------------------
+# Website & app design service page + "dream site" intake form
+# ---------------------------------------------------------------------------
+PROJECTS_PATH = os.path.join(DATA, "projects.json")
+
+
+def load_projects():
+    try:
+        with open(PROJECTS_PATH, encoding="utf-8") as f:
+            d = json.load(f)
+            return d if isinstance(d, list) else []
+    except Exception:
+        return []
+
+
+def save_projects(v):
+    try:
+        tmp = PROJECTS_PATH + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(v, f, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, PROJECTS_PATH)
+        return True
+    except Exception:
+        try:
+            with open(PROJECTS_PATH, "w", encoding="utf-8") as f:
+                json.dump(v, f, ensure_ascii=False)
+            return True
+        except Exception:
+            return False
+
+
+def send_project_email(rec):
+    from email.message import EmailMessage
+    m = EmailMessage()
+    m["From"] = os.getenv("SMTP_FROM", "").strip() or os.getenv("SMTP_USER", "").strip()
+    m["To"] = ORG_EMAIL
+    m["Reply-To"] = rec.get("email", ORG_EMAIL)
+    m["Subject"] = "New design project: %s (%s)" % (rec.get("name", ""), rec.get("type", "") or "—")
+    m.set_content(
+        "New website/app design inquiry.\n\n"
+        "Name:     %s\nEmail:    %s\nBuilding: %s\nTimeline: %s\nBudget:   %s\n\n"
+        "What it's for / goal:\n%s\n\nTheir dream site/app:\n%s\n"
+        % (rec.get("name", ""), rec.get("email", ""), rec.get("type", "") or "-",
+           rec.get("timeline", "") or "-", rec.get("budget", "") or "-",
+           rec.get("goal", "") or "-", rec.get("dream", "") or "-"))
+    return _smtp_send(m)
+
+
+@app.route("/design")
+def design_page():
+    head = "" if session.get("admin") else tracking_head()
+    resp = Response(DESIGN_HTML.replace("__TRACK__", head), mimetype="text/html")
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/api/project", methods=["POST"])
+def api_project():
+    if not rate_ok("project", client_ip(), 8, 900):
+        return jsonify(ok=False, error="Too many submissions, please try again shortly."), 429
+    data = request.get_json(silent=True) or {}
+    if str(data.get("website", "")).strip():  # honeypot
+        return jsonify(ok=True)
+    name = _clean_line(data.get("name", ""))[:120]
+    email = _clean_line(data.get("email", ""))[:160]
+    dream = _clean_note(data.get("dream", ""))[:2000]
+    if not name or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email) or not dream:
+        return jsonify(ok=False, error="Please add your name, a valid email, and a little about your project."), 400
+    rec = {"t": datetime.datetime.utcnow().isoformat(timespec="seconds"),
+           "name": name, "email": email,
+           "type": _clean_line(data.get("type", ""))[:60],
+           "goal": _clean_note(data.get("goal", ""))[:800],
+           "timeline": _clean_line(data.get("timeline", ""))[:60],
+           "budget": _clean_line(data.get("budget", ""))[:60],
+           "dream": dream}
+    with _leads_lock:
+        v = load_projects()
+        v.append(rec)
+        save_projects(v)
+    threading.Thread(target=send_project_email, args=(rec,), daemon=True).start()
+    return jsonify(ok=True)
+
+
+@app.route("/admin/projects")
+def admin_projects():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/projects")
+    rows = ""
+    for r in sorted(load_projects(), key=lambda x: x.get("t", ""), reverse=True):
+        when = _esc((r.get("t", "") or "").replace("T", " ")[:16])
+        rows += ("<div class='proj'><div class='ph'><b>%s</b> <span class='tp'>%s</span>"
+                 "<span class='dt'>%s</span></div>"
+                 "<div class='pmeta'><a href='mailto:%s'>%s</a> &middot; Timeline: %s &middot; Budget: %s</div>"
+                 "<div class='pl'><span class='k'>Goal:</span> %s</div>"
+                 "<div class='pl'><span class='k'>Dream:</span> %s</div></div>") % (
+                 _esc(r.get("name", "")), _esc(r.get("type", "") or "—"), when,
+                 _esc(r.get("email", "")), _esc(r.get("email", "")),
+                 _esc(r.get("timeline", "") or "—"), _esc(r.get("budget", "") or "—"),
+                 _esc(r.get("goal", "") or "—").replace("\n", "<br>"),
+                 _esc(r.get("dream", "") or "—").replace("\n", "<br>"))
+    if not rows:
+        rows = "<p class='empty'>No design inquiries yet.</p>"
+    return Response(PROJECTS_HTML.replace("__ROWS__", rows), mimetype="text/html")
+
+
+DESIGN_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Website &amp; App Design - MacRandle Acres</title>
+<meta name="description" content="Custom website and app design that brings your vision to life. Tell me about your dream site and I'll build it.">
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+__TRACK__
+<style>*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:0 0 60px;
+  background-image:radial-gradient(900px 480px at 50% -10%,rgba(199,154,59,.12),transparent 60%)}
+.head{background:linear-gradient(160deg,#26543f,#1a3b2d);color:#f6f4ec;padding:44px 22px 40px;text-align:center;border-radius:0 0 26px 26px}
+.mark{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fbf7ea,#d8cfb0);display:grid;place-items:center;font-weight:800;color:#234F3D;margin:0 auto 14px;overflow:hidden}
+.mark img{width:100%;height:100%;object-fit:cover}
+.eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#e0b862;font-weight:700}
+.head h1{font-size:clamp(26px,5vw,38px);font-weight:800;margin:8px 0 8px;color:#fff;line-height:1.12}
+.head p{opacity:.9;font-size:16px;max-width:540px;margin:0 auto}
+.wins{max-width:720px;margin:22px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 18px}
+.win{background:rgba(255,255,255,.06);border:1px solid rgba(224,184,98,.22);border-radius:14px;padding:14px 12px}
+.win .wi{font-size:22px}.win .wt{font-size:13px;font-weight:700;margin-top:5px;color:#fff}
+.card{max-width:640px;margin:26px auto 0;background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:22px;padding:30px 28px;box-shadow:0 22px 55px rgba(35,49,40,.12)}
+.card h2{font-size:22px;color:#234F3D;margin-bottom:4px}.card .sub{color:#5c635e;font-size:14.5px;margin-bottom:20px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fld{display:flex;flex-direction:column;gap:6px}.fld.full{grid-column:1/-1}
+.fld span{font-size:13px;font-weight:700;color:#234F3D}
+.fld input,.fld select,.fld textarea{font-family:inherit;font-size:14.5px;padding:11px 13px;border:1px solid rgba(35,79,61,.2);border-radius:10px;color:#2D2D2D;background:#fff;outline:none}
+.fld textarea{min-height:110px;resize:vertical;line-height:1.55}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid rgba(199,154,59,.4)}
+.hp{position:absolute;left:-9999px}
+.send{margin-top:18px;width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:800;font-size:16px;cursor:pointer}
+.send:disabled{opacity:.7}
+.msg{font-size:13.5px;color:#b23;margin-top:10px;text-align:center}
+.done{text-align:center;padding:20px 6px}.done .ic{font-size:46px;margin-bottom:12px}.done h2{font-size:25px;color:#234F3D;margin-bottom:8px}.done p{color:#5c635e;font-size:16px;max-width:420px;margin:0 auto}
+.foot{text-align:center;color:#8a918b;font-size:13px;margin-top:22px}.foot a{color:#a97f2a;font-weight:700;text-decoration:none}
+@media(max-width:560px){.fg{grid-template-columns:1fr}.wins{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<div class="head">
+  <div class="mark"><img src="/logo.jpg" alt="MacRandle Acres" onerror="this.parentNode.textContent='M'"></div>
+  <div class="eyebrow">Design &amp; Build</div>
+  <h1>Websites &amp; apps that bring your vision to life</h1>
+  <p>Custom-designed, built to convert, and handled end to end. Tell me about your dream site or app and I'll make it real.</p>
+  <div class="wins">
+    <div class="win"><div class="wi">&#127912;</div><div class="wt">Custom design</div></div>
+    <div class="win"><div class="wi">&#9889;</div><div class="wt">Built to convert</div></div>
+    <div class="win"><div class="wi">&#129309;</div><div class="wt">Done for you</div></div>
+  </div>
+</div>
+<div class="card" id="pbody">
+  <h2>Tell me about your dream site</h2>
+  <div class="sub">A few quick questions &mdash; no pressure, and there's no cost to reach out.</div>
+  <div class="fg">
+    <label class="fld"><span>Your name *</span><input id="pd_name" autocomplete="name"></label>
+    <label class="fld"><span>Email *</span><input id="pd_email" type="email" autocomplete="email"></label>
+    <label class="fld"><span>What do you want built?</span><select id="pd_type">
+      <option value="">Choose one…</option><option>Website</option><option>Web app</option>
+      <option>Mobile app</option><option>Not sure yet</option></select></label>
+    <label class="fld"><span>Timeline</span><select id="pd_timeline">
+      <option value="">Choose one…</option><option>ASAP</option><option>Within a month</option>
+      <option>1–3 months</option><option>Flexible</option></select></label>
+    <label class="fld full"><span>Describe your dream site or app *</span>
+      <textarea id="pd_dream" placeholder="What should it do? What's the vibe or feeling? Any pages or features you already have in mind?"></textarea></label>
+    <label class="fld full"><span>What's it for? (your business, goal, or who it's for)</span>
+      <input id="pd_goal" placeholder="e.g. book more real estate clients, sell a product, launch a community…"></label>
+    <label class="fld full"><span>Budget range (optional)</span><select id="pd_budget">
+      <option value="">Prefer not to say</option><option>Under $2k</option><option>$2k–$5k</option>
+      <option>$5k–$10k</option><option>$10k+</option></select></label>
+  </div>
+  <input type="text" id="pd_hp" class="hp" tabindex="-1" autocomplete="off">
+  <button class="send" id="pd_submit">Send my project &rarr;</button>
+  <div class="msg" id="pd_msg"></div>
+  <div class="foot">Prefer to talk first? <a href="/book">Book a quick call</a></div>
+</div>
+<script>
+var b=document.getElementById('pbody');
+document.getElementById('pd_submit').onclick=function(){
+  var g=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};
+  var name=g('pd_name'), email=g('pd_email'), dream=g('pd_dream'), msg=document.getElementById('pd_msg');
+  if(!name||email.indexOf('@')<1||!dream){ msg.textContent='Please add your name, a valid email, and a little about your project.'; return; }
+  var btn=this; btn.disabled=true; btn.textContent='Sending\\u2026'; msg.textContent='';
+  fetch('/api/project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    name:name,email:email,dream:dream,goal:g('pd_goal'),type:g('pd_type'),timeline:g('pd_timeline'),budget:g('pd_budget'),website:g('pd_hp')})})
+   .then(function(r){return r.json();}).then(function(j){
+     if(j&&j.ok){ if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','design_inquiry');
+       b.innerHTML='<div class="done"><div class="ic">\\uD83C\\uDFA8</div><h2>Got it \\u2014 thank you!</h2><p>Your project just landed in my inbox. I\\'ll reach out personally to talk through your vision and next steps.</p></div>';
+       window.scrollTo({top:0,behavior:'smooth'});
+     } else { btn.disabled=false; btn.textContent='Send my project \\u2192'; msg.textContent=(j&&j.error)||'Something went wrong, please try again.'; }
+   }).catch(function(){ btn.disabled=false; btn.textContent='Send my project \\u2192'; msg.textContent='Network error, please try again.'; });
+};
+</script>
+</body></html>"""
+
+
+PROJECTS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Design inquiries</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:26px 16px}
+.wrap{max-width:720px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decoration:none}
+.proj{background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:0 8px 22px rgba(35,49,40,.06)}
+.ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ph b{font-size:16px;color:#234F3D}
+.tp{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:rgba(35,79,61,.1);color:#234F3D;padding:2px 9px;border-radius:100px}
+.dt{margin-left:auto;font-size:12px;color:#8a918b}
+.pmeta{font-size:13.5px;color:#5c635e;margin:6px 0 10px}.pmeta a{color:#a97f2a;font-weight:600;text-decoration:none}
+.pl{font-size:14px;margin-top:6px;line-height:1.55}.pl .k{font-weight:700;color:#234F3D}
+.empty{color:#5c635e;padding:20px 0}
+a{color:#a97f2a}
+</style></head><body><div class="wrap">
+<div class="top"><h1>Design inquiries</h1><a class="back" href="/">&larr; Site</a></div>
+__ROWS__
+</div></body></html>"""
 
 
 # Background reminder scheduler (single gunicorn worker -> one thread, no dupes).
