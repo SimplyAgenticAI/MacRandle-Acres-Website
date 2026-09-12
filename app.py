@@ -2676,19 +2676,36 @@ def save_projects(v):
 
 def send_project_email(rec):
     from email.message import EmailMessage
+    sender = os.getenv("SMTP_FROM", "").strip() or os.getenv("SMTP_USER", "").strip()
+    # 1) Notify Jeff
     m = EmailMessage()
-    m["From"] = os.getenv("SMTP_FROM", "").strip() or os.getenv("SMTP_USER", "").strip()
+    m["From"] = sender
     m["To"] = ORG_EMAIL
     m["Reply-To"] = rec.get("email", ORG_EMAIL)
     m["Subject"] = "New design project: %s (%s)" % (rec.get("name", ""), rec.get("type", "") or "—")
     m.set_content(
         "New website/app design inquiry.\n\n"
-        "Name:     %s\nEmail:    %s\nBuilding: %s\nTimeline: %s\nBudget:   %s\n\n"
+        "Name:     %s\nEmail:    %s\nBuilding: %s\nTimeline: %s\nBudget:   %s\nLikes:    %s\n\n"
         "What it's for / goal:\n%s\n\nTheir dream site/app:\n%s\n"
         % (rec.get("name", ""), rec.get("email", ""), rec.get("type", "") or "-",
-           rec.get("timeline", "") or "-", rec.get("budget", "") or "-",
+           rec.get("timeline", "") or "-", rec.get("budget", "") or "-", rec.get("inspo", "") or "-",
            rec.get("goal", "") or "-", rec.get("dream", "") or "-"))
-    return _smtp_send(m)
+    _smtp_send(m)
+    # 2) Auto-reply to the person who submitted
+    if rec.get("email"):
+        first = (rec.get("name", "").split(" ") or [""])[0] or "there"
+        ack = EmailMessage()
+        ack["From"] = sender
+        ack["To"] = rec["email"]
+        ack["Reply-To"] = ORG_EMAIL
+        ack["Subject"] = "Thanks — I got your project"
+        ack.set_content(
+            "Hi %s,\n\nThank you for sharing your project with MacRandle Acres. I've got the details, "
+            "and I'll personally review them and reply within one business day to talk through your "
+            "vision and the next steps.\n\nIf anything else comes to mind in the meantime, just reply "
+            "to this email.\n\nTalk soon,\nJeff Randle\nMacRandle Acres" % first)
+        _smtp_send(ack)
+    return True
 
 
 @app.route("/design")
@@ -2717,6 +2734,7 @@ def api_project():
            "goal": _clean_note(data.get("goal", ""))[:800],
            "timeline": _clean_line(data.get("timeline", ""))[:60],
            "budget": _clean_line(data.get("budget", ""))[:60],
+           "inspo": _clean_line(data.get("inspo", ""))[:300],
            "dream": dream}
     with _leads_lock:
         v = load_projects()
@@ -2735,12 +2753,13 @@ def admin_projects():
         when = _esc((r.get("t", "") or "").replace("T", " ")[:16])
         rows += ("<div class='proj'><div class='ph'><b>%s</b> <span class='tp'>%s</span>"
                  "<span class='dt'>%s</span></div>"
-                 "<div class='pmeta'><a href='mailto:%s'>%s</a> &middot; Timeline: %s &middot; Budget: %s</div>"
+                 "<div class='pmeta'><a href='mailto:%s'>%s</a> &middot; Timeline: %s &middot; Budget: %s &middot; Likes: %s</div>"
                  "<div class='pl'><span class='k'>Goal:</span> %s</div>"
                  "<div class='pl'><span class='k'>Dream:</span> %s</div></div>") % (
                  _esc(r.get("name", "")), _esc(r.get("type", "") or "—"), when,
                  _esc(r.get("email", "")), _esc(r.get("email", "")),
                  _esc(r.get("timeline", "") or "—"), _esc(r.get("budget", "") or "—"),
+                 _esc(r.get("inspo", "") or "—"),
                  _esc(r.get("goal", "") or "—").replace("\n", "<br>"),
                  _esc(r.get("dream", "") or "—").replace("\n", "<br>"))
     if not rows:
@@ -2804,12 +2823,30 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .sc-maison{background:#f4efe6;color:#2a2620}.sc-maison h3{color:#7a3b2e}.sc-maison .cta{background:#7a3b2e;color:#fff}
 .sc-lumen{background:linear-gradient(150deg,#eef2f0,#e7edf5);color:#2b3a44}.sc-lumen h3{color:#3a5a6b}.sc-lumen .cta{background:linear-gradient(135deg,#7faec0,#4a7f96);color:#fff}
 @media(max-width:760px){.sc-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+.hbtn,.scbtn{display:inline-block;text-decoration:none;font-weight:800;font-size:15px;padding:13px 26px;border-radius:12px;background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;box-shadow:0 8px 22px rgba(169,127,42,.3)}
+.hbtn{margin-top:20px}.scbtn{margin-top:22px}
+.how{max-width:820px;margin:34px auto 0;padding:0 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.how-step{background:#fff;border:1px solid rgba(35,79,61,.1);border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 6px 18px rgba(35,49,40,.05)}
+.how-step .hn{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:800;display:grid;place-items:center;margin:0 auto 10px}
+.how-step .ht{font-weight:800;color:#234F3D;font-size:15px}
+.how-step .hp{font-size:13px;color:#5c635e;margin-top:4px;line-height:1.5}
+.reply-note{text-align:center;font-size:12.5px;color:#8a918b;margin-top:10px}
+.faq{max-width:640px;margin:26px auto 0;padding:0 18px}
+.faq h3{font-size:17px;color:#234F3D;text-align:center;margin-bottom:14px}
+.faq details{background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:12px;padding:2px 16px;margin-bottom:10px}
+.faq summary{cursor:pointer;font-weight:700;color:#2D2D2D;font-size:14.5px;padding:12px 0;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:after{content:'+';float:right;color:#a97f2a;font-weight:800}
+.faq details[open] summary:after{content:'\\2013'}
+.faq details p{font-size:14px;color:#5c635e;padding:0 0 14px;line-height:1.55;margin:0}
+@media(max-width:640px){.how{grid-template-columns:1fr;max-width:420px}}
 </style></head><body>
 <div class="head">
   <div class="mark"><img src="/logo.jpg" alt="MacRandle Acres" onerror="this.parentNode.textContent='M'"></div>
   <div class="eyebrow">Design &amp; Build</div>
   <h1>Websites &amp; apps that bring your vision to life</h1>
   <p>Custom-designed, built to convert, and handled end to end. Tell me about your dream site or app and I'll make it real.</p>
+  <a class="hbtn" href="#pbody">Start my project &darr;</a>
   <div class="wins">
     <div class="win"><div class="wi">&#127912;</div><div class="wt">Custom design</div></div>
     <div class="win"><div class="wi">&#9889;</div><div class="wt">Built to convert</div></div>
@@ -2852,10 +2889,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
       <figcaption>Coaching &amp; wellness</figcaption>
     </figure>
   </div>
+  <a class="scbtn" href="#pbody">Start your project &darr;</a>
+</div>
+<div class="how">
+  <div class="how-step"><div class="hn">1</div><div class="ht">Share your vision</div><div class="hp">Fill out the quick form below &mdash; takes about two minutes.</div></div>
+  <div class="how-step"><div class="hn">2</div><div class="ht">I design &amp; build</div><div class="hp">Custom-crafted to your brand, handled end to end.</div></div>
+  <div class="how-step"><div class="hn">3</div><div class="ht">You launch</div><div class="hp">Go live and start bringing in business.</div></div>
 </div>
 <div class="card" id="pbody">
   <h2>Tell me about your dream site</h2>
-  <div class="sub">A few quick questions &mdash; no pressure, and there's no cost to reach out.</div>
+  <div class="sub">A few quick questions &mdash; no cost to reach out, and there are options for every budget, from a simple site to a full custom build.</div>
   <div class="fg">
     <label class="fld"><span>Your name *</span><input id="pd_name" autocomplete="name"></label>
     <label class="fld"><span>Email *</span><input id="pd_email" type="email" autocomplete="email"></label>
@@ -2872,11 +2915,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
     <label class="fld full"><span>Budget range (optional)</span><select id="pd_budget">
       <option value="">Prefer not to say</option><option>Under $2k</option><option>$2k–$5k</option>
       <option>$5k–$10k</option><option>$10k+</option></select></label>
+    <label class="fld full"><span>Sites or apps you love (optional)</span>
+      <input id="pd_inspo" placeholder="Paste any links or names for inspiration"></label>
   </div>
   <input type="text" id="pd_hp" class="hp" tabindex="-1" autocomplete="off">
-  <button class="send" id="pd_submit">Send my project &rarr;</button>
+  <button class="send" id="pd_submit">Bring my vision to life &rarr;</button>
+  <div class="reply-note">I personally reply within 1 business day.</div>
   <div class="msg" id="pd_msg"></div>
   <div class="foot">Prefer to talk first? <a href="/book">Book a quick call</a></div>
+</div>
+<div class="faq">
+  <h3>Common questions</h3>
+  <details><summary>Do I own the finished site?</summary><p>Yes &mdash; once it's done, it's yours to keep.</p></details>
+  <details><summary>Can you handle hosting, domain, and launch?</summary><p>Yes &mdash; I can take care of hosting, your domain, and getting everything live, so you don't have to.</p></details>
+  <details><summary>How long does it take?</summary><p>It depends on the scope &mdash; we'll agree on a clear timeline together before any work starts.</p></details>
+  <details><summary>What about changes and updates later?</summary><p>Absolutely &mdash; we'll set up an easy way to keep your site fresh so you're never stuck.</p></details>
 </div>
 <script>
 var b=document.getElementById('pbody');
@@ -2886,13 +2939,13 @@ document.getElementById('pd_submit').onclick=function(){
   if(!name||email.indexOf('@')<1||!dream){ msg.textContent='Please add your name, a valid email, and a little about your project.'; return; }
   var btn=this; btn.disabled=true; btn.textContent='Sending\\u2026'; msg.textContent='';
   fetch('/api/project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    name:name,email:email,dream:dream,goal:g('pd_goal'),type:g('pd_type'),timeline:g('pd_timeline'),budget:g('pd_budget'),website:g('pd_hp')})})
+    name:name,email:email,dream:dream,goal:g('pd_goal'),type:g('pd_type'),timeline:g('pd_timeline'),budget:g('pd_budget'),inspo:g('pd_inspo'),website:g('pd_hp')})})
    .then(function(r){return r.json();}).then(function(j){
      if(j&&j.ok){ if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','design_inquiry');
-       b.innerHTML='<div class="done"><div class="ic">\\uD83C\\uDFA8</div><h2>Got it \\u2014 thank you!</h2><p>Your project just landed in my inbox. I\\'ll reach out personally to talk through your vision and next steps.</p></div>';
+       b.innerHTML='<div class="done"><div class="ic">\\uD83C\\uDFA8</div><h2>Got it \\u2014 thank you!</h2><p>Your project just landed in my inbox. I\\'ll personally reply within one business day \\u2014 check your inbox for a confirmation. Talk soon!</p></div>';
        window.scrollTo({top:0,behavior:'smooth'});
-     } else { btn.disabled=false; btn.textContent='Send my project \\u2192'; msg.textContent=(j&&j.error)||'Something went wrong, please try again.'; }
-   }).catch(function(){ btn.disabled=false; btn.textContent='Send my project \\u2192'; msg.textContent='Network error, please try again.'; });
+     } else { btn.disabled=false; btn.textContent='Bring my vision to life \\u2192'; msg.textContent=(j&&j.error)||'Something went wrong, please try again.'; }
+   }).catch(function(){ btn.disabled=false; btn.textContent='Bring my vision to life \\u2192'; msg.textContent='Network error, please try again.'; });
 };
 </script>
 </body></html>"""
