@@ -116,7 +116,7 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    urls = "".join("<url><loc>%s%s</loc></url>" % (SITE, u) for u in ("/", "/offer", "/hub", "/privacy"))
+    urls = "".join("<url><loc>%s%s</loc></url>" % (SITE, u) for u in ("/", "/design", "/hub", "/privacy"))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
     return Response(xml, mimetype="application/xml")
@@ -202,76 +202,16 @@ def render_page(page):
     return resp
 
 
-WELCOME_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<title>MacRandle Acres - Jeff Randle</title>
-<meta name="description" content="MacRandle Acres - Cultivating better businesses. Choose your path: growth advising for real estate teams and businesses, or explore everything Jeff Randle is building.">
-<link rel="icon" type="image/jpeg" href="/logo.jpg">
-<link rel="apple-touch-icon" href="/logo.jpg">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
-__TRACK__
-<style>*{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%}
-body{font-family:'Inter',system-ui,sans-serif;color:#f6f4ec;line-height:1.6;
-  background:radial-gradient(1100px 620px at 50% -8%,rgba(199,154,59,.18),transparent 60%),linear-gradient(165deg,#26543f,#12261d 75%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 18px;text-align:center}
-.mark{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fbf7ea,#d8cfb0);
-  display:grid;place-items:center;margin:0 auto 20px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.3),0 0 0 6px rgba(224,184,98,.12)}
-.mark img{width:100%;height:100%;object-fit:cover}
-.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#e0b862;font-weight:700}
-h1{font-size:clamp(30px,6vw,46px);font-weight:800;margin:8px 0 6px;color:#fff;line-height:1.1}
-.tag{font-size:16px;color:#cfe0d6;opacity:.92;max-width:520px;margin:0 auto}
-.pick{margin:30px 0 16px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#e0b862;font-weight:700}
-.paths{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:760px;width:100%}
-.path{display:block;text-decoration:none;color:inherit;background:rgba(255,255,255,.05);border:1px solid rgba(224,184,98,.22);
-  border-radius:20px;padding:30px 26px;transition:transform .18s,box-shadow .18s,border-color .18s,background .18s}
-.path:hover{transform:translateY(-4px);border-color:rgba(224,184,98,.55);background:rgba(255,255,255,.08);box-shadow:0 20px 46px rgba(0,0,0,.32)}
-.path .ic{font-size:38px;display:block;margin-bottom:12px}
-.path h2{font-size:21px;font-weight:800;color:#fff;margin-bottom:7px}
-.path p{font-size:14.5px;color:#cfe0d6;opacity:.9;margin-bottom:16px;min-height:44px}
-.path .go{display:inline-block;font-weight:800;font-size:14.5px;color:#2a2005;background:linear-gradient(135deg,#e0b862,#a97f2a);
-  padding:11px 20px;border-radius:11px}
-.path.alt .go{background:transparent;color:#e0b862;border:1.5px solid rgba(224,184,98,.55);padding:9.5px 18px}
-.foot{margin-top:30px;font-size:13px;color:#9fb3a6}
-.foot a{color:#e0b862;text-decoration:none;font-weight:600}
-@media(max-width:640px){.paths{grid-template-columns:1fr;gap:14px}.path p{min-height:0}}
-</style></head><body>
-<div class="mark"><img src="/logo.jpg" alt="MacRandle Acres" onerror="this.parentNode.textContent='M';this.parentNode.style.color='#234F3D';this.parentNode.style.fontWeight='800';this.parentNode.style.fontSize='40px'"></div>
-<div class="eyebrow">MacRandle Acres</div>
-<h1>Cultivating better businesses</h1>
-<p class="tag">Growth advising, AI, automation, and the ventures behind the brand. Where would you like to start?</p>
-<div class="pick">Choose your path</div>
-<div class="paths">
-  <a class="path" href="/offer">
-    <span class="ic">&#127793;</span>
-    <h2>Work With Me</h2>
-    <p>Fractional growth advising for real estate teams &amp; growth-minded businesses.</p>
-    <span class="go">See my services &rarr;</span>
-  </a>
-  <a class="path alt" href="/hub">
-    <span class="ic">&#127811;</span>
-    <h2>Meet Jeff Randle</h2>
-    <p>My ventures, content, community, and everything I'm building.</p>
-    <span class="go">Explore &rarr;</span>
-  </a>
-</div>
-<div class="foot">&#128205; Salisbury, MD &middot; <a href="/design">Website &amp; app design</a> &middot; <a href="/book">Book a call</a></div>
-</body></html>"""
-
-
 @app.route("/")
 def index():
-    # Friendly front door: choose the offer (services) or the personal hub.
-    head = "" if session.get("admin") else tracking_head()
-    html = WELCOME_HTML.replace("__TRACK__", head)
-    resp = Response(html, mimetype="text/html")
-    resp.headers["Cache-Control"] = "no-store"
-    return resp
+    # Visitors land straight on the main offer page (no chooser in the way).
+    return render_page("main")
 
 
 @app.route("/offer")
 def offer():
-    return render_page("main")
+    # Old address for the main page; keep links and bookmarks working.
+    return redirect("/", code=301)
 
 
 @app.route("/hub")
@@ -2772,10 +2712,11 @@ DESIGN_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <title>Website &amp; App Design - MacRandle Acres</title>
 <meta name="description" content="Custom website and app design that brings your vision to life. Tell me about your dream site and I'll build it.">
 <link rel="icon" type="image/jpeg" href="/logo.jpg">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
+<script>document.documentElement.className+=' js'</script>
 __TRACK__
 <style>*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:0 0 60px;
+body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:0 0 60px;overflow-x:hidden;
   background-image:radial-gradient(900px 480px at 50% -10%,rgba(199,154,59,.12),transparent 60%)}
 .head{background:linear-gradient(160deg,#26543f,#1a3b2d);color:#f6f4ec;padding:44px 22px 40px;text-align:center;border-radius:0 0 26px 26px}
 .mark{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fbf7ea,#d8cfb0);display:grid;place-items:center;font-weight:800;color:#234F3D;margin:0 auto 14px;overflow:hidden}
@@ -2801,35 +2742,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .done{text-align:center;padding:20px 6px}.done .ic{font-size:46px;margin-bottom:12px}.done h2{font-size:25px;color:#234F3D;margin-bottom:8px}.done p{color:#5c635e;font-size:16px;max-width:420px;margin:0 auto}
 .foot{text-align:center;color:#8a918b;font-size:13px;margin-top:22px}.foot a{color:#a97f2a;font-weight:700;text-decoration:none}
 @media(max-width:560px){.fg{grid-template-columns:1fr}.wins{grid-template-columns:1fr 1fr}}
-.showcase{max-width:980px;margin:36px auto 0;padding:0 18px;text-align:center}
-.sc-eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#a97f2a;font-weight:700}
-.showcase h2{font-size:26px;color:#234F3D;margin:6px 0 6px}
-.sc-sub{color:#5c635e;font-size:14.5px;max-width:540px;margin:0 auto 24px}
-.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.shot{margin:0;border-radius:14px;overflow:hidden;background:#fff;border:1px solid rgba(35,79,61,.12);box-shadow:0 16px 40px rgba(35,49,40,.14);transition:transform .2s,box-shadow .2s}
-.shot:hover{transform:translateY(-5px);box-shadow:0 26px 58px rgba(35,49,40,.22)}
-.shot .bar{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#eee9df}
-.shot .bar i{width:9px;height:9px;border-radius:50%;background:#cfc6b6;display:inline-block}
-.shot .bar em{margin-left:10px;font-style:normal;font-size:11px;color:#9a917f;font-family:ui-monospace,monospace}
-.screen{height:212px;padding:20px;display:flex;flex-direction:column;justify-content:center;text-align:left;position:relative;overflow:hidden}
-.screen .nav{position:absolute;top:14px;left:20px;right:20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:.04em}
-.screen .brand{font-weight:800}.screen .links{opacity:.7}
-.screen h3{font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.12;margin:0 0 8px;max-width:82%}
-.screen p{font-size:11.5px;opacity:.86;max-width:74%;margin:0 0 13px}
-.screen .cta{align-self:flex-start;font-size:11px;font-weight:800;padding:8px 15px;border-radius:100px}
-.shot figcaption{font-size:12.5px;font-weight:700;color:#5c635e;padding:11px;background:#faf8f3}
-.sc-realty{background:radial-gradient(600px 200px at 82% -20%,rgba(199,154,59,.28),transparent),linear-gradient(150deg,#26543f,#12261d);color:#f6f4ec}
-.sc-realty .brand{color:#e0b862}.sc-realty .cta{background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005}
-.sc-maison{background:#f4efe6;color:#2a2620}.sc-maison h3{color:#7a3b2e}.sc-maison .cta{background:#7a3b2e;color:#fff}
-.sc-lumen{background:linear-gradient(150deg,#eef2f0,#e7edf5);color:#2b3a44}.sc-lumen h3{color:#3a5a6b}.sc-lumen .cta{background:linear-gradient(135deg,#7faec0,#4a7f96);color:#fff}
-@media(max-width:760px){.sc-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
 .hbtn,.scbtn{display:inline-block;text-decoration:none;font-weight:800;font-size:15px;padding:13px 26px;border-radius:12px;background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;box-shadow:0 8px 22px rgba(169,127,42,.3)}
 .hbtn{margin-top:20px}.scbtn{margin-top:22px}
 .how{max-width:820px;margin:34px auto 0;padding:0 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .how-step{background:#fff;border:1px solid rgba(35,79,61,.1);border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 6px 18px rgba(35,49,40,.05)}
 .how-step .hn{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:800;display:grid;place-items:center;margin:0 auto 10px}
 .how-step .ht{font-weight:800;color:#234F3D;font-size:15px}
-.how-step .hp{font-size:13px;color:#5c635e;margin-top:4px;line-height:1.5}
+.how-step .hd{font-size:13px;color:#5c635e;margin-top:4px;line-height:1.5}
 .reply-note{text-align:center;font-size:12.5px;color:#8a918b;margin-top:10px}
 .faq{max-width:640px;margin:26px auto 0;padding:0 18px}
 .faq h3{font-size:17px;color:#234F3D;text-align:center;margin-bottom:14px}
@@ -2840,12 +2759,234 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .faq details[open] summary:after{content:'\\2013'}
 .faq details p{font-size:14px;color:#5c635e;padding:0 0 14px;line-height:1.55;margin:0}
 @media(max-width:640px){.how{grid-template-columns:1fr;max-width:420px}}
+/* ---------- page motion ---------- */
+#prog{position:fixed;top:0;left:0;height:3px;width:0;z-index:50;background:linear-gradient(90deg,#e0b862,#f6dc9c,#a97f2a);box-shadow:0 0 12px rgba(224,184,98,.6)}
+.head{position:relative;overflow:hidden;padding:56px 22px 48px}
+.head>*{position:relative;z-index:1}
+.head .aur{position:absolute;z-index:0;border-radius:50%;filter:blur(60px);pointer-events:none;animation:drift 14s ease-in-out infinite alternate}
+.aur.a1{width:440px;height:440px;background:#e0b862;top:-240px;left:-140px;opacity:.26}
+.aur.a2{width:380px;height:380px;background:#5fa37f;bottom:-210px;right:-90px;opacity:.38;animation-delay:-7s}
+.aur.a3{width:240px;height:240px;background:#f6dc9c;top:30%;left:62%;opacity:.12;animation-delay:-3s}
+@keyframes drift{to{transform:translate(80px,46px) scale(1.2)}}
+.head h1{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:clamp(32px,6vw,54px);letter-spacing:-.01em;line-height:1.04;max-width:760px;margin:10px auto 14px}
+.head h1 .w{display:inline-block;opacity:0;transform:translateY(26px) rotate(2deg);animation:wup .8s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes wup{to{opacity:1;transform:none}}
+.head h1 em{font-style:italic;font-weight:400;background:linear-gradient(90deg,#e0b862,#fff3cf,#e0b862);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shim 4s linear infinite}
+@keyframes shim{to{background-position:-200% 0}}
+.head p{font-size:17px;max-width:560px;opacity:0;animation:wup .8s .75s cubic-bezier(.2,.8,.2,1) forwards}
+.head .hbtn{opacity:0;animation:wup .8s .95s cubic-bezier(.2,.8,.2,1) forwards}
+.win{opacity:0;animation:wup .8s cubic-bezier(.2,.8,.2,1) forwards;transition:transform .3s,background .3s}
+.win:nth-child(1){animation-delay:1.1s}.win:nth-child(2){animation-delay:1.22s}.win:nth-child(3){animation-delay:1.34s}
+.win:hover{transform:translateY(-4px);background:rgba(255,255,255,.11)}
+.hbtn,.scbtn,.send{position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.hbtn:hover,.scbtn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(169,127,42,.42)}
+.hbtn:after,.scbtn:after,.send:after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:sheen 3.6s ease-in-out infinite}
+@keyframes sheen{0%,60%{left:-60%}100%{left:130%}}
+.js .rv{opacity:0;transform:translateY(36px);transition:opacity .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1)}
+.js .rv.in{opacity:1;transform:none}
+/* what's included marquee */
+.inc{overflow:hidden;margin:30px 0 0;padding:14px 0;border-top:1px solid rgba(35,79,61,.1);border-bottom:1px solid rgba(35,79,61,.1);background:#fff;white-space:nowrap}
+.inc div{display:inline-block;animation:marquee 34s linear infinite}
+.inc span{display:inline-flex;align-items:center;gap:8px;margin:0 22px;font-weight:700;font-size:14px;color:#234F3D}
+.inc span:before{content:'';width:7px;height:7px;border-radius:50%;background:#c79a3b;box-shadow:0 0 0 4px rgba(199,154,59,.18)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+/* how it works */
+.how{position:relative}
+.how:before{content:'';position:absolute;top:36px;left:18%;right:18%;height:2px;background:linear-gradient(90deg,#e0b862,#234F3D);transform:scaleX(0);transform-origin:left;transition:transform 1.4s .35s cubic-bezier(.2,.8,.2,1)}
+.how.in:before{transform:scaleX(1)}
+.how-step{position:relative;z-index:1;transition:transform .3s,box-shadow .3s}
+.how-step:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(35,49,40,.12)}
+.how-step .hn{box-shadow:0 0 0 6px #F8F7F3}
+.how.in .how-step .hn{animation:pop .6s cubic-bezier(.3,1.6,.5,1) both}
+.how.in .how-step:nth-child(2) .hn{animation-delay:.5s}.how.in .how-step:nth-child(3) .hn{animation-delay:1s}
+@keyframes pop{from{transform:scale(.3)}}
+.fld input,.fld select,.fld textarea{transition:border-color .2s,box-shadow .2s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:#c79a3b;box-shadow:0 0 0 4px rgba(199,154,59,.18)}
+.faq details{transition:box-shadow .25s}.faq details[open]{box-shadow:0 10px 26px rgba(35,49,40,.08)}
+
+/* ---------- showcase ---------- */
+.showcase{max-width:1080px;margin:64px auto 0;padding:0 18px;text-align:center}
+.sc-eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#a97f2a;font-weight:700}
+.showcase h2{font-family:'Fraunces',Georgia,serif;font-size:clamp(28px,4.4vw,42px);color:#234F3D;margin:6px 0 8px;line-height:1.08;font-weight:700}
+.sc-sub{color:#5c635e;font-size:15.5px;max-width:580px;margin:0 auto 22px}
+.sc-tabs{display:inline-flex;gap:6px;padding:6px;background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:100px;box-shadow:0 8px 24px rgba(35,49,40,.08);margin-bottom:28px;flex-wrap:wrap;justify-content:center}
+.sc-tab{font:inherit;font-size:13.5px;font-weight:700;border:0;background:transparent;color:#5c635e;padding:9px 16px;border-radius:100px;cursor:pointer;position:relative;overflow:hidden;transition:color .25s,background .25s}
+.sc-tab:hover{color:#234F3D}
+.sc-tab.on{background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec}
+.sc-tab .tb{position:absolute;left:0;bottom:0;height:3px;background:#e0b862;width:0}
+.sc-tab.on.auto .tb{animation:tabfill 12s linear forwards}
+@keyframes tabfill{to{width:100%}}
+.stage{position:relative;padding:0 130px 40px 0;max-width:1000px;margin:0 auto}
+.browser{position:relative;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 44px 90px rgba(20,40,30,.28),0 0 0 1px rgba(35,79,61,.1);transform:perspective(1800px) rotateX(3deg);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.stage:hover .browser{transform:perspective(1800px) rotateX(0)}
+.bbar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:linear-gradient(#f3efe6,#e9e3d7);border-bottom:1px solid rgba(0,0,0,.06)}
+.bbar i{width:11px;height:11px;border-radius:50%;background:#ff5f57;display:inline-block;flex:none}.bbar i:nth-child(2){background:#febc2e}.bbar i:nth-child(3){background:#28c840}
+.url{flex:1;max-width:340px;margin:0 auto;background:#fff;border-radius:8px;padding:5px 12px;font-size:12px;color:#6b6457;font-family:ui-monospace,Menlo,monospace;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vp{position:relative;height:480px;overflow:hidden;text-align:left;background:#0b1820}
+.site{position:absolute;inset:0;opacity:0;visibility:hidden;transform:scale(1.03);transition:opacity .7s,transform .9s cubic-bezier(.2,.8,.2,1),visibility .7s}
+.site.on{opacity:1;visibility:visible;transform:none}
+.sz{transform-origin:top left;width:760px}
+.site.on .sc{animation:autoscroll 12s ease-in-out .6s infinite}
+.vp:hover .sc{animation-play-state:paused}
+@keyframes autoscroll{0%,12%{transform:translateY(0)}48%,62%{transform:translateY(calc(-1*var(--d,0px)))}96%,100%{transform:translateY(0)}}
+.sc-note{font-size:12.5px;color:#8a918b;margin-top:8px}
+
+/* Oakline - real estate */
+.s-oak .sc{background:#0b1820;color:#f3ede2}
+.o-hero{position:relative;height:410px;overflow:hidden}
+.o-scene{position:absolute;inset:0;width:100%;height:100%}
+.o-sun{animation:sunrise 9s ease-in-out infinite alternate}
+@keyframes sunrise{from{transform:translateY(18px)}to{transform:translateY(-8px)}}
+.o-waves line{animation:wave 4s ease-in-out infinite alternate}
+.o-waves line:nth-child(2n){animation-delay:-2s}
+@keyframes wave{to{transform:translateX(-30px);opacity:.2}}
+.o-win{animation:winglow 3s ease-in-out infinite alternate}.o-win:nth-child(2n){animation-delay:-1.5s}
+@keyframes winglow{to{opacity:.45}}
+.o-bird{animation:fly 14s linear infinite}
+@keyframes fly{from{transform:translate(-80px,0)}to{transform:translate(900px,-40px)}}
+.o-hero:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,20,28,.86),rgba(8,20,28,.25) 62%,transparent)}
+.o-nav{position:absolute;z-index:2;top:0;left:0;right:0;display:flex;align-items:center;gap:22px;padding:18px 28px;font-size:11.5px;letter-spacing:.06em}
+.o-nav b{font-family:'Fraunces',serif;font-size:17px;letter-spacing:.3em;color:#f2c98a}
+.o-nav span:nth-child(2){opacity:.78;margin-left:auto}
+.o-pill{border:1px solid rgba(242,201,138,.6);padding:7px 14px;border-radius:100px;color:#f2c98a}
+.o-copy{position:absolute;z-index:2;left:28px;top:100px;max-width:470px}
+.o-kick{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#f2c98a;margin-bottom:10px}
+.s-oak h3{font-family:'Fraunces',serif;font-weight:600;font-size:50px;line-height:1;margin:0 0 24px;color:#fff}
+.s-oak h3 i{color:#f2c98a;font-weight:400}
+.o-search{display:flex;align-items:stretch;background:rgba(255,255,255,.97);border-radius:14px;padding:6px;box-shadow:0 18px 40px rgba(0,0,0,.35);color:#1d2a30;width:max-content}
+.o-search span{padding:6px 14px;font-size:12.5px;font-weight:600;border-right:1px solid #e6e1d6;white-space:nowrap}
+.o-search small{display:block;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#8b8577;font-weight:700}
+.o-search b{display:grid;place-items:center;background:linear-gradient(135deg,#d9a35a,#b07a32);color:#fff;font-size:12.5px;padding:0 20px;border-radius:10px;margin-left:6px}
+.o-sec{padding:32px 28px 8px}
+.o-h{display:flex;justify-content:space-between;align-items:baseline;font-family:'Fraunces',serif;font-size:24px;color:#fff;margin-bottom:16px}
+.o-h span{font-family:'Inter',sans-serif;font-size:12px;color:#f2c98a}
+.o-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.o-card{background:#12232c;border-radius:12px;overflow:hidden;border:1px solid rgba(242,201,138,.12)}
+.o-img{height:124px;position:relative;overflow:hidden}
+.o-img:after{content:'';position:absolute;left:20%;right:20%;bottom:0;height:58%;background:#0e1c22;clip-path:polygon(0 40%,45% 0,100% 32%,100% 100%,0 100%)}
+.o-img:before{content:'';position:absolute;z-index:1;left:38%;bottom:12%;width:9%;height:16%;background:#ffcf7a;box-shadow:34px 0 0 #ffcf7a,17px -26px 0 #ffcf7a;opacity:.9}
+.o-i1{background:linear-gradient(#f6c387,#e0855e 60%,#3c5560 61%)}
+.o-i2{background:linear-gradient(#9cc7d8,#d7e7ea 60%,#4d6b5a 61%)}
+.o-i3{background:linear-gradient(#2a3b66,#b7698a 60%,#2b3b44 61%)}
+.o-img em{position:absolute;z-index:2;top:10px;left:10px;font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.1em;background:#f2c98a;color:#1d2a30;padding:3px 8px;border-radius:100px}
+.o-p{font-family:'Fraunces',serif;font-size:19px;color:#fff;padding:10px 12px 0}
+.o-a{font-size:11.5px;padding:2px 12px;opacity:.8}.o-m{font-size:10.5px;padding:4px 12px 12px;color:#f2c98a}
+.o-stats{display:grid;grid-template-columns:repeat(3,1fr);margin:24px 28px;border-top:1px solid rgba(242,201,138,.18);border-bottom:1px solid rgba(242,201,138,.18);padding:18px 0;text-align:center;font-size:11px;opacity:.92}
+.o-stats b{display:block;font-family:'Fraunces',serif;font-size:28px;color:#f2c98a;font-weight:600}
+.o-quote{padding:6px 28px 40px;font-family:'Fraunces',serif;font-style:italic;font-size:22px;color:#fff;max-width:600px}
+.o-quote span{display:block;font-family:'Inter',sans-serif;font-style:normal;font-size:11px;opacity:.65;margin-top:8px}
+
+/* Maison - restaurant */
+.s-mai .sc{background:#f3ece1;color:#2b2119}
+.m-nav{display:flex;align-items:center;justify-content:center;gap:26px;padding:18px 26px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid rgba(43,33,25,.12)}
+.m-nav b{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:26px;letter-spacing:0;text-transform:none;color:#8a3324;margin:0 12px}
+.m-res{background:#8a3324;color:#f3ece1;padding:7px 14px}
+.m-hero{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:10px;padding:34px 32px 30px}
+.m-kick{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:#8a3324;margin-bottom:12px}
+.s-mai h3{font-family:'Fraunces',serif;font-size:52px;line-height:.96;font-weight:600;margin:0 0 16px}
+.s-mai h3 i{color:#8a3324;font-weight:400}
+.m-copy p{font-size:13px;max-width:300px;opacity:.8;margin-bottom:20px}
+.m-btn{display:inline-block;background:#2b2119;color:#f3ece1;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;padding:12px 22px}
+.m-plate{position:relative;justify-self:center;width:250px;height:250px}
+.m-plate svg{width:100%;height:100%;animation:spin 46s linear infinite;filter:drop-shadow(0 24px 30px rgba(60,30,10,.28))}
+@keyframes spin{to{transform:rotate(360deg)}}
+.m-steam{position:absolute;left:50%;top:-6px;width:60px;margin-left:-30px;height:60px}
+.m-steam i{position:absolute;bottom:0;width:8px;height:40px;border-radius:50%;background:linear-gradient(transparent,rgba(255,255,255,.9));filter:blur(4px);animation:steam 3.2s ease-out infinite}
+.m-steam i:nth-child(1){left:10px}.m-steam i:nth-child(2){left:26px;animation-delay:-1s}.m-steam i:nth-child(3){left:42px;animation-delay:-2s}
+@keyframes steam{from{transform:translateY(20px) scaleX(1);opacity:0}40%{opacity:.8}to{transform:translateY(-34px) scaleX(2.2);opacity:0}}
+.m-strip{overflow:hidden;background:#2b2119;color:#e9c78f;font-family:'Fraunces',serif;font-style:italic;font-size:18px;white-space:nowrap;padding:12px 0}
+.m-strip div{display:inline-block;animation:marquee 20s linear infinite}
+.m-low{display:grid;grid-template-columns:1.2fr 1fr;gap:26px;padding:30px 32px 40px}
+.s-mai h4{font-family:'Fraunces',serif;font-size:24px;margin-bottom:12px;font-weight:600}
+.m-row{display:flex;align-items:baseline;gap:8px;font-size:13px;padding:7px 0}
+.m-row i{flex:1;border-bottom:1px dotted rgba(43,33,25,.35)}
+.m-row b{font-family:'Fraunces',serif;color:#8a3324;font-size:15px}
+.m-row small{display:block;font-size:10.5px;opacity:.6}
+.m-book{background:#fffaf2;border:1px solid rgba(43,33,25,.1);padding:18px;box-shadow:0 14px 30px rgba(60,30,10,.08)}
+.m-days,.m-times{display:flex;gap:6px;margin-bottom:10px}
+.m-days span,.m-times span{flex:1;text-align:center;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(43,33,25,.15);padding:6px 0}
+.m-days b{display:block;font-family:'Fraunces',serif;font-size:18px;letter-spacing:0}
+.m-times span{font-size:12px;letter-spacing:0;padding:8px 0}
+.m-days .on,.m-times .on{background:#8a3324;color:#f3ece1;border-color:#8a3324}
+.m-times .on{animation:pick 2.4s ease-in-out infinite}
+@keyframes pick{50%{box-shadow:0 0 0 5px rgba(138,51,36,.2)}}
+.m-go{background:#2b2119;color:#f3ece1;text-align:center;font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:12px;margin-top:4px}
+
+/* Lumen - coaching */
+.s-lum .sc{background:#f6f3fb;color:#2c2a3f}
+.l-hero{position:relative;overflow:hidden;padding:0 0 46px;background:linear-gradient(160deg,#efe9fb,#e3f0f2)}
+.l-blob{position:absolute;border-radius:50%;filter:blur(28px);opacity:.8;animation:blob 11s ease-in-out infinite alternate}
+.b1{width:280px;height:280px;background:#c9b6f2;top:-70px;right:60px}
+.b2{width:210px;height:210px;background:#a7e0d6;top:130px;right:230px;animation-delay:-4s}
+.b3{width:190px;height:190px;background:#ffd2bd;top:50px;right:-30px;animation-delay:-8s}
+@keyframes blob{to{transform:translate(-46px,34px) scale(1.18)}}
+.l-nav{position:relative;display:flex;align-items:center;gap:20px;padding:18px 28px;font-size:12px}
+.l-nav b{font-size:22px;font-weight:800;letter-spacing:-.03em;color:#5b45a8}
+.l-nav span:nth-child(2){margin-left:auto;opacity:.7}
+.l-pill{background:#2c2a3f;color:#fff;padding:7px 14px;border-radius:100px}
+.l-copy{position:relative;padding:48px 28px 0;max-width:480px}
+.l-kick{display:inline-block;font-size:11px;font-weight:700;background:rgba(255,255,255,.75);padding:5px 12px;border-radius:100px;color:#5b45a8;margin-bottom:14px}
+.s-lum h3{font-size:52px;line-height:1;letter-spacing:-.035em;font-weight:800;margin:0 0 14px}
+.s-lum h3 span{background:linear-gradient(90deg,#5b45a8,#2fa59a,#5b45a8);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shim 5s linear infinite}
+.l-copy p{font-size:14px;opacity:.75;margin-bottom:22px}
+.l-ctas{display:flex;gap:10px}
+.l-btn{background:linear-gradient(135deg,#6b52c8,#4a37a0);color:#fff;font-weight:700;font-size:12.5px;padding:12px 20px;border-radius:100px;box-shadow:0 10px 24px rgba(91,69,168,.35)}
+.l-ghost{font-weight:700;font-size:12.5px;padding:12px 18px;border-radius:100px;background:rgba(255,255,255,.8)}
+.l-sec{padding:32px 28px 8px}
+.l-sec h4{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+.l-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.l-card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 10px 26px rgba(44,42,63,.08)}
+.l-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:17px;margin-bottom:10px}
+.l-card b{display:block;font-size:14.5px}.l-card small{font-size:11px;opacity:.65}
+.l-card .pr{margin-top:10px;font-weight:800;color:#5b45a8;font-size:13px}
+.l-cal{display:grid;grid-template-columns:1fr 1.15fr;gap:20px;align-items:center;background:#fff;border-radius:18px;padding:20px;margin:18px 28px 40px;box-shadow:0 10px 26px rgba(44,42,63,.08)}
+.l-cal b{font-size:20px;letter-spacing:-.02em}.l-cal p{font-size:12.5px;opacity:.7;margin-top:4px}
+.l-days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;font-size:10.5px;text-align:center}
+.l-days span{padding:6px 0;border-radius:8px;opacity:.45}
+.l-days .av{opacity:1;background:#efeafc;color:#5b45a8;font-weight:700}
+.l-days .pk{opacity:1;background:#5b45a8;color:#fff;font-weight:700;animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(91,69,168,.5)}70%{box-shadow:0 0 0 9px rgba(91,69,168,0)}100%{box-shadow:0 0 0 0 rgba(91,69,168,0)}}
+
+/* Pulse - phone app */
+.phone{position:absolute;right:0;bottom:0;width:224px;height:456px;border-radius:40px;background:#0d0f14;padding:10px;box-shadow:0 44px 80px rgba(10,20,15,.45),inset 0 0 0 2px #2a2e38;animation:floaty 6s ease-in-out infinite;z-index:3;text-align:left}
+@keyframes floaty{50%{transform:translateY(-14px) rotate(-1.2deg)}}
+.notch{position:absolute;top:18px;left:50%;width:72px;height:20px;margin-left:-36px;background:#000;border-radius:20px;z-index:2}
+.pscreen{height:100%;border-radius:31px;overflow:hidden;background:radial-gradient(260px 200px at 80% 0%,rgba(80,227,194,.2),transparent),linear-gradient(#141821,#0c0e13);color:#e9edf5;padding:44px 16px 0;position:relative;font-size:11px}
+.p-top{position:absolute;top:17px;left:24px;right:24px;display:flex;justify-content:space-between;font-size:10px;font-weight:700}
+.p-hi{font-size:16px;font-weight:800}
+.p-sub{opacity:.6;font-size:10.5px;margin-bottom:8px}
+.p-ring{position:relative;width:118px;height:118px;margin:2px auto 10px}
+.p-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.p-ring circle{fill:none;stroke-width:10;stroke-linecap:round}
+.rb{stroke:rgba(255,255,255,.08)}
+.rf{stroke:url(#pg);stroke-dasharray:314;stroke-dashoffset:314;animation:ring1 3.4s cubic-bezier(.3,.8,.2,1) .4s infinite alternate}
+.rf2{stroke:#ff8a65;stroke-width:8;stroke-dasharray:226;stroke-dashoffset:226;animation:ring2 3.4s cubic-bezier(.3,.8,.2,1) .8s infinite alternate}
+@keyframes ring1{to{stroke-dashoffset:69}}@keyframes ring2{to{stroke-dashoffset:90}}
+.p-pct{position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1.1}
+.p-pct b{font-size:22px}.p-pct small{font-size:9px;opacity:.6}
+.p-bars{display:flex;align-items:flex-end;gap:6px;height:54px;padding:0 4px}
+.p-bars span{flex:1;background:linear-gradient(#50e3c2,#2b8f7a);border-radius:4px 4px 2px 2px;transform-origin:bottom;animation:grow 2.8s ease-in-out infinite alternate}
+.p-bars span:nth-child(odd){animation-delay:-1s}
+@keyframes grow{from{transform:scaleY(.3)}}
+.p-days{display:flex;gap:6px;padding:4px 4px 10px;font-size:8.5px;opacity:.5}.p-days i{flex:1;text-align:center;font-style:normal}
+.p-item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border-radius:12px;padding:8px 10px;margin-bottom:6px}
+.p-item b{width:17px;height:17px;border-radius:6px;border:2px solid #50e3c2;display:grid;place-items:center;font-size:10px;color:#0c0e13;flex:none}
+.p-item.ck b{background:#50e3c2}
+.p-item.ck2 b{animation:check 5s ease-in-out infinite}
+@keyframes check{0%,25%{background:transparent;color:transparent}35%,100%{background:#50e3c2;color:#0c0e13}}
+.p-item span{flex:1}.p-item small{opacity:.5}
+.p-label{position:absolute;bottom:-28px;left:0;right:0;text-align:center;font-size:12px;font-weight:700;color:#5c635e}
+@media(max-width:860px){.stage{padding:0 0 10px}.phone{position:relative;right:auto;bottom:auto;margin:44px auto 44px}.vp{height:420px}}
+@media(max-width:560px){.vp{height:360px}.sc-tab{padding:8px 12px;font-size:12.5px}.how:before{display:none}.inc span{font-size:13px;margin:0 14px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.js .rv,.head h1 .w,.head p,.head .hbtn,.win{opacity:1!important;transform:none!important}.vp{overflow-y:auto}.how:before{transform:none}}
 </style></head><body>
+<div id="prog"></div>
 <div class="head">
+  <span class="aur a1"></span><span class="aur a2"></span><span class="aur a3"></span>
   <div class="mark"><img src="/logo.jpg" alt="MacRandle Acres" onerror="this.parentNode.textContent='M'"></div>
   <div class="eyebrow">Design &amp; Build</div>
-  <h1>Websites &amp; apps that bring your vision to life</h1>
-  <p>Custom-designed, built to convert, and handled end to end. Tell me about your dream site or app and I'll make it real.</p>
+  <h1><span class="w" style="animation-delay:0.10s">Websites</span> <span class="w" style="animation-delay:0.18s">&amp;</span> <span class="w" style="animation-delay:0.26s">apps</span> <span class="w" style="animation-delay:0.34s">that</span> <em><span class="w" style="animation-delay:0.42s">stop</span> <span class="w" style="animation-delay:0.50s">the</span> <span class="w" style="animation-delay:0.58s">scroll.</span></em></h1>
+  <p>Custom-designed, beautifully animated, and built to turn visitors into clients. Tell me what you're dreaming up and I'll handle everything from first sketch to launch day.</p>
   <a class="hbtn" href="#pbody">Start my project &darr;</a>
   <div class="wins">
     <div class="win"><div class="wi">&#127912;</div><div class="wt">Custom design</div></div>
@@ -2853,50 +2994,152 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
     <div class="win"><div class="wi">&#129309;</div><div class="wt">Done for you</div></div>
   </div>
 </div>
-<div class="showcase">
-  <div class="sc-eyebrow">A taste of what I can build</div>
-  <h2>Sample designs</h2>
-  <p class="sc-sub">Concept pieces that show the craft your project gets. Yours is designed custom to your brand and goals.</p>
-  <div class="sc-grid">
-    <figure class="shot">
-      <div class="bar"><i></i><i></i><i></i><em>oaklinerealty.com</em></div>
-      <div class="screen sc-realty">
-        <div class="nav"><span class="brand">OAKLINE</span><span class="links">Buy &middot; Sell &middot; About</span></div>
-        <h3>Find your place on the coast.</h3>
-        <p>A boutique real estate team for the homes people dream about.</p>
-        <span class="cta">View listings</span>
-      </div>
-      <figcaption>Real estate team</figcaption>
-    </figure>
-    <figure class="shot">
-      <div class="bar"><i></i><i></i><i></i><em>maison-dine.com</em></div>
-      <div class="screen sc-maison">
-        <div class="nav"><span class="brand">MAISON</span><span class="links">Menu &middot; Story &middot; Book</span></div>
-        <h3>Seasonal. Local.<br>Unforgettable.</h3>
-        <p>A chef-driven table in the heart of downtown.</p>
-        <span class="cta">Reserve a table</span>
-      </div>
-      <figcaption>Restaurant &amp; hospitality</figcaption>
-    </figure>
-    <figure class="shot">
-      <div class="bar"><i></i><i></i><i></i><em>lumenwellness.co</em></div>
-      <div class="screen sc-lumen">
-        <div class="nav"><span class="brand">lumen</span><span class="links">Work with me &middot; Blog</span></div>
-        <h3>Feel like yourself again.</h3>
-        <p>Coaching and calm for people ready for a reset.</p>
-        <span class="cta">Start today</span>
-      </div>
-      <figcaption>Coaching &amp; wellness</figcaption>
-    </figure>
+<div class="inc"><div>
+  <span>Custom design, never a template</span><span>Mobile-first</span><span>Animations that captivate</span><span>Lightning fast</span><span>Built-in booking &amp; forms</span><span>SEO-ready</span><span>Analytics set up</span><span>Hosting &amp; launch handled</span>
+  <span>Custom design, never a template</span><span>Mobile-first</span><span>Animations that captivate</span><span>Lightning fast</span><span>Built-in booking &amp; forms</span><span>SEO-ready</span><span>Analytics set up</span><span>Hosting &amp; launch handled</span>
+</div></div>
+<section class="showcase rv" id="work">
+  <div class="sc-eyebrow">Concept work</div>
+  <h2>Sites people remember</h2>
+  <p class="sc-sub">Three concept builds, each designed from scratch for a different kind of business, plus an app. Click through them. Your project gets the same craft, built around your brand.</p>
+  <div class="sc-tabs" role="tablist">
+    <button class="sc-tab on auto" data-i="0">Luxury real estate<span class="tb"></span></button>
+    <button class="sc-tab" data-i="1">Restaurant<span class="tb"></span></button>
+    <button class="sc-tab" data-i="2">Coaching &amp; wellness<span class="tb"></span></button>
   </div>
+  <div class="stage">
+    <div class="browser">
+      <div class="bbar"><i></i><i></i><i></i><span class="url" id="sc_url">oaklinecoastal.com</span></div>
+      <div class="vp" id="sc_vp">
+
+        <div class="site s-oak on" data-url="oaklinecoastal.com"><div class="sz"><div class="sc">
+          <div class="o-hero">
+            <svg class="o-scene" viewBox="0 0 760 410" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs>
+                <linearGradient id="oSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f2a3a"/><stop offset=".55" stop-color="#c46b4a"/><stop offset="1" stop-color="#f2b46a"/></linearGradient>
+                <linearGradient id="oSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#28485a"/><stop offset="1" stop-color="#0b1d27"/></linearGradient>
+                <radialGradient id="oGlow"><stop offset="0" stop-color="#ffe2b0" stop-opacity=".8"/><stop offset="1" stop-color="#ffe2b0" stop-opacity="0"/></radialGradient>
+              </defs>
+              <rect width="760" height="410" fill="url(#oSky)"/>
+              <g class="o-sun"><circle cx="560" cy="262" r="110" fill="url(#oGlow)"/><circle cx="560" cy="262" r="44" fill="#ffd9a0"/></g>
+              <path class="o-bird" d="M0 120 q8 -8 16 0 q8 -8 16 0" stroke="#1a2a33" stroke-width="2" fill="none"/>
+              <rect y="280" width="760" height="130" fill="url(#oSea)"/>
+              <g class="o-waves" stroke="#ffd9a0" stroke-opacity=".55" stroke-width="2" stroke-linecap="round">
+                <line x1="500" y1="296" x2="620" y2="296"/><line x1="470" y1="312" x2="650" y2="312"/><line x1="520" y1="330" x2="600" y2="330"/><line x1="440" y1="350" x2="690" y2="350"/><line x1="540" y1="372" x2="590" y2="372"/>
+              </g>
+              <path d="M0 300 Q200 262 420 300 L420 410 L0 410 Z" fill="#0a161c"/>
+              <path d="M150 284 L150 214 L262 214 L262 186 L396 186 L396 284 Z" fill="#0e1e26"/>
+              <rect x="140" y="208" width="132" height="8" fill="#1a2f38"/><rect x="252" y="180" width="154" height="8" fill="#1a2f38"/>
+              <rect class="o-win" x="166" y="232" width="34" height="38" fill="#ffcf7a"/><rect class="o-win" x="212" y="232" width="34" height="38" fill="#ffcf7a"/>
+              <rect class="o-win" x="278" y="204" width="48" height="66" fill="#ffcf7a"/><rect class="o-win" x="336" y="204" width="44" height="30" fill="#ffcf7a"/>
+            </svg>
+            <div class="o-nav"><b>OAKLINE</b><span>Buy &middot; Sell &middot; Neighborhoods &middot; About</span><span class="o-pill">Let's talk</span></div>
+            <div class="o-copy">
+              <div class="o-kick">Coastal Maryland &middot; Since 2009</div>
+              <h3>Find your place<br><i>on the coast.</i></h3>
+              <div class="o-search"><span><small>Location</small>Ocean City, MD</span><span><small>Price</small>$600k &ndash; $1.5M</span><span><small>Beds</small>3+</span><b>Search</b></div>
+            </div>
+          </div>
+          <div class="o-sec">
+            <div class="o-h">Featured listings <span>View all 48 &rarr;</span></div>
+            <div class="o-grid">
+              <div class="o-card"><div class="o-img o-i1"><em>NEW</em></div><div class="o-p">$1,295,000</div><div class="o-a">12 Bayview Ln &middot; Ocean City</div><div class="o-m">4 bd &middot; 3 ba &middot; 2,840 sqft</div></div>
+              <div class="o-card"><div class="o-img o-i2"><em>WATERFRONT</em></div><div class="o-p">$879,000</div><div class="o-a">7 Heron Point &middot; Berlin</div><div class="o-m">3 bd &middot; 2 ba &middot; 1,960 sqft</div></div>
+              <div class="o-card"><div class="o-img o-i3"><em>OPEN SUN</em></div><div class="o-p">$1,540,000</div><div class="o-a">88 Dune Rd &middot; Fenwick</div><div class="o-m">5 bd &middot; 4 ba &middot; 3,400 sqft</div></div>
+            </div>
+          </div>
+          <div class="o-stats"><div><b>$480M</b>in homes sold</div><div><b>1,200+</b>families moved</div><div><b>4.9&#9733;</b>from 300+ reviews</div></div>
+          <div class="o-quote">&ldquo;They sold our home in six days, over asking. It felt effortless.&rdquo;<span>THE CARTERS &middot; BERLIN, MD</span></div>
+        </div></div></div>
+
+        <div class="site s-mai" data-url="maisontable.com"><div class="sz"><div class="sc">
+          <div class="m-nav"><span>Menu</span><span>Story</span><b>Maison</b><span>Events</span><span class="m-res">Reserve</span></div>
+          <div class="m-hero">
+            <div class="m-copy">
+              <div class="m-kick">Est. 2019 &middot; Downtown</div>
+              <h3>Seasonal.<br>Local.<br><i>Unforgettable.</i></h3>
+              <p>A twelve-seat chef's counter and a menu that changes with the farms.</p>
+              <span class="m-btn">Reserve a table</span>
+            </div>
+            <div class="m-plate">
+              <div class="m-steam"><i></i><i></i><i></i></div>
+              <svg viewBox="0 0 200 200" aria-hidden="true">
+                <circle cx="100" cy="100" r="96" fill="#fbf7f0"/><circle cx="100" cy="100" r="95" fill="none" stroke="#e2d6c3" stroke-width="2"/><circle cx="100" cy="100" r="72" fill="none" stroke="#efe5d6" stroke-width="1.5"/>
+                <path d="M58 118 Q60 74 104 70 Q146 70 142 112 Q138 140 98 140 Q60 140 58 118 Z" fill="#b8542b"/>
+                <path d="M70 112 Q74 84 104 82 Q132 84 130 108" fill="none" stroke="#e4935a" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+                <path d="M78 122 Q100 112 124 124" fill="none" stroke="#7a2e14" stroke-width="3" opacity=".45"/>
+                <path d="M52 76 q16 -22 36 -6 q-16 22 -36 6z" fill="#4f7a2a"/><path d="M60 72 q12 -6 26 -2" stroke="#2f5216" stroke-width="1.5" fill="none"/>
+                <circle cx="146" cy="78" r="9" fill="#6b8f3a"/><circle cx="156" cy="92" r="7" fill="#7fa548"/><circle cx="140" cy="94" r="6" fill="#5d7f2f"/>
+                <circle cx="150" cy="134" r="5" fill="#d9b13b"/><circle cx="62" cy="146" r="3.5" fill="#8a3324"/><circle cx="74" cy="154" r="2.5" fill="#8a3324"/><circle cx="52" cy="134" r="2.5" fill="#8a3324"/>
+              </svg>
+            </div>
+          </div>
+          <div class="m-strip"><div>Tonight &middot; Wood-fired &middot; Natural wine &middot; Open till eleven &middot; Chef's counter &middot; Farm to table &middot;&nbsp;Tonight &middot; Wood-fired &middot; Natural wine &middot; Open till eleven &middot; Chef's counter &middot; Farm to table &middot;&nbsp;</div></div>
+          <div class="m-low">
+            <div><h4>Tonight's menu</h4>
+              <div class="m-row"><span>Charred Chesapeake oysters<small>brown butter, chili, lemon</small></span><i></i><b>18</b></div>
+              <div class="m-row"><span>Heirloom tomato &amp; peach<small>burrata, basil oil</small></span><i></i><b>16</b></div>
+              <div class="m-row"><span>Wood-fired rockfish<small>sweet corn, chanterelles</small></span><i></i><b>34</b></div>
+              <div class="m-row"><span>Dry-aged ribeye<small>bone marrow jus, embers</small></span><i></i><b>52</b></div>
+              <div class="m-row"><span>Honey lavender tart<small>cr&egrave;me fra&icirc;che</small></span><i></i><b>12</b></div>
+            </div>
+            <div class="m-book"><h4>Book your evening</h4>
+              <div class="m-days"><span>Thu<b>14</b></span><span class="on">Fri<b>15</b></span><span>Sat<b>16</b></span><span>Sun<b>17</b></span></div>
+              <div class="m-times"><span>6:00</span><span class="on">7:30</span><span>9:00</span></div>
+              <div class="m-go">Confirm &middot; 2 guests</div>
+            </div>
+          </div>
+        </div></div></div>
+
+        <div class="site s-lum" data-url="lumenwellness.co"><div class="sz"><div class="sc">
+          <div class="l-hero"><div class="l-blob b1"></div><div class="l-blob b2"></div><div class="l-blob b3"></div>
+            <div class="l-nav"><b>lumen</b><span>Programs &middot; Journal &middot; About</span><span class="l-pill">Book a call</span></div>
+            <div class="l-copy">
+              <div class="l-kick">&#10022; 1:1 coaching &middot; online</div>
+              <h3>Feel like<br><span>yourself again.</span></h3>
+              <p>Calm, clarity, and a plan that fits real life. No 5am routines required.</p>
+              <div class="l-ctas"><span class="l-btn">Start a free session</span><span class="l-ghost">How it works</span></div>
+            </div>
+          </div>
+          <div class="l-sec"><h4>Find your program</h4>
+            <div class="l-cards">
+              <div class="l-card"><div class="l-ic" style="background:#efeafc">&#127769;</div><b>Sleep Reset</b><small>4 weeks &middot; guided</small><div class="pr">$249</div></div>
+              <div class="l-card"><div class="l-ic" style="background:#e0f4f0">&#127807;</div><b>Stress to Calm</b><small>6 weeks &middot; 1:1</small><div class="pr">$480</div></div>
+              <div class="l-card"><div class="l-ic" style="background:#ffeee5">&#9728;&#65039;</div><b>Energy Rebuild</b><small>8 weeks &middot; 1:1</small><div class="pr">$720</div></div>
+            </div>
+          </div>
+          <div class="l-cal"><div><b>Pick a time that works</b><p>Free 20-minute intro call. No pressure, just a conversation.</p></div>
+            <div class="l-days"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+              <span>3</span><span class="av">4</span><span>5</span><span class="av">6</span><span class="pk">7</span><span>8</span><span>9</span>
+              <span class="av">10</span><span>11</span><span class="av">12</span><span class="av">13</span><span>14</span><span>15</span><span>16</span></div>
+          </div>
+        </div></div></div>
+
+      </div>
+    </div>
+    <div class="phone" aria-hidden="true"><div class="notch"></div><div class="pscreen">
+      <div class="p-top"><span>9:41</span><span>&#9679;&#9679;&#9679; &#9646;</span></div>
+      <div class="p-hi">Good morning, Sam</div>
+      <div class="p-sub">12-day streak. Keep it going &#128293;</div>
+      <div class="p-ring"><svg viewBox="0 0 120 120"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#50e3c2"/><stop offset="1" stop-color="#7c8cff"/></linearGradient></defs>
+        <circle class="rb" cx="60" cy="60" r="50"/><circle class="rf" cx="60" cy="60" r="50"/><circle class="rb" cx="60" cy="60" r="36" style="stroke-width:8"/><circle class="rf2" cx="60" cy="60" r="36"/></svg>
+        <div class="p-pct"><b>78%</b><small>daily goal</small></div></div>
+      <div class="p-bars"><span style="height:40%"></span><span style="height:65%"></span><span style="height:52%"></span><span style="height:88%"></span><span style="height:70%"></span><span style="height:96%"></span><span style="height:60%"></span></div>
+      <div class="p-days"><i>M</i><i>T</i><i>W</i><i>T</i><i>F</i><i>S</i><i>S</i></div>
+      <div class="p-item ck"><b>&#10003;</b><span>Morning walk</span><small>20m</small></div>
+      <div class="p-item ck ck2"><b>&#10003;</b><span>Drink water</span><small>6/8</small></div>
+      <div class="p-item"><b></b><span>Read 10 pages</span><small>9pm</small></div>
+    </div><div class="p-label">App concept &middot; Pulse</div></div>
+  </div>
+  <div class="sc-note">Hover a site to pause it &middot; Every build is mobile-first</div>
   <a class="scbtn" href="#pbody">Start your project &darr;</a>
+</section>
+<div class="how rv">
+  <div class="how-step"><div class="hn">1</div><div class="ht">Share your vision</div><div class="hd">Fill out the quick form below &mdash; takes about two minutes.</div></div>
+  <div class="how-step"><div class="hn">2</div><div class="ht">I design &amp; build</div><div class="hd">Custom-crafted to your brand, handled end to end.</div></div>
+  <div class="how-step"><div class="hn">3</div><div class="ht">You launch</div><div class="hd">Go live and start bringing in business.</div></div>
 </div>
-<div class="how">
-  <div class="how-step"><div class="hn">1</div><div class="ht">Share your vision</div><div class="hp">Fill out the quick form below &mdash; takes about two minutes.</div></div>
-  <div class="how-step"><div class="hn">2</div><div class="ht">I design &amp; build</div><div class="hp">Custom-crafted to your brand, handled end to end.</div></div>
-  <div class="how-step"><div class="hn">3</div><div class="ht">You launch</div><div class="hp">Go live and start bringing in business.</div></div>
-</div>
-<div class="card" id="pbody">
+<div class="card rv" id="pbody">
   <h2>Tell me about your dream site</h2>
   <div class="sub">A few quick questions &mdash; no cost to reach out, and there are options for every budget, from a simple site to a full custom build.</div>
   <div class="fg">
@@ -2924,7 +3167,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
   <div class="msg" id="pd_msg"></div>
   <div class="foot">Prefer to talk first? <a href="/book">Book a quick call</a></div>
 </div>
-<div class="faq">
+<div class="faq rv">
   <h3>Common questions</h3>
   <details><summary>Do I own the finished site?</summary><p>Yes &mdash; once it's done, it's yours to keep.</p></details>
   <details><summary>Can you handle hosting, domain, and launch?</summary><p>Yes &mdash; I can take care of hosting, your domain, and getting everything live, so you don't have to.</p></details>
@@ -2947,6 +3190,36 @@ document.getElementById('pd_submit').onclick=function(){
      } else { btn.disabled=false; btn.textContent='Bring my vision to life \\u2192'; msg.textContent=(j&&j.error)||'Something went wrong, please try again.'; }
    }).catch(function(){ btn.disabled=false; btn.textContent='Bring my vision to life \\u2192'; msg.textContent='Network error, please try again.'; });
 };
+(function(){
+  var pr=document.getElementById('prog');
+  window.addEventListener('scroll',function(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;pr.style.width=(m>0?h.scrollTop/m*100:0)+'%';},{passive:true});
+  var els=[].slice.call(document.querySelectorAll('.rv'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+    els.forEach(function(el){io.observe(el);});
+  } else els.forEach(function(el){el.classList.add('in');});
+  // Showcase: tabbed concept sites that auto-rotate and auto-scroll inside the browser frame
+  var vp=document.getElementById('sc_vp'); if(!vp)return;
+  var sites=[].slice.call(vp.querySelectorAll('.site')), tabs=[].slice.call(document.querySelectorAll('.sc-tab')), url=document.getElementById('sc_url'), cur=0, auto=true;
+  function fit(){
+    var w=vp.clientWidth, W=Math.max(760,w), s=w/W;
+    sites.forEach(function(st){var sz=st.firstElementChild, sc=sz.firstElementChild;
+      sz.style.width=W+'px'; sz.style.transform='scale('+s+')';
+      sc.style.setProperty('--d',Math.max(0,sc.scrollHeight-vp.clientHeight/s)+'px');});
+  }
+  function show(i){
+    cur=i;
+    sites.forEach(function(st,k){st.classList.toggle('on',k===i);});
+    tabs.forEach(function(t,k){t.classList.remove('auto');t.classList.toggle('on',k===i);});
+    if(auto){void tabs[i].offsetWidth; tabs[i].classList.add('auto');}
+    url.textContent=sites[i].getAttribute('data-url');
+    var sc=sites[i].firstElementChild.firstElementChild; sc.style.animation='none'; void sc.offsetWidth; sc.style.animation='';
+  }
+  tabs.forEach(function(t,k){t.onclick=function(){auto=false;show(k);};});
+  setInterval(function(){if(auto&&!vp.matches(':hover'))show((cur+1)%sites.length);},12000);
+  window.addEventListener('resize',fit); fit();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+})();
 </script>
 </body></html>"""
 
