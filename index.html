@@ -492,6 +492,99 @@ footer{position:relative}
 .impact-stat .im-src{font-size:12.5px;color:rgba(246,244,236,.72);line-height:1.4}
 
 @media(max-width:700px){.impact-grid{grid-template-columns:1fr 1fr;gap:26px 18px}}
+/* ===== V2 motion + new sections ===== */
+@media(max-width:1020px){.nav-links{display:none}.hamb{display:block}}
+.hero h1 .hl{display:inline-block;animation:h1rise 1.1s cubic-bezier(.2,.8,.2,1) both}
+.hero h1 .hl.h2{animation-delay:.28s}
+@keyframes h1rise{from{opacity:0;transform:translateY(34px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+/* outcome ticker under the hero */
+.ticker{overflow:hidden;white-space:nowrap;background:var(--grad-green);color:var(--cream);padding:15px 0;position:relative;z-index:1;
+ -webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.ticker div{display:inline-block;animation:tick 38s linear infinite}
+.ticker span{display:inline-flex;align-items:center;gap:18px;margin-right:18px;font-weight:700;font-size:15px;letter-spacing:.01em}
+.ticker span:after{content:'\2726';color:var(--gold-l);font-size:13px}
+.ticker:hover div{animation-play-state:paused}
+@keyframes tick{to{transform:translateX(-50%)}}
+.chip .q{display:inline-block;animation:qbob 3.2s ease-in-out infinite}
+.chip:nth-child(2) .q{animation-delay:-.6s}.chip:nth-child(3) .q{animation-delay:-1.2s}.chip:nth-child(4) .q{animation-delay:-1.8s}.chip:nth-child(5) .q{animation-delay:-2.4s}
+@keyframes qbob{50%{transform:translateY(-4px) rotate(-8deg)}}
+.card:hover .ico{animation:wig .7s ease}
+@keyframes wig{20%{transform:rotate(-12deg) scale(1.15)}50%{transform:rotate(9deg) scale(1.15)}80%{transform:rotate(-4deg)}}
+/* featured plan: orbiting gold border */
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+.tier.feature::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:2px;pointer-events:none;
+ background:conic-gradient(from var(--ang),transparent 0 58%,rgba(224,184,98,.2) 66%,#e0b862 76%,#fff3cf 80%,#e0b862 84%,transparent 94%);
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:orbit 4.5s linear infinite}
+@keyframes orbit{to{--ang:360deg}}
+/* Websites & apps */
+#websites{padding-top:40px}
+.ws-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center}
+.ws-copy h2{font-size:clamp(30px,4.2vw,44px);margin:4px 0 16px}
+.ws-copy p{font-size:17px;color:var(--ink2);line-height:1.65;max-width:520px}
+.ws-list{list-style:none;margin:22px 0 28px;padding:0;display:grid;gap:11px}
+.ws-list li{display:flex;gap:11px;align-items:center;font-weight:600;font-size:15.5px}
+.ws-list li:before{content:'\2713';flex:none;width:22px;height:22px;border-radius:50%;background:var(--grad-gold);color:#3a2a05;font-size:12px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 5px rgba(199,154,59,.14)}
+.ws-copy .hero-cta{justify-content:flex-start}
+.ws-art{position:relative;padding:20px 26px 30px 0}
+.wb{position:relative;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 40px 80px rgba(20,40,30,.22),0 0 0 1px rgba(35,79,61,.1);transform:perspective(1400px) rotateY(-7deg) rotateX(3deg);transition:transform .6s}
+.ws-art:hover .wb{transform:perspective(1400px) rotateY(0) rotateX(0)}
+.wb-bar{display:flex;gap:6px;align-items:center;padding:10px 13px;background:#efeae0}
+.wb-bar i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.wb-bar i:nth-child(2){background:#febc2e}.wb-bar i:nth-child(3){background:#28c840}
+.wb-bar em{margin:0 auto;font-style:normal;font-size:11px;color:#8a8270;font-family:ui-monospace,monospace;background:#fff;padding:3px 14px;border-radius:6px}
+.wb-pg{position:relative;height:330px;padding:16px 20px;background:#faf8f3;overflow:hidden}
+.wb-pg *{--g:#e6e1d6}
+.wb-nav{display:flex;align-items:center;gap:10px;margin-bottom:26px}
+.wb-logo{width:26px;height:26px;border-radius:8px;background:var(--g);animation:paint 10s infinite;--c:#234F3D}
+.wb-nl{height:8px;width:40px;border-radius:4px;background:var(--g)}.wb-nl:first-of-type{margin-left:auto}
+.wb-hero{position:relative;border-radius:14px;padding:26px 22px;background:var(--g);animation:paint 10s infinite;--c:linear-gradient(135deg,#26543f,#1a3b2d)}
+.wb-t{height:20px;border-radius:5px;background:rgba(255,255,255,.75);width:0;animation:type 10s steps(14) infinite}
+.wb-t.t2{width:0;margin-top:8px;height:20px;animation-name:type2;background:#e0b862}
+.wb-s{height:8px;width:56%;border-radius:4px;background:rgba(255,255,255,.4);margin-top:14px;opacity:0;animation:fadein 10s infinite}
+.wb-cta{display:inline-block;margin-top:16px;height:28px;width:110px;border-radius:9px;background:var(--grad-gold);transform:scale(0);animation:popin 10s infinite;position:relative}
+.wb-cta:after{content:'';position:absolute;inset:0;border-radius:inherit;border:2px solid #e0b862;opacity:0;animation:ripple 10s infinite}
+.wb-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.wb-card{height:74px;border-radius:12px;background:#fff;box-shadow:0 8px 20px rgba(35,49,40,.08);opacity:0;transform:translateY(24px);animation:rise 10s infinite;padding:10px}
+.wb-card:nth-child(2){animation-name:rise2}.wb-card:nth-child(3){animation-name:rise3}
+.wb-card b{display:block;width:22px;height:22px;border-radius:7px;background:rgba(199,154,59,.25)}
+.wb-card i{display:block;height:6px;border-radius:3px;background:var(--g);margin-top:10px;width:80%}.wb-card i+i{width:55%;margin-top:6px}
+.wb-cur{position:absolute;z-index:3;width:22px;height:22px;left:0;top:0;animation:cur 10s infinite;filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
+.wb-cur svg{width:100%;height:100%}
+@keyframes paint{0%,18%{background:var(--g)}26%,90%{background:var(--c)}100%{background:var(--g)}}
+@keyframes type{0%,4%{width:0}20%,90%{width:62%}100%{width:0}}
+@keyframes type2{0%,20%{width:0}32%,90%{width:40%}100%{width:0}}
+@keyframes fadein{0%,32%{opacity:0}38%,90%{opacity:1}100%{opacity:0}}
+@keyframes popin{0%,38%{transform:scale(0)}44%{transform:scale(1.12)}48%,90%{transform:scale(1)}100%{transform:scale(0)}}
+@keyframes ripple{0%,60%{opacity:0;transform:scale(1)}62%{opacity:1}72%,100%{opacity:0;transform:scale(1.5)}}
+@keyframes rise{0%,46%{opacity:0;transform:translateY(24px)}54%,90%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes rise2{0%,50%{opacity:0;transform:translateY(24px)}58%,90%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes rise3{0%,54%{opacity:0;transform:translateY(24px)}62%,90%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes cur{0%{transform:translate(380px,300px)}12%{transform:translate(120px,110px)}40%{transform:translate(160px,140px)}56%{transform:translate(70px,196px)}60%{transform:translate(70px,196px) scale(.82)}63%{transform:translate(70px,196px)}80%{transform:translate(300px,270px)}100%{transform:translate(380px,300px)}}
+.wb-badge{position:absolute;z-index:4;background:#fff;border-radius:100px;padding:8px 14px;font-weight:700;font-size:13px;color:var(--green);box-shadow:0 14px 30px rgba(20,40,30,.18);display:flex;gap:7px;align-items:center;animation:bfloat 5s ease-in-out infinite}
+.wb-badge b{width:18px;height:18px;border-radius:50%;background:var(--grad-gold);display:grid;place-items:center;color:#3a2a05;font-size:11px}
+.wb-badge.b1{top:6px;right:0}.wb-badge.b2{bottom:0;left:-14px;animation-delay:-1.7s}.wb-badge.b3{top:46%;right:-8px;animation-delay:-3.3s}
+@keyframes bfloat{50%{transform:translateY(-10px)}}
+/* Meet Jeff */
+#jeff{padding-top:30px}
+.jeff{display:grid;grid-template-columns:auto 1fr;gap:46px;align-items:center;background:var(--card);border:1px solid var(--bd-soft);border-radius:26px;padding:44px 48px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.jeff:before{content:'';position:absolute;width:420px;height:420px;right:-160px;top:-200px;border-radius:50%;background:radial-gradient(circle,rgba(224,184,98,.18),transparent 65%);animation:drift2 12s ease-in-out infinite alternate}
+@keyframes drift2{to{transform:translate(-60px,50px)}}
+.jf-av{position:relative;width:190px;height:190px;flex:none}
+.jf-av img{position:absolute;inset:18px;width:calc(100% - 36px);height:calc(100% - 36px);border-radius:50%;object-fit:cover;box-shadow:0 18px 40px rgba(20,40,30,.25)}
+.jf-orbit{position:absolute;inset:0;border-radius:50%;border:2px dashed rgba(199,154,59,.6);animation:spinr 22s linear infinite}
+.jf-orbit.o2{inset:-12px;border:1px solid rgba(35,79,61,.18);animation-duration:34s;animation-direction:reverse}
+.jf-orbit:after{content:'';position:absolute;top:-6px;left:50%;width:11px;height:11px;margin-left:-5px;border-radius:50%;background:var(--gold-l);box-shadow:0 0 12px var(--gold-l)}
+@keyframes spinr{to{transform:rotate(360deg)}}
+.jf-copy{position:relative}
+.jf-copy h2{font-size:clamp(28px,3.6vw,38px);margin:2px 0 14px}
+.jf-copy p{font-size:16.5px;color:var(--ink2);line-height:1.7;max-width:640px}
+.jf-copy .hero-cta{justify-content:flex-start;margin-top:24px}
+/* final CTA sparks */
+.final-box{position:relative;overflow:hidden}
+.final-box .spk{position:absolute;bottom:-10px;width:6px;height:6px;border-radius:50%;background:var(--gold-l);box-shadow:0 0 10px var(--gold-l);opacity:0;animation:spark 6s linear infinite;pointer-events:none}
+@keyframes spark{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-320px) translateX(30px)}}
+@media(max-width:900px){.ws-grid{grid-template-columns:1fr;gap:34px}.ws-art{padding:10px 8px 26px}.jeff{grid-template-columns:1fr;text-align:center;padding:34px 24px;gap:26px}.jf-av{margin:0 auto;width:150px;height:150px}.jf-copy .hero-cta,.ws-copy .hero-cta{justify-content:center}.jf-copy p{margin:0 auto}.ws-copy{text-align:center}.ws-copy p{margin:0 auto}.ws-list{justify-content:center}}
+@media(max-width:520px){.wb-pg{height:280px}.wb-badge{font-size:12px;padding:6px 11px}.wb-badge.b3{display:none}.ticker span{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.wb-t{width:62%}.wb-t.t2{width:40%}.wb-s{opacity:1}.wb-cta{transform:none}.wb-card{opacity:1;transform:none}.wb-hero{background:var(--c)}.wb-cur{display:none}.hero h1 .hl{opacity:1;transform:none;filter:none}}
 </style>
 </head>
 <body>
@@ -529,10 +622,11 @@ footer{position:relative}
  <div class="wrap nav-in">
   <div class="brand"><a class="brand-main" href="#top"><span class="mark"><span>M</span></span> MacRandle Acres</a><a class="brand-hub" href="/hub.html" title="Jeff Randle, my landing page">· Jeff Randle <span class="hub-arr">↗</span></a></div>
   <div class="nav-links">
-   <a href="#voice">Why it matters</a>
    <a href="#outcomes">What you get</a>
    <a href="#scorecard">Growth Scorecard</a>
    <a href="#pricing">Pricing</a>
+   <a href="#websites">Websites &amp; Apps</a>
+   <a href="#jeff">About</a>
    <a class="btn btn-primary nav-cta" href="/book"><span data-edit="nav_cta">Book a Growth Audit</span></a>
   </div>
   <button class="hamb" id="hamb" aria-label="Menu">☰</button>
@@ -548,7 +642,7 @@ footer{position:relative}
    <img class="hero-logo" src="logo.jpg" alt="MacRandle Acres, Cultivating Better Businesses" onerror="this.parentNode.style.display='none'">
   </div>
   <span class="eyebrow reveal in" data-edit="hero_eyebrow">Fractional Growth Advisor · For Real Estate Teams</span>
-  <h1 class="reveal in"><span class="accent-text shimmer" data-edit="hero_h1a">Remove Friction.</span><br><span data-edit="hero_h1b">Accelerate Growth.</span></h1>
+  <h1 class="reveal in"><span class="hl"><span class="accent-text shimmer" data-edit="hero_h1a">Remove Friction.</span></span><br><span class="hl h2"><span data-edit="hero_h1b">Accelerate Growth.</span></span></h1>
   <p class="promise reveal in" data-edit="hero_promise">Every month I find hidden opportunities to make your real estate business <b>more profitable</b>, then I implement the systems to capture them.</p>
   <div class="hero-cta reveal in">
    <a class="btn btn-primary" href="/book"><span data-edit="hero_cta1">Book a Growth Audit</span></a>
@@ -566,6 +660,8 @@ footer{position:relative}
   </div>
  </div>
 </header>
+
+<div class="ticker" aria-hidden="true"><div><span>Faster lead response</span><span>More appointments booked</span><span>No more leads gone cold</span><span>Smarter ad spend</span><span>A clear plan every month</span><span>Real numbers, no fluff</span><span>Websites that convert</span><span>Faster lead response</span><span>More appointments booked</span><span>No more leads gone cold</span><span>Smarter ad spend</span><span>A clear plan every month</span><span>Real numbers, no fluff</span><span>Websites that convert</span></div></div>
 
 <!-- CLIENT VOICE -->
 <div class="wrap"><div class="flourish" aria-hidden="true">
@@ -620,7 +716,7 @@ footer{position:relative}
     <div class="impact-stat"><div class="im-ic">👀</div><div class="im-name" data-edit="mz1_n">Reach &amp; link clicks</div><div class="im-src" data-edit="mz1_s">Straight from Meta Ads Manager</div></div>
     <div class="impact-stat"><div class="im-ic">📞</div><div class="im-name" data-edit="mz2_n">Calls from your ads</div><div class="im-src" data-edit="mz2_s">Tracked call reporting</div></div>
     <div class="impact-stat"><div class="im-ic">💬</div><div class="im-name" data-edit="mz3_n">Conversations &amp; appointments</div><div class="im-src" data-edit="mz3_s">Logged in your CRM</div></div>
-    <div class="impact-stat"><div class="im-ic">🌱</div><div class="im-name" data-edit="mz4_n">Seeds planted, then booked</div><div class="im-src" data-edit="mz4_s">Counted, never guessed</div></div>
+    <div class="impact-stat"><div class="im-ic">🌱</div><div class="im-name" data-edit="mz4_n">Warm leads nurtured, then booked</div><div class="im-src" data-edit="mz4_s">Counted, never guessed</div></div>
    </div>
   </div>
  </div>
@@ -631,7 +727,7 @@ footer{position:relative}
   <div class="sec-head">
    <span class="eyebrow reveal" data-edit="outcomes_eyebrow">What you get</span>
    <h2 class="reveal">You buy <span class="accent-text" data-edit="outcomes_h2hi">results</span>, not tasks</h2>
-   <p class="reveal" data-edit="outcomes_p">The same work every agency lists, reframed around the outcome you actually care about.</p>
+   <p class="reveal" data-edit="outcomes_p">Every agency hands you a list of tasks. Here's what those tasks actually get you.</p>
   </div>
   <div class="grid g3">
    <div class="card reveal d1">
@@ -714,7 +810,7 @@ footer{position:relative}
       <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">👆</span><span data-edit="rl2">Link clicks</span></span><span class="rp-m-val g count" data-to="1340">0</span></div><span class="rp-bar"><i style="--w:70%"></i></span></li>
       <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📞</span><span data-edit="rl3">Calls from ads</span></span><span class="rp-m-val g count" data-to="62">0</span></div><span class="rp-bar"><i style="--w:45%"></i></span></li>
       <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">💬</span><span data-edit="rl4">Conversations started</span></span><span class="rp-m-val g count" data-to="210">0</span></div><span class="rp-bar"><i style="--w:62%"></i></span></li>
-      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🌱</span><span data-edit="rl5">Seeds planted</span></span><span class="rp-m-val gold count" data-to="95">0</span></div><span class="rp-bar"><i style="--w:52%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🌱</span><span data-edit="rl5">Warm leads nurtured</span></span><span class="rp-m-val gold count" data-to="95">0</span></div><span class="rp-bar"><i style="--w:52%"></i></span></li>
       <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📅</span><span data-edit="rl6">Appointments booked</span></span><span class="rp-m-val g count" data-to="19">0</span></div><span class="rp-bar"><i style="--w:40%"></i></span></li>
      </ul>
      <div class="rp-foot">
@@ -743,7 +839,7 @@ footer{position:relative}
     <div class="price" data-edit="t1_price"><span class="amt">$997–1,250</span> <span class="per">/mo</span></div>
     <ul>
      <li><span class="ck">✓</span><span data-edit="t1_li1">Monthly growth audit + game plan</span></li>
-     <li><span class="ck">✓</span><span data-edit="t1_li2">I find your highest-impact growth moves — leaks and untapped growth</span></li>
+     <li><span class="ck">✓</span><span data-edit="t1_li2">Leaks plugged and untapped growth found, ranked by impact</span></li>
      <li><span class="ck">✓</span><span data-edit="t1_li3">Clear, prioritized action steps</span></li>
      <li><span class="ck">✓</span><span data-edit="t1_li4">I implement the highest-impact moves &amp; systems</span></li>
     </ul>
@@ -768,9 +864,9 @@ footer{position:relative}
     <div class="price" data-edit="t3_price"><span class="amt">$3,500–5,000</span> <span class="per">/mo</span></div>
     <ul>
      <li><span class="ck">✓</span><span data-edit="t3_li1">Dedicated Fractional Growth Advisor</span></li>
-     <li><span class="ck">✓</span><span data-edit="t3_li2">Unlimited strategic guidance (within reason)</span></li>
+     <li><span class="ck">✓</span><span data-edit="t3_li2">On-call strategic guidance</span></li>
      <li><span class="ck">✓</span><span data-edit="t3_li3">Custom AI built for your business</span></li>
-     <li><span class="ck">✓</span><span data-edit="t3_li4">Recruiting & expansion systems</span></li>
+     <li><span class="ck">✓</span><span data-edit="t3_li4">Recruiting &amp; expansion systems</span></li>
      <li><span class="ck">✓</span><span data-edit="t3_li5">Quarterly planning</span></li>
     </ul>
     <a class="btn btn-ghost fx-elite" href="/book"><span data-edit="t3_btn">Apply for Elite</span></a>
@@ -790,12 +886,67 @@ footer{position:relative}
  </div>
 </section>
 
+<!-- WEBSITES & APPS -->
+<section id="websites">
+ <div class="wrap">
+  <div class="ws-grid">
+   <div class="ws-copy">
+    <span class="eyebrow reveal" data-edit="ws_eyebrow">Also built here</span>
+    <h2 class="reveal"><span data-edit="ws_h2a">Websites &amp; apps that</span> <span class="accent-text" data-edit="ws_h2hi">stop the scroll</span></h2>
+    <p class="reveal d1" data-edit="ws_p">Your website is often the first handshake. I design and build custom sites and apps that look stunning, move beautifully, and turn visitors into booked calls. Design, build, hosting, and launch, all handled for you.</p>
+    <ul class="ws-list reveal d2">
+     <li><span data-edit="ws_li1">Custom design, never a template</span></li>
+     <li><span data-edit="ws_li2">Booking, forms &amp; lead capture built in</span></li>
+     <li><span data-edit="ws_li3">Mobile-first, fast, and SEO-ready</span></li>
+    </ul>
+    <div class="hero-cta reveal d3">
+     <a class="btn btn-primary" href="/design"><span data-edit="ws_cta1">See the work &rarr;</span></a>
+     <a class="btn btn-ghost" href="/design#pbody"><span data-edit="ws_cta2">Start a project</span></a>
+    </div>
+   </div>
+   <div class="ws-art reveal d2" aria-hidden="true">
+    <div class="wb">
+     <div class="wb-bar"><i></i><i></i><i></i><em>yourbusiness.com</em></div>
+     <div class="wb-pg">
+      <div class="wb-cur"><svg viewBox="0 0 24 24"><path d="M4 2l15 10-7 1.5L9 21z" fill="#1a2a24" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+      <div class="wb-nav"><span class="wb-logo"></span><span class="wb-nl"></span><span class="wb-nl"></span><span class="wb-nl"></span></div>
+      <div class="wb-hero"><div class="wb-t"></div><div class="wb-t t2"></div><div class="wb-s"></div><span class="wb-cta"></span></div>
+      <div class="wb-cards"><div class="wb-card"><b></b><i></i><i></i></div><div class="wb-card"><b></b><i></i><i></i></div><div class="wb-card"><b></b><i></i><i></i></div></div>
+     </div>
+    </div>
+    <span class="wb-badge b1"><b>&#10003;</b>Mobile-first</span>
+    <span class="wb-badge b2"><b>&#10003;</b>Built to convert</span>
+    <span class="wb-badge b3"><b>&#10003;</b>Lightning fast</span>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- MEET JEFF -->
+<section id="jeff">
+ <div class="wrap">
+  <div class="jeff reveal">
+   <div class="jf-av" aria-hidden="true"><span class="jf-orbit"></span><span class="jf-orbit o2"></span><img src="logo.jpg" alt=""></div>
+   <div class="jf-copy">
+    <span class="eyebrow" data-edit="jeff_eyebrow">Meet your advisor</span>
+    <h2 data-edit="jeff_h2">Hi, I'm Jeff Randle.</h2>
+    <p data-edit="jeff_p">I'm the founder of MacRandle Acres and a fractional growth advisor based in Salisbury, MD. I work alongside real estate teams to find what's quietly costing them deals, fix it, and show the results in plain numbers every month. You get a real person who knows your business, not a ticket queue.</p>
+    <div class="hero-cta">
+     <a class="btn btn-gold" href="/book"><span data-edit="jeff_cta1">Book a call with Jeff</span></a>
+     <a class="btn btn-ghost" href="/hub"><span data-edit="jeff_cta2">More about me &rarr;</span></a>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
 <!-- FINAL CTA -->
 <section class="final">
  <div class="wrap">
   <div class="band-green final-box reveal">
+   <i class="spk" style="left:8%;animation-delay:0.0s"></i><i class="spk" style="left:19%;animation-delay:2.4s"></i><i class="spk" style="left:31%;animation-delay:1.1s"></i><i class="spk" style="left:44%;animation-delay:3.6s"></i><i class="spk" style="left:57%;animation-delay:0.6s"></i><i class="spk" style="left:68%;animation-delay:2.9s"></i><i class="spk" style="left:80%;animation-delay:1.7s"></i><i class="spk" style="left:91%;animation-delay:4.2s"></i>
    <h2>Where are you <span style="color:var(--gold-l)" data-edit="final_h2hi">leaking growth?</span></h2>
-   <p data-edit="final_p">Let's find out. Book a Growth Audit and I'll show you the opportunities hiding in your business right now.</p>
+   <p data-edit="final_p">Let's find out. Book a Growth Audit and I'll show you exactly where deals, time, and ad dollars are slipping away, and how to win them back.</p>
    <div class="hero-cta" style="justify-content:center">
     <a class="btn btn-gold" href="/book"><span data-edit="final_cta1">Book a Growth Audit</span></a>
     <a class="btn btn-ghost-l" href="mailto:Macrandleacres@gmail.com"><span data-edit="final_cta2">Email Jeff</span></a>
@@ -811,7 +962,7 @@ footer{position:relative}
   <div class="ftag" data-edit="foot_tag">Cultivating better businesses</div>
   <div class="fvals" data-edit="foot_vals">Growth · Foundation · Freedom · Trust</div>
   <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
-  <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. We help ambitious real estate teams remove friction from growth.</span></small>
+  <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. Helping ambitious real estate teams remove friction from growth.</span></small>
   <div class="foot-hub"><a href="/hub.html">🍃 Explore Jeff Randle's Landing Page <span class="fh-arr">↗</span></a></div>
   <div style="margin-top:12px"><a href="/privacy" style="color:rgba(246,244,236,.5);font-size:12px">Privacy</a></div>
   <div class="foot-admin"><a href="/admin/login" id="adminLink">🔒 Admin · Edit site</a></div>
