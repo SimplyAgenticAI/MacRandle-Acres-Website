@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start your AI Virtual Employee setup - MacRandle Acres</title>
+<meta name="description" content="Tell Jeff about your business and the AI teammate you want. One-time setup from $497, with a live walkthrough and optional monthly support.">
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+__TRACK__
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.55;padding:0 0 48px;
+  background-image:radial-gradient(900px 480px at 50% -10%,rgba(199,154,59,.12),transparent 60%)}
+.head{background:linear-gradient(160deg,#26543f,#1a3b2d);color:#f6f4ec;padding:36px 18px 32px;text-align:center;border-radius:0 0 26px 26px}
+.mark{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fbf7ea,#d8cfb0);display:grid;place-items:center;margin:0 auto 12px;overflow:hidden}
+.mark img{width:100%;height:100%;object-fit:cover}
+.eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#e0b862;font-weight:700}
+.head h1{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:clamp(28px,6vw,44px);line-height:1.08;margin:8px auto 10px;max-width:680px;color:#fff}
+.head p{max-width:520px;margin:0 auto;font-size:16px;color:rgba(246,244,236,.9)}
+.price-line{margin-top:12px;font-weight:700;color:#e0b862;font-size:14.5px}
+.card{max-width:680px;margin:22px auto 0;background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:22px;padding:26px 22px 28px;box-shadow:0 22px 55px rgba(35,49,40,.12)}
+.steps{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 20px}
+.steps li{text-align:center;font-size:12px;font-weight:700;color:#8a918b;padding-bottom:8px;border-bottom:3px solid rgba(35,79,61,.12)}
+.steps li.on{color:#234F3D;border-color:#c79a3b}
+.steps li.done{color:#2a5c47;border-color:#2a5c47}
+.stepcount{font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8a918b;margin-bottom:8px}
+.pane h2{font-family:'Fraunces',Georgia,serif;font-size:26px;color:#234F3D;font-weight:650;margin-bottom:4px;outline:none}
+.pane .sub{color:#5c635e;font-size:14.5px;margin-bottom:16px}
+.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fld span,.checks legend{font-size:13.5px;font-weight:700;color:#234F3D}
+.req{color:#a97f2a}
+.fld input,.fld select,.fld textarea{font-family:inherit;font-size:16px;padding:12px 13px;border:1px solid rgba(35,79,61,.22);border-radius:10px;color:#2D2D2D;background:#fff;width:100%}
+.fld textarea{min-height:120px;resize:vertical;line-height:1.5}
+.fld input:focus,.fld select:focus,.fld textarea:focus,.check input:focus{outline:2px solid #c79a3b;outline-offset:2px;border-color:#c79a3b}
+.fld input[aria-invalid="true"],.fld select[aria-invalid="true"],.fld textarea[aria-invalid="true"],fieldset[aria-invalid="true"]{border-color:#8d1d1d}
+fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
+.hint{font-size:12.5px;color:#5c635e;font-weight:500}
+.fld span.ae-err,.checks .ae-err{color:#8d1d1d;font-size:13.5px;font-weight:600}
+.ae-err{color:#8d1d1d;font-size:13.5px;font-weight:600;min-height:0}
+.ae-err:empty{display:none}
+.checks{border:0;padding:0;margin:0 0 8px;display:grid;gap:8px}
+.checks legend{margin-bottom:8px}
+.check{display:flex;align-items:flex-start;gap:10px;font-size:15px;font-weight:600;color:#2D2D2D;background:#F8F7F3;border:1px solid rgba(35,79,61,.1);border-radius:10px;padding:10px 12px}
+.check input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:#234F3D}
+.actions{display:flex;gap:10px;margin-top:8px}
+.actions button{font-family:inherit;font-weight:800;font-size:16px;border-radius:12px;padding:14px 18px;min-height:48px;cursor:pointer;flex:1}
+.actions .next,.actions .go{border:none;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec}
+.actions .back{background:#fff;color:#234F3D;border:1.5px solid rgba(35,79,61,.25)}
+.actions button:disabled{opacity:.65;cursor:wait}
+.actions button:focus{outline:2px solid #c79a3b;outline-offset:2px}
+.banner{margin-top:12px;font-size:14.5px;font-weight:650;color:#8d1d1d;text-align:center}
+.banner:empty{display:none}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}
+.review{display:grid;gap:10px}
+.rvrow{background:#F8F7F3;border-radius:12px;padding:10px 12px}
+.rvrow b{display:block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#5c635e;margin-bottom:2px}
+.rvrow span{font-size:15px;white-space:pre-wrap;word-break:break-word}
+.editrow{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.editrow button{font-family:inherit;font-size:13px;font-weight:700;color:#234F3D;background:#fff;border:1px solid rgba(35,79,61,.2);border-radius:100px;padding:8px 12px;cursor:pointer}
+.editrow button:focus{outline:2px solid #c79a3b;outline-offset:2px}
+.done{text-align:center;padding:12px 6px 4px}
+.done h2{font-family:'Fraunces',Georgia,serif;font-size:30px;color:#234F3D;margin:8px 0}
+.done p{color:#5c635e;font-size:16px;max-width:460px;margin:0 auto 16px}
+.book{display:inline-block;text-decoration:none;font-weight:800;font-size:16px;padding:14px 22px;border-radius:12px;background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;min-height:48px}
+.book:focus{outline:2px solid #234F3D;outline-offset:3px}
+.secondary{display:inline-block;margin-top:14px;color:#a97f2a;font-weight:700;font-size:14.5px}
+.foot{text-align:center;margin-top:16px;font-size:13px;color:#8a918b}
+.foot a{color:#a97f2a;font-weight:700;text-decoration:none}
+.noscript{max-width:680px;margin:16px auto 0;background:#fff;border-radius:14px;padding:16px;color:#5c635e}
+@media(min-width:640px){.checks.cols{grid-template-columns:1fr 1fr}.card{padding:30px 28px 32px}}
+@media(max-width:359px){.head{padding:28px 14px 24px}.card{padding:18px 14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="head">
+  <div class="mark"><img src="/logo.jpg" alt="MacRandle Acres"></div>
+  <div class="eyebrow">MacRandle Acres</div>
+  <h1>AI Virtual Employee Setup</h1>
+  <p>Tell me about your business and the teammate you want. This takes a few minutes, then you can book a setup consultation.</p>
+  <p class="price-line">One-time setup from $497. Optional monthly support is available.</p>
+</header>
+<noscript><p class="noscript">This form needs JavaScript. Email <a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> and Jeff will help you get started.</p></noscript>
+<form class="card" id="aiForm" novalidate>
+  <ol class="steps" aria-label="Progress">
+    <li class="step on" aria-current="step">Contact</li>
+    <li class="step">Business</li>
+    <li class="step">Teammate</li>
+    <li class="step">Review</li>
+  </ol>
+  <p class="stepcount" id="stepcount">Step 1 of 4</p>
+
+  <div class="hp" aria-hidden="true">
+    <label for="website">Company website</label>
+    <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" value="">
+  </div>
+  <input type="hidden" id="csrf" name="csrf" value="__CSRF__">
+
+  <section class="pane" data-step="0" aria-labelledby="step1-title">
+    <h2 id="step1-title" tabindex="-1">Contact</h2>
+    <p class="sub">How should Jeff reach you about this setup?</p>
+    <label class="fld" for="name"><span>Full name <span class="req">*</span></span>
+      <input id="name" name="name" autocomplete="name" maxlength="120" aria-required="true" aria-describedby="name-err">
+      <span class="ae-err" id="name-err" aria-live="polite"></span>
+    </label>
+    <label class="fld" for="email"><span>Email <span class="req">*</span></span>
+      <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="160" aria-required="true" aria-describedby="email-err">
+      <span class="ae-err" id="email-err" aria-live="polite"></span>
+    </label>
+    <label class="fld" for="phone"><span>Phone <span class="req">*</span></span>
+      <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="40" aria-required="true" aria-describedby="phone-hint phone-err">
+      <span class="hint" id="phone-hint">US numbers like (410) 555-0199, or an international number starting with +.</span>
+      <span class="ae-err" id="phone-err" aria-live="polite"></span>
+    </label>
+  </section>
+
+  <section class="pane" data-step="1" hidden aria-labelledby="step2-title">
+    <h2 id="step2-title" tabindex="-1">Business</h2>
+    <p class="sub">A little context so the assistant fits the way you already work.</p>
+    <label class="fld" for="business"><span>Business name <span class="req">*</span></span>
+      <input id="business" name="business" autocomplete="organization" maxlength="160" aria-required="true" aria-describedby="business-err">
+      <span class="ae-err" id="business-err" aria-live="polite"></span>
+    </label>
+    <label class="fld" for="industry"><span>Industry <span class="req">*</span></span>
+      <select id="industry" name="industry" aria-required="true" aria-describedby="industry-err">__INDUSTRY_OPTIONS__</select>
+      <span class="ae-err" id="industry-err" aria-live="polite"></span>
+    </label>
+    <div id="industryOtherWrap" hidden>
+      <label class="fld" for="industry_other"><span>Your industry <span class="req">*</span></span>
+        <input id="industry_other" name="industry_other" maxlength="120" aria-describedby="industry_other-err">
+        <span class="ae-err" id="industry_other-err" aria-live="polite"></span>
+      </label>
+    </div>
+    <label class="fld" for="team"><span>Team size <span class="req">*</span></span>
+      <select id="team" name="team" aria-required="true" aria-describedby="team-err">__TEAM_OPTIONS__</select>
+      <span class="ae-err" id="team-err" aria-live="polite"></span>
+    </label>
+    <label class="fld" for="daily_task"><span>What's one task you wish you could take off your plate every day? <span class="req">*</span></span>
+      <textarea id="daily_task" name="daily_task" maxlength="1000" aria-required="true" aria-describedby="daily_task-err"></textarea>
+      <span class="ae-err" id="daily_task-err" aria-live="polite"></span>
+    </label>
+  </section>
+
+  <section class="pane" data-step="2" hidden aria-labelledby="step3-title">
+    <h2 id="step3-title" tabindex="-1">Your AI teammate</h2>
+    <p class="sub">Describe the worker you want. Built inside your own AI account.</p>
+    <label class="fld" for="teammate"><span>Describe the teammate you want <span class="req">*</span></span>
+      <textarea id="teammate" name="teammate" maxlength="2000" aria-required="true" aria-describedby="teammate-err" placeholder="What should they handle, and what does a good result look like?"></textarea>
+      <span class="ae-err" id="teammate-err" aria-live="polite"></span>
+    </label>
+    <fieldset class="checks cols" id="automations" aria-describedby="automations-err">
+      <legend>Which automations do you want?</legend>
+      __AUTO_CHECKS__
+      <span class="ae-err" id="automations-err" aria-live="polite"></span>
+    </fieldset>
+    <div id="autoOtherWrap" hidden>
+      <label class="fld" for="automation_other"><span>Other automation <span class="req">*</span></span>
+        <input id="automation_other" name="automation_other" maxlength="300" aria-describedby="automation_other-err">
+        <span class="ae-err" id="automation_other-err" aria-live="polite"></span>
+      </label>
+    </div>
+    <label class="fld" for="tools"><span>Tools you use today</span>
+      <input id="tools" name="tools" maxlength="400" aria-describedby="tools-hint tools-err" placeholder="Gmail, Google Calendar, a CRM">
+      <span class="hint" id="tools-hint">Optional. Name the tools this teammate should work beside.</span>
+      <span class="ae-err" id="tools-err" aria-live="polite"></span>
+    </label>
+    <fieldset class="checks" id="package" aria-required="true" aria-describedby="package-err">
+      <legend>Package interest <span class="req">*</span></legend>
+      __PACKAGE_RADIOS__
+      <span class="ae-err" id="package-err" aria-live="polite"></span>
+    </fieldset>
+  </section>
+
+  <section class="pane" data-step="3" hidden aria-labelledby="step4-title">
+    <h2 id="step4-title" tabindex="-1">Review and submit</h2>
+    <p class="sub">Check everything, then send it to Jeff. Nothing is emailed to you from this form.</p>
+    <div class="editrow">
+      <button type="button" id="edit0">Edit contact</button>
+      <button type="button" id="edit1">Edit business</button>
+      <button type="button" id="edit2">Edit teammate</button>
+    </div>
+    <div class="review" id="review"></div>
+  </section>
+
+  <div class="actions">
+    <button type="button" class="back" id="back" hidden>Back</button>
+    <button type="button" class="next" id="next">Next</button>
+    <button type="submit" class="go" id="submitBtn" hidden>Submit</button>
+  </div>
+  <div class="banner" id="formAlert" role="alert"></div>
+  <p class="foot">Client pays for any required AI subscription separately. <a href="/#ai-employee">See packages</a></p>
+</form>
+<script>
+(function(){
+  var form = document.getElementById('aiForm');
+  var panes = [].slice.call(document.querySelectorAll('[data-step]'));
+  var dots = [].slice.call(document.querySelectorAll('.step'));
+  var alertBox = document.getElementById('formAlert');
+  var cur = 0;
+  var MSG = {
+    name: 'Please enter your full name.',
+    nameLen: 'Please keep your name to 120 characters or fewer.',
+    email: 'Please enter a valid email.',
+    phone: 'Please enter a valid phone number.',
+    phoneLen: 'Please keep your phone number to 40 characters or fewer.',
+    business: 'Please enter your business name.',
+    businessLen: 'Please keep the business name to 160 characters or fewer.',
+    industry: 'Please choose an industry.',
+    industryOther: 'Please tell us your industry.',
+    industryOtherLen: 'Please keep your industry to 120 characters or fewer.',
+    team: 'Please choose a team size.',
+    daily: 'Please share one task you wish you could take off your plate.',
+    dailyLen: 'Please keep that task to 1000 characters or fewer.',
+    teammate: 'Please describe the AI teammate you want.',
+    teammateLen: 'Please keep the description to 2000 characters or fewer.',
+    autos: 'Please choose an automation from the list.',
+    autoOther: 'Please describe the other automation.',
+    autoOtherLen: 'Please keep the other automation to 300 characters or fewer.',
+    toolsLen: 'Please keep tools to 400 characters or fewer.',
+    package: 'Please choose a package, or Not sure.',
+    retry: 'We could not send that just now. Your answers are still here. Please try again.'
+  };
+  var STEP_OF = {name:0,email:0,phone:0,business:1,industry:1,industry_other:1,team:1,daily_task:1,teammate:2,automations:2,automation_other:2,tools:2,package:2};
+
+  function val(id){
+    var el = document.getElementById(id);
+    return el ? (el.value || '').trim() : '';
+  }
+  function validEmail(s){ return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s) && s.length <= 160; }
+  function validPhone(raw){
+    if(!raw || raw.length > 40) return false;
+    if(!/^[+()0-9][0-9\s().+-]{6,}$/.test(raw)) return false;
+    var digits = raw.replace(/[^0-9]/g, '');
+    if(raw.charAt(0) === '+') return digits.length >= 8 && digits.length <= 15 && digits.charAt(0) !== '0';
+    if(digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
+    if(digits.length !== 10) return false;
+    return digits.charAt(0) !== '0' && digits.charAt(0) !== '1' && digits.charAt(3) !== '0' && digits.charAt(3) !== '1';
+  }
+  function showError(id, msg){
+    var el = document.getElementById(id);
+    var err = document.getElementById(id + '-err');
+    if(err) err.textContent = msg || '';
+    if(!el) return;
+    if(msg) el.setAttribute('aria-invalid', 'true');
+    else el.removeAttribute('aria-invalid');
+  }
+  function checkedAutos(){
+    return [].slice.call(form.querySelectorAll('input[name="auto"]:checked')).map(function(c){ return c.value; });
+  }
+  function packageValue(){
+    var c = form.querySelector('input[name="package"]:checked');
+    return c ? c.value : '';
+  }
+  function otherAutoOn(){
+    var c = form.querySelector('input[name="auto"][value="other"]');
+    return !!(c && c.checked);
+  }
+  function syncConditional(){
+    var otherIndustry = document.getElementById('industry').value === 'Other';
+    document.getElementById('industryOtherWrap').hidden = !otherIndustry;
+    document.getElementById('industry_other').setAttribute('aria-required', otherIndustry ? 'true' : 'false');
+    var otherAuto = otherAutoOn();
+    document.getElementById('autoOtherWrap').hidden = !otherAuto;
+    document.getElementById('automation_other').setAttribute('aria-required', otherAuto ? 'true' : 'false');
+  }
+  function validateStep(n){
+    var ok = true;
+    function bad(id, msg){ showError(id, msg); ok = false; }
+    function good(id){ showError(id, ''); }
+    if(n === 0){
+      var name = val('name');
+      if(name.length > 120) bad('name', MSG.nameLen);
+      else if(name.length < 2) bad('name', MSG.name);
+      else good('name');
+      if(!validEmail(val('email'))) bad('email', MSG.email); else good('email');
+      var phone = val('phone');
+      if(phone.length > 40) bad('phone', MSG.phoneLen);
+      else if(!validPhone(phone)) bad('phone', MSG.phone);
+      else good('phone');
+    }
+    if(n === 1){
+      var business = val('business');
+      if(business.length > 160) bad('business', MSG.businessLen);
+      else if(business.length < 2) bad('business', MSG.business);
+      else good('business');
+      var industry = val('industry');
+      if(!industry) bad('industry', MSG.industry); else good('industry');
+      if(industry === 'Other'){
+        var indOther = val('industry_other');
+        if(indOther.length > 120) bad('industry_other', MSG.industryOtherLen);
+        else if(indOther.length < 2) bad('industry_other', MSG.industryOther);
+        else good('industry_other');
+      } else good('industry_other');
+      if(!val('team')) bad('team', MSG.team); else good('team');
+      var daily = val('daily_task');
+      if(daily.length > 1000) bad('daily_task', MSG.dailyLen);
+      else if(daily.length < 2) bad('daily_task', MSG.daily);
+      else good('daily_task');
+    }
+    if(n === 2){
+      var mate = val('teammate');
+      if(mate.length > 2000) bad('teammate', MSG.teammateLen);
+      else if(mate.length < 2) bad('teammate', MSG.teammate);
+      else good('teammate');
+      good('automations');
+      if(otherAutoOn()){
+        var ao = val('automation_other');
+        if(ao.length > 300) bad('automation_other', MSG.autoOtherLen);
+        else if(ao.length < 2) bad('automation_other', MSG.autoOther);
+        else good('automation_other');
+      } else good('automation_other');
+      if(val('tools').length > 400) bad('tools', MSG.toolsLen); else good('tools');
+      if(!packageValue()) bad('package', MSG.package); else good('package');
+    }
+    if(!ok){
+      var first = panes[n].querySelector('[aria-invalid="true"]');
+      if(first && first.focus) first.focus();
+    }
+    return ok;
+  }
+  function labelForAuto(value){
+    var input = form.querySelector('input[name="auto"][value="'+value+'"]');
+    if(!input) return value;
+    return (input.parentNode.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+  function addRow(root, label, value){
+    var row = document.createElement('div');
+    row.className = 'rvrow';
+    var b = document.createElement('b');
+    b.textContent = label;
+    var s = document.createElement('span');
+    s.textContent = value && String(value).trim() ? value : 'Not provided';
+    row.appendChild(b);
+    row.appendChild(s);
+    root.appendChild(row);
+  }
+  function buildReview(){
+    var root = document.getElementById('review');
+    root.textContent = '';
+    var industry = val('industry');
+    if(industry === 'Other' && val('industry_other')) industry = 'Other: ' + val('industry_other');
+    var autos = checkedAutos().map(labelForAuto);
+    if(otherAutoOn() && val('automation_other')) autos.push(val('automation_other'));
+    addRow(root, 'Name', val('name'));
+    addRow(root, 'Email', val('email'));
+    addRow(root, 'Phone', val('phone'));
+    addRow(root, 'Business', val('business'));
+    addRow(root, 'Industry', industry);
+    addRow(root, 'Team size', val('team'));
+    addRow(root, 'Daily task', val('daily_task'));
+    addRow(root, 'AI teammate', val('teammate'));
+    addRow(root, 'Automations', autos.join(', '));
+    addRow(root, 'Tools', val('tools'));
+    addRow(root, 'Package', packageValue());
+  }
+  function show(n, opts){
+    opts = opts || {};
+    cur = n;
+    panes.forEach(function(p, i){ p.hidden = i !== n; });
+    dots.forEach(function(d, i){
+      d.classList.toggle('on', i === n);
+      d.classList.toggle('done', i < n);
+      if(i === n) d.setAttribute('aria-current', 'step');
+      else d.removeAttribute('aria-current');
+    });
+    document.getElementById('stepcount').textContent = 'Step ' + (n + 1) + ' of 4';
+    document.getElementById('back').hidden = n === 0;
+    document.getElementById('next').hidden = n === 3;
+    document.getElementById('submitBtn').hidden = n !== 3;
+    if(n === 3) buildReview();
+    if(opts.silent) return;
+    var bad = panes[n].querySelector('[aria-invalid="true"]');
+    var h = panes[n].querySelector('h2');
+    if(bad && bad.focus) bad.focus();
+    else if(h) h.focus();
+  }
+  function safeBook(book){
+    if(typeof book !== 'string' || book.indexOf('/book?') !== 0) return '/book?service=ai-employee';
+    if(/[\s<>"']/.test(book)) return '/book?service=ai-employee';
+    return book;
+  }
+  function showThanks(book){
+    var card = document.getElementById('aiForm');
+    var name = val('name').split(' ')[0] || 'there';
+    card.textContent = '';
+    var wrap = document.createElement('div');
+    wrap.className = 'done';
+    var h = document.createElement('h2');
+    h.tabIndex = -1;
+    h.textContent = 'Thanks, ' + name + '.';
+    var p = document.createElement('p');
+    p.textContent = 'Your setup request is in. Book a consultation next and Jeff will use what you just shared.';
+    var a = document.createElement('a');
+    a.className = 'book';
+    a.href = safeBook(book);
+    a.textContent = 'Book the setup consultation';
+    var back = document.createElement('a');
+    back.className = 'secondary';
+    back.href = '/#ai-employee';
+    back.textContent = 'Back to the offer';
+    wrap.appendChild(h);
+    wrap.appendChild(p);
+    wrap.appendChild(a);
+    wrap.appendChild(document.createElement('br'));
+    wrap.appendChild(back);
+    card.appendChild(wrap);
+    h.focus();
+    window.scrollTo(0, 0);
+  }
+  function payload(){
+    return {
+      csrf: document.getElementById('csrf').value,
+      website: val('website'),
+      name: val('name'),
+      email: val('email'),
+      phone: val('phone'),
+      business: val('business'),
+      industry: val('industry'),
+      industry_other: val('industry_other'),
+      team: val('team'),
+      daily_task: val('daily_task'),
+      teammate: val('teammate'),
+      automations: checkedAutos(),
+      automation_other: val('automation_other'),
+      tools: val('tools'),
+      package: packageValue()
+    };
+  }
+  function submitForm(){
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    alertBox.textContent = '';
+    fetch('/api/ai-employee', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload())
+    }).then(function(r){
+      return r.text().then(function(t){
+        var body = null;
+        try { body = JSON.parse(t); } catch (e) { body = null; }
+        return {status: r.status, body: body};
+      });
+    }).then(function(res){
+      var j = res.body;
+      if(j && j.ok){
+        if(window.fbq) fbq('track', 'Lead');
+        if(window.gtag) gtag('event', 'ai_employee_intake');
+        showThanks(j.book);
+        return;
+      }
+      btn.disabled = false;
+      btn.textContent = 'Submit';
+      if(j && j.fields){
+        var first = 3;
+        Object.keys(j.fields).forEach(function(k){
+          if(k === 'csrf') return;
+          showError(k, j.fields[k]);
+          if(STEP_OF[k] != null && STEP_OF[k] < first) first = STEP_OF[k];
+        });
+        if(first < 3) show(first);
+        alertBox.textContent = j.error || 'Please fix the highlighted fields.';
+        return;
+      }
+      alertBox.textContent = (j && j.error) || MSG.retry;
+    }).catch(function(){
+      btn.disabled = false;
+      btn.textContent = 'Submit';
+      alertBox.textContent = MSG.retry;
+    });
+  }
+
+  document.getElementById('industry').addEventListener('change', syncConditional);
+  form.querySelectorAll('input[name="auto"]').forEach(function(c){
+    c.addEventListener('change', syncConditional);
+  });
+  document.getElementById('next').addEventListener('click', function(){
+    alertBox.textContent = '';
+    if(validateStep(cur)) show(cur + 1);
+  });
+  document.getElementById('back').addEventListener('click', function(){
+    alertBox.textContent = '';
+    if(cur > 0) show(cur - 1);
+  });
+  document.getElementById('edit0').addEventListener('click', function(){ show(0); });
+  document.getElementById('edit1').addEventListener('click', function(){ show(1); });
+  document.getElementById('edit2').addEventListener('click', function(){ show(2); });
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(cur < 3){
+      if(validateStep(cur)) show(cur + 1);
+      return;
+    }
+    for(var i = 0; i < 3; i++){
+      if(!validateStep(i)){ show(i); return; }
+    }
+    submitForm();
+  });
+  syncConditional();
+  show(0, {silent:true});
+})();
+</script>
+</body>
+</html>
