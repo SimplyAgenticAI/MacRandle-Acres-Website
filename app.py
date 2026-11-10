@@ -64,7 +64,7 @@ PAGES = {
 }
 BLOCKED_FILES = {"app.py", "requirements.txt", ".gitignore", "render.yaml", "README.md",
                  "index.html", "content.json", "hub_content.json", "scorecards.json", "visits.json",
-                 "leads.json", "bookings.json"}
+                 "leads.json", "bookings.json", "ai_employees.json", "ai_employee_page.html"}
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
@@ -116,7 +116,8 @@ def robots_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    urls = "".join("<url><loc>%s%s</loc></url>" % (SITE, u) for u in ("/", "/design", "/hub", "/privacy"))
+    urls = "".join("<url><loc>%s%s</loc></url>" % (SITE, u) for u in
+                   ("/", "/design", "/hub", "/ai-employee/start", "/privacy"))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
     return Response(xml, mimetype="application/xml")
@@ -843,7 +844,7 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 <h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle</div>
 <p>This site is operated by Jeff Randle (MacRandle Acres). We respect your privacy and keep things simple.</p>
 <h2>What we collect</h2>
-<p>If you submit the Growth Audit form, we collect the name, email, phone, and answers you provide. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
+<p>If you submit the Growth Audit form, we collect the name, email, phone, and answers you provide. If you start an AI Virtual Employee setup, we collect your name, email, phone, business details, and the answers you provide so we can prepare your setup and consultation. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
 <h2>How we use it</h2>
 <p>Only to respond to your request, prepare your growth audit, and improve the site. We do not sell your information.</p>
 <h2>Your choices</h2>
@@ -1232,8 +1233,32 @@ def api_book():
 @app.route("/book")
 def book_page():
     # Inject GA/Pixel so the booking conversion (book_call / Schedule) actually fires.
+    # Optional query params prefill the contact fields (used by the AI employee intake).
     head = "" if session.get("admin") else tracking_head()
+    service = "ai-employee" if request.args.get("service") == "ai-employee" else ""
+    pre = {
+        "name": _clean_line(request.args.get("name", ""))[:120],
+        "email": _clean_line(request.args.get("email", ""))[:160],
+        "phone": _clean_line(request.args.get("phone", ""))[:40],
+        "service": service,
+    }
+    pre_json = json.dumps(pre, ensure_ascii=True).replace("<", "\\u003c")
     html = BOOK_HTML.replace("</head>", head + "\n</head>", 1)
+    html = html.replace(
+        'var PREFILL={"name":"","email":"","phone":"","service":""};',
+        "var PREFILL=%s;" % pre_json,
+        1)
+    if service == "ai-employee":
+        html = html.replace(
+            "<title>Book a Growth Audit call - MacRandle Acres</title>",
+            "<title>Book your setup consultation - MacRandle Acres</title>", 1)
+        html = html.replace(
+            "<h1>Book your Growth Audit call</h1>",
+            "<h1>Book your setup consultation</h1>", 1)
+        html = html.replace(
+            '<p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p>',
+            '<p id="sub">30 minutes with Jeff Randle to plan your AI virtual employee. Pick a time that works.</p>',
+            1)
     resp = Response(html, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
     return resp
@@ -1468,14 +1493,24 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
   <div class="body" id="body"><div class="empty">Loading available times…</div></div>
 </div>
 <script>
+var PREFILL={"name":"","email":"","phone":"","service":""};
+var entered={name:PREFILL.name||'',email:PREFILL.email||'',phone:PREFILL.phone||''};
 var TZ='', DAYS=[], di=0, slot=null, body=document.getElementById('body');
 fetch('/api/slots').then(function(r){return r.json();}).then(function(j){
   TZ=j.tz||''; DAYS=j.days||[];
-  document.getElementById('sub').textContent='30 minutes with Jeff Randle. All times '+TZ+'.';
+  var intro = PREFILL.service==='ai-employee'
+    ? '30 minutes with Jeff Randle to plan your AI virtual employee. All times '
+    : '30 minutes with Jeff Randle. All times ';
+  document.getElementById('sub').textContent=intro+TZ+'.';
   render();
 }).catch(function(){body.innerHTML='<div class="empty">Could not load times. Please email Macrandleacres@gmail.com.</div>';});
 function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function captureContact(){
+  var n=document.getElementById('bn'), e=document.getElementById('be'), p=document.getElementById('bp');
+  if(n) entered.name=n.value; if(e) entered.email=e.value; if(p) entered.phone=p.value;
+}
 function render(){
+  captureContact();
   if(!DAYS.length){body.innerHTML='<div class="empty">No open times in the next couple of weeks. Please email <a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> and we\\'ll find a time.</div>';return;}
   var h='<div class="lbl">Choose a day</div><div class="days">';
   DAYS.forEach(function(d,i){h+='<div class="day'+(i===di?' on':'')+'" data-d="'+i+'">'+esc(d.label)+'</div>';});
@@ -1492,9 +1527,9 @@ function formHtml(){
   if(!slot)return '';
   return '<div class="form show"><div class="pick">📅 '+esc(slotLabel())+' '+esc(TZ)+'</div>'+
     '<div class="fg" style="margin-top:12px">'+
-    '<label class="fld"><span>Your name *</span><input id="bn" autocomplete="name"></label>'+
-    '<label class="fld"><span>Email *</span><input id="be" type="email" autocomplete="email"></label>'+
-    '<label class="fld full"><span>Phone (optional)</span><input id="bp" autocomplete="tel"></label></div>'+
+    '<label class="fld"><span>Your name *</span><input id="bn" autocomplete="name" value="'+esc(entered.name)+'"></label>'+
+    '<label class="fld"><span>Email *</span><input id="be" type="email" autocomplete="email" value="'+esc(entered.email)+'"></label>'+
+    '<label class="fld full"><span>Phone (optional)</span><input id="bp" autocomplete="tel" value="'+esc(entered.phone)+'"></label></div>'+
     '<input type="text" id="bw" class="hp" tabindex="-1" autocomplete="off">'+
     '<button class="confirm" id="bc">Confirm booking</button><div id="bm" class="msg"></div></div>';
 }
@@ -3240,6 +3275,418 @@ h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decorat
 a{color:#a97f2a}
 </style></head><body><div class="wrap">
 <div class="top"><h1>Design inquiries</h1><a class="back" href="/">&larr; Site</a></div>
+__ROWS__
+</div></body></html>"""
+
+
+# ---------------------------------------------------------------------------
+# AI Virtual Employee setup intake
+# Stored like the other lead files (JSON in DATA, which is /var/data on Render
+# when that disk is mounted). Owner mail reuses SMTP_* + LEAD_EMAIL.
+# ---------------------------------------------------------------------------
+AI_EMPLOYEES_PATH = os.path.join(DATA, "ai_employees.json")
+AI_INDUSTRIES = [
+    "Real estate",
+    "Home services",
+    "Professional services",
+    "Retail",
+    "Health and wellness",
+    "Restaurant and hospitality",
+    "Online business",
+    "Other",
+]
+AI_TEAM_SIZES = ["Just me", "2-5", "6-15", "16-50", "51+"]
+AI_AUTOMATIONS = [
+    ("content", "Content creation"),
+    ("followups", "Follow-ups"),
+    ("research", "Lead research"),
+    ("inbox", "Inbox and email help"),
+    ("scheduling", "Scheduling"),
+    ("inquiries", "Customer inquiries"),
+    ("admin", "Admin tasks"),
+    ("other", "Other"),
+]
+AI_AUTO_KEYS = {key for key, _label in AI_AUTOMATIONS}
+AI_AUTO_LABELS = dict(AI_AUTOMATIONS)
+AI_PACKAGES = ["Starter", "Growth", "Business", "Not sure"]
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+_PHONE_RE = re.compile(r"^[+()0-9][0-9\s().+-]{6,}$")
+
+
+def valid_phone(value):
+    """Common US formats, plus international numbers that start with +."""
+    raw = value or ""
+    if not raw or len(raw) > 40 or not _PHONE_RE.match(raw):
+        return False
+    digits = re.sub(r"[^0-9]", "", raw)
+    if raw.startswith("+"):
+        return 8 <= len(digits) <= 15 and digits[0] != "0"
+    if len(digits) == 11 and digits.startswith("1"):
+        digits = digits[1:]
+    if len(digits) != 10:
+        return False
+    return digits[0] not in "01" and digits[3] not in "01"
+
+
+def _ai_csrf_ok(token):
+    expected = session.get("ai_csrf") or ""
+    got = "" if token is None else str(token)
+    if not expected or len(expected) != len(got):
+        return False
+    return hmac.compare_digest(expected, got)
+
+
+def validate_ai_employee(data):
+    """Return (record, errors). errors is empty only when the record is safe to store.
+
+    The same rules are enforced in the browser on /ai-employee/start.
+    """
+    if not isinstance(data, dict):
+        return None, {"form": "Please check the form and try again."}
+    errors = {}
+
+    def line(key):
+        return _clean_line(data.get(key, ""))
+
+    def note(key):
+        return _clean_note(data.get(key, ""))
+
+    name = line("name")
+    email = line("email")
+    phone = line("phone")
+    business = line("business")
+    industry = line("industry")
+    industry_other = line("industry_other")
+    team = line("team")
+    daily = note("daily_task")
+    teammate = note("teammate")
+    tools = note("tools")
+    package = line("package")
+    automation_other = note("automation_other")
+
+    if len(name) > 120:
+        errors["name"] = "Please keep your name to 120 characters or fewer."
+    elif len(name) < 2:
+        errors["name"] = "Please enter your full name."
+    if len(email) > 160 or not _EMAIL_RE.match(email or ""):
+        errors["email"] = "Please enter a valid email."
+    if len(phone) > 40:
+        errors["phone"] = "Please keep your phone number to 40 characters or fewer."
+    elif not valid_phone(phone):
+        errors["phone"] = "Please enter a valid phone number."
+    if len(business) > 160:
+        errors["business"] = "Please keep the business name to 160 characters or fewer."
+    elif len(business) < 2:
+        errors["business"] = "Please enter your business name."
+    if industry not in AI_INDUSTRIES:
+        errors["industry"] = "Please choose an industry."
+        industry_other = ""
+    elif industry == "Other":
+        if len(industry_other) > 120:
+            errors["industry_other"] = "Please keep your industry to 120 characters or fewer."
+        elif len(industry_other) < 2:
+            errors["industry_other"] = "Please tell us your industry."
+    else:
+        industry_other = ""
+    if team not in AI_TEAM_SIZES:
+        errors["team"] = "Please choose a team size."
+    if len(daily) > 1000:
+        errors["daily_task"] = "Please keep that task to 1000 characters or fewer."
+    elif len(daily) < 2:
+        errors["daily_task"] = "Please share one task you wish you could take off your plate."
+    if len(teammate) > 2000:
+        errors["teammate"] = "Please keep the description to 2000 characters or fewer."
+    elif len(teammate) < 2:
+        errors["teammate"] = "Please describe the AI teammate you want."
+
+    raw_autos = data.get("automations", [])
+    if raw_autos in (None, ""):
+        raw_autos = []
+    autos = []
+    if not isinstance(raw_autos, list) or len(raw_autos) > len(AI_AUTOMATIONS):
+        errors["automations"] = "Please choose an automation from the list."
+    else:
+        for item in raw_autos:
+            key = _clean_line(item)[:40]
+            if not key:
+                continue
+            if key not in AI_AUTO_KEYS:
+                errors["automations"] = "Please choose an automation from the list."
+                break
+            if key not in autos:
+                autos.append(key)
+    if "other" in autos:
+        if len(automation_other) > 300:
+            errors["automation_other"] = "Please keep the other automation to 300 characters or fewer."
+        elif len(automation_other) < 2:
+            errors["automation_other"] = "Please describe the other automation."
+    else:
+        automation_other = ""
+    if len(tools) > 400:
+        errors["tools"] = "Please keep tools to 400 characters or fewer."
+    if package not in AI_PACKAGES:
+        errors["package"] = "Please choose a package, or Not sure."
+    if errors:
+        return None, errors
+    return {
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "business": business,
+        "industry": industry,
+        "industry_other": industry_other,
+        "team": team,
+        "daily_task": daily,
+        "teammate": teammate,
+        "automations": autos,
+        "automation_other": automation_other,
+        "tools": tools,
+        "package": package,
+    }, {}
+
+
+def load_ai_employees():
+    try:
+        with open(AI_EMPLOYEES_PATH, encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+def save_ai_employees(rows):
+    try:
+        tmp = AI_EMPLOYEES_PATH + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(rows, f, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, AI_EMPLOYEES_PATH)
+        return True
+    except Exception:
+        app.logger.exception("Could not save AI employee intake")
+        return False
+
+
+def ai_employee_book_path(rec):
+    from urllib.parse import urlencode
+    return "/book?" + urlencode({
+        "service": "ai-employee",
+        "name": rec.get("name", ""),
+        "email": rec.get("email", ""),
+        "phone": rec.get("phone", ""),
+    })
+
+
+def send_ai_employee_email(rec):
+    """Email Jeff only. Reuses the booking SMTP settings.
+
+    Env: SMTP_HOST, SMTP_PORT (default 587), SMTP_USER, SMTP_PASS,
+    optional SMTP_FROM and SMTP_SSL. Recipient is LEAD_EMAIL when set,
+    otherwise Macrandleacres@gmail.com (ORG_EMAIL). Never emails the lead.
+    Failure is logged and swallowed so a saved intake still counts.
+    """
+    try:
+        from email.message import EmailMessage
+        sender = os.getenv("SMTP_FROM", "").strip() or os.getenv("SMTP_USER", "").strip()
+        if not sender:
+            app.logger.warning(
+                "AI employee intake saved but owner email was not sent (SMTP sender unset)")
+            return False
+
+        def esc_text(value):
+            text = value if value else "-"
+            return _esc(text, quote=False)
+
+        labels = [esc_text(AI_AUTO_LABELS.get(key, key)) for key in (rec.get("automations") or [])]
+        if rec.get("automation_other"):
+            labels.append(esc_text(rec.get("automation_other")))
+        industry = rec.get("industry") or "-"
+        if rec.get("industry") == "Other" and rec.get("industry_other"):
+            industry = "Other: " + rec.get("industry_other")
+        book = SITE + ai_employee_book_path(rec)
+        lines = [
+            "New AI Virtual Employee setup request.",
+            "",
+            "Name: %s" % esc_text(rec.get("name")),
+            "Email: %s" % esc_text(rec.get("email")),
+            "Phone: %s" % esc_text(rec.get("phone")),
+            "Business: %s" % esc_text(rec.get("business")),
+            "Industry: %s" % esc_text(industry),
+            "Team size: %s" % esc_text(rec.get("team")),
+            "Package: %s" % esc_text(rec.get("package")),
+            "",
+            "Task they want off their plate:",
+            esc_text(rec.get("daily_task")),
+            "",
+            "AI teammate they want:",
+            esc_text(rec.get("teammate")),
+            "",
+            "Automations: %s" % (", ".join(labels) or "-"),
+            "Tools: %s" % esc_text(rec.get("tools") or "-"),
+            "",
+            "Book their setup consultation:",
+            book,
+            "",
+            "All intakes: %s/admin/ai-employees" % SITE,
+        ]
+        msg = EmailMessage()
+        msg["From"] = sender
+        msg["To"] = ORG_EMAIL
+        reply = rec.get("email") or ""
+        if _EMAIL_RE.match(reply):
+            msg["Reply-To"] = reply
+        msg["Subject"] = "New AI Virtual Employee intake: %s" % esc_text(
+            _clean_line(rec.get("name", ""))[:80])
+        msg.set_content("\n".join(lines))
+        if _smtp_send(msg):
+            return True
+        app.logger.warning(
+            "AI employee intake saved but owner email was not sent (SMTP unset or send failed)")
+        return False
+    except Exception:
+        app.logger.exception("AI employee intake saved but owner notification failed")
+        return False
+
+
+def _notify_ai_employee(rec):
+    try:
+        send_ai_employee_email(rec)
+    except Exception:
+        app.logger.exception("AI employee intake saved but owner notification failed")
+
+
+def _select_options(items):
+    parts = ['<option value="">Choose one</option>']
+    for item in items:
+        parts.append("<option>%s</option>" % _esc(item))
+    return "".join(parts)
+
+
+def _auto_checks():
+    parts = []
+    for key, label in AI_AUTOMATIONS:
+        parts.append(
+            '<label class="check"><input type="checkbox" name="auto" value="%s"> %s</label>'
+            % (_esc(key), _esc(label)))
+    return "".join(parts)
+
+
+def _package_radios():
+    parts = []
+    for name in AI_PACKAGES:
+        parts.append(
+            '<label class="check"><input type="radio" name="package" value="%s"> %s</label>'
+            % (_esc(name), _esc(name)))
+    return "".join(parts)
+
+
+def _ai_employee_page():
+    with open(os.path.join(BASE, "ai_employee_page.html"), encoding="utf-8") as f:
+        html = f.read()
+    head = "" if session.get("admin") else tracking_head()
+    return (html.replace("__TRACK__", head)
+            .replace("__CSRF__", _esc(session.get("ai_csrf", "")))
+            .replace("__INDUSTRY_OPTIONS__", _select_options(AI_INDUSTRIES))
+            .replace("__TEAM_OPTIONS__", _select_options(AI_TEAM_SIZES))
+            .replace("__AUTO_CHECKS__", _auto_checks())
+            .replace("__PACKAGE_RADIOS__", _package_radios()))
+
+
+@app.route("/ai-employee/start")
+def ai_employee_start():
+    if not session.get("ai_csrf"):
+        session["ai_csrf"] = secrets.token_urlsafe(32)
+    resp = Response(_ai_employee_page(), mimetype="text/html")
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/api/ai-employee", methods=["POST"])
+def api_ai_employee():
+    if not rate_ok("aiemp", client_ip(), 8, 900):
+        return jsonify(ok=False, error="Too many submissions, please try again shortly."), 429
+    data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        data = {}
+    if _clean_line(data.get("website") or ""):
+        return jsonify(ok=True)
+    if not _ai_csrf_ok(data.get("csrf")):
+        return jsonify(ok=False,
+                       error="Your session expired. Please refresh the page and try again.",
+                       fields={"csrf": "Your session expired. Please refresh the page and try again."}), 400
+    rec, errors = validate_ai_employee(data)
+    if errors:
+        return jsonify(ok=False, error="Please fix the highlighted fields.", fields=errors), 400
+    rec["t"] = datetime.datetime.utcnow().isoformat(timespec="seconds")
+    with _leads_lock:
+        rows = load_ai_employees()
+        rows.append(rec)
+        if len(rows) > 2000:
+            rows = rows[-2000:]
+        if not save_ai_employees(rows):
+            return jsonify(ok=False,
+                           error="We could not save that just now. Your answers are still here. Please try again."), 500
+    threading.Thread(target=_notify_ai_employee, args=(rec,), daemon=True).start()
+    return jsonify(ok=True, book=ai_employee_book_path(rec))
+
+
+@app.route("/admin/ai-employees")
+def admin_ai_employees():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/ai-employees")
+    rows_html = ""
+    for rec in sorted(load_ai_employees(), key=lambda r: r.get("t", ""), reverse=True):
+        when = _esc((rec.get("t") or "").replace("T", " ")[:16])
+        autos = ", ".join(AI_AUTO_LABELS.get(k, k) for k in (rec.get("automations") or []))
+        if rec.get("automation_other"):
+            autos = (autos + ", " if autos else "") + rec.get("automation_other")
+        industry = rec.get("industry") or ""
+        if industry == "Other" and rec.get("industry_other"):
+            industry = "Other: " + rec.get("industry_other")
+        book = ai_employee_book_path(rec)
+        rows_html += (
+            "<div class='proj'><div class='ph'><b>%s</b> <span class='tp'>%s</span>"
+            "<span class='dt'>%s</span></div>"
+            "<div class='pmeta'><a href='mailto:%s'>%s</a> &middot; %s &middot; %s</div>"
+            "<div class='pl'><span class='k'>Business:</span> %s &middot; Team: %s</div>"
+            "<div class='pl'><span class='k'>Daily task:</span> %s</div>"
+            "<div class='pl'><span class='k'>Teammate:</span> %s</div>"
+            "<div class='pl'><span class='k'>Automations:</span> %s</div>"
+            "<div class='pl'><span class='k'>Tools:</span> %s</div>"
+            "<div class='pl'><a href='%s'>Book their consultation</a></div></div>"
+        ) % (
+            _esc(rec.get("name", "")), _esc(rec.get("package", "") or "-"), when,
+            _esc(rec.get("email", "")), _esc(rec.get("email", "")),
+            _esc(rec.get("phone", "") or "-"), _esc(industry or "-"),
+            _esc(rec.get("business", "") or "-"), _esc(rec.get("team", "") or "-"),
+            _esc(rec.get("daily_task", "") or "-").replace("\n", "<br>"),
+            _esc(rec.get("teammate", "") or "-").replace("\n", "<br>"),
+            _esc(autos or "-"),
+            _esc(rec.get("tools", "") or "-").replace("\n", "<br>"),
+            _esc(book),
+        )
+    if not rows_html:
+        rows_html = "<p class='empty'>No AI employee intakes yet.</p>"
+    return Response(AI_EMPLOYEES_HTML.replace("__ROWS__", rows_html), mimetype="text/html")
+
+
+AI_EMPLOYEES_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>AI employee intakes</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:26px 16px}
+.wrap{max-width:720px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decoration:none}
+.proj{background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:0 8px 22px rgba(35,49,40,.06)}
+.ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ph b{font-size:16px;color:#234F3D}
+.tp{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:rgba(35,79,61,.1);color:#234F3D;padding:2px 9px;border-radius:100px}
+.dt{margin-left:auto;font-size:12px;color:#8a918b}
+.pmeta{font-size:13.5px;color:#5c635e;margin:6px 0 10px}.pmeta a{color:#a97f2a;font-weight:600;text-decoration:none}
+.pl{font-size:14px;margin-top:6px;line-height:1.55}.pl .k{font-weight:700;color:#234F3D}
+.empty{color:#5c635e;padding:20px 0}
+a{color:#a97f2a}
+</style></head><body><div class="wrap">
+<div class="top"><h1>AI employee intakes</h1><a class="back" href="/">&larr; Site</a></div>
 __ROWS__
 </div></body></html>"""
 
