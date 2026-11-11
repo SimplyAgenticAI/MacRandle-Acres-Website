@@ -120,13 +120,39 @@ CANONICAL_ORIGIN = "https://www.macrandleacres.com"
 
 @app.route("/favicon.ico")
 def favicon():
-    return send_from_directory(BASE, "logo-v5.jpg", mimetype="image/jpeg")
+    return send_from_directory(BASE, "favicon.ico", mimetype="image/x-icon")
+
+
+@app.route("/favicon-32.png")
+def favicon_png():
+    return send_from_directory(BASE, "favicon-32.png", mimetype="image/png")
+
+
+@app.route("/apple-touch-icon.png")
+def apple_touch_icon():
+    return send_from_directory(BASE, "apple-touch-icon.png", mimetype="image/png")
+
+
+@app.route("/logo.jpg")
+def legacy_logo():
+    return redirect("/logo-v5.jpg", code=301)
 
 
 NOT_FOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>Page not found | Lucid Marketing, by MacRandle Acres</title>
+<meta name="description" content="That page is not on MacRandle Acres. Lucid Marketing, by MacRandle Acres.">
+<meta property="og:title" content="Page not found | Lucid Marketing, by MacRandle Acres">
+<meta property="og:description" content="That page is not on MacRandle Acres. Lucid Marketing, by MacRandle Acres.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.macrandleacres.com/">
+<meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Page not found | Lucid Marketing, by MacRandle Acres">
+<meta name="twitter:description" content="That page is not on MacRandle Acres. Lucid Marketing, by MacRandle Acres.">
+<meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>body{font-family:Inter,system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px}
 h1{color:#234F3D;font-size:32px;margin:0 0 8px}p{color:#5c635e;font-size:17px}a{color:#a97f2a;font-weight:700}
 .tag{margin-top:18px;font-style:italic;color:#a97f2a}</style></head><body>
@@ -537,7 +563,8 @@ document.querySelectorAll('.del').forEach(function(b){b.addEventListener('click'
 
 SCORECARD_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Growth Scorecard, __CLIENT__</title>
-<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -860,7 +887,20 @@ def admin_leads_csv():
 
 
 PRIVACY_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><title>Privacy Policy, MacRandle Acres</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Privacy Policy | Lucid Marketing, by MacRandle Acres</title>
+<meta name="description" content="How MacRandle Acres handles booking details, email signups, and your first AI agent setup.">
+<link rel="canonical" href="https://www.macrandleacres.com/privacy">
+<meta property="og:title" content="Privacy Policy | Lucid Marketing, by MacRandle Acres">
+<meta property="og:description" content="How MacRandle Acres handles booking details, email signups, and your first AI agent setup.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.macrandleacres.com/privacy">
+<meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Privacy Policy | Lucid Marketing, by MacRandle Acres">
+<meta name="twitter:description" content="How MacRandle Acres handles booking details, email signups, and your first AI agent setup.">
+<meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.7;padding:40px 18px}
 .wrap{max-width:680px;margin:0 auto}h1{color:#234F3D;font-size:28px;margin-bottom:6px}.sub{color:#8a8f88;font-size:13px;margin-bottom:24px}
@@ -869,7 +909,7 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 <h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle<br>Last updated: November 11, 2026</div>
 <p>This site is operated by Jeff Randle (MacRandle Acres). We respect your privacy and keep things simple.</p>
 <h2>What we collect</h2>
-<p>If you book a call, we collect the name, email, and phone you provide. If you join the email list, we collect your email address. If you start an AI Virtual Employee setup, we collect your name, email, phone, business details, and the answers you provide so we can prepare your setup and consultation. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
+<p>If you book a call, we collect the name, email, and phone you provide. If you join the email list, we collect your email address. If you start a first AI agent setup, we collect your name, email, phone, business details, and the answers you provide so we can prepare your setup and consultation. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
 <h2>How we use it</h2>
 <p>Only to respond to your request, prepare your growth audit, and improve the site. We do not sell your information.</p>
 <h2>Your choices</h2>
@@ -1355,8 +1395,14 @@ def book_page():
         1)
     if request.args.get("type") == "agent":
         html = html.replace(
-            "<title>Book a Growth Audit call - MacRandle Acres</title>",
-            "<title>Book a Lucid Marketing call - MacRandle Acres</title>", 1)
+            "Book a Growth Audit call - MacRandle Acres",
+            "Book a Lucid Marketing call - MacRandle Acres")
+        html = html.replace(
+            "Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.",
+            "Book a call to set up your first AI agent. $149 one-time. Lucid Marketing, by MacRandle Acres.")
+        html = html.replace(
+            "https://www.macrandleacres.com/book",
+            "https://www.macrandleacres.com/book?type=agent")
         html = html.replace(
             "<h1>Book your Growth Audit call</h1>",
             "<h1>Book a Lucid Marketing call</h1>", 1)
@@ -1563,7 +1609,19 @@ def admin_bookings_delete():
 
 BOOK_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Book a Growth Audit call - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
+<meta name="description" content="Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.">
+<link rel="canonical" href="https://www.macrandleacres.com/book">
+<meta property="og:title" content="Book a Growth Audit call - MacRandle Acres">
+<meta property="og:description" content="Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.macrandleacres.com/book">
+<meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Book a Growth Audit call - MacRandle Acres">
+<meta name="twitter:description" content="Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.">
+<meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1704,7 +1762,8 @@ tr.upcoming .tg{background:rgba(35,79,61,.1);color:#234F3D}tr.past .tg{backgroun
 
 CANCEL_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Manage your call - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:40px 16px;
@@ -1727,7 +1786,8 @@ a{color:#a97f2a;font-weight:600}
 
 MEET_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Growth Audit call - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
 body{font-family:'Inter',system-ui,sans-serif;background:#12261d;color:#f6f4ec;display:flex;flex-direction:column}
@@ -1974,7 +2034,8 @@ def admin_settings_ai_key():
 
 SETTINGS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Admin Settings - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:30px 16px}
 .wrap{max-width:560px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
@@ -2666,7 +2727,8 @@ AUDIT_NOTFOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 
 AUDIT_REPORT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Your Facebook Profile Audit - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:0 0 60px;
@@ -2868,11 +2930,13 @@ DESIGN_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta property="og:description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.macrandleacres.com/design">
-<meta property="og:image" content="https://www.macrandleacres.com/logo-v5.jpg">
+<meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Website and App Design | Lucid Marketing, by MacRandle Acres">
 <meta name="twitter:description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
+<meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
 <script>document.documentElement.className+=' js'</script>
 __TRACK__
@@ -3326,7 +3390,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
   <button class="send" id="pd_submit">Bring my vision to life &rarr;</button>
   <div class="reply-note">I personally reply within 1 business day.</div>
   <div class="msg" id="pd_msg"></div>
-  <div class="foot">Prefer to talk first? <a href="/book">Book a quick call</a></div>
+  <div class="foot">Prefer to talk first? <a href="/book">Book a free Growth Audit call</a></div>
 </div>
 <div class="faq rv">
   <h3>Common questions</h3>
