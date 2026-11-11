@@ -69,7 +69,7 @@ Search `index.html` for `[[LINK]]` and replace `-schedule` (booking),
 `-email` (mailto), `-phone` (tel).
 
 ## Logo & animation
-Logo ships as `logo.jpg` (hero showcase + favicon + social image). Animated
+Logo ships as `logo-v5.jpg` (hero showcase + favicon + social image). `logo.jpg` stays in the repo unused. Animated
 touches: pulsing moonlight glow + float on the logo, headline gold shimmer,
 drifting-leaf canvas, Growth Scorecard count-up on scroll, glowing nav mark,
 hover micro-interactions — all respect `prefers-reduced-motion`.

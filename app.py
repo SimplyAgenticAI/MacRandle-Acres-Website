@@ -120,7 +120,7 @@ CANONICAL_ORIGIN = "https://www.macrandleacres.com"
 
 @app.route("/favicon.ico")
 def favicon():
-    return send_from_directory(BASE, "logo.jpg", mimetype="image/jpeg")
+    return send_from_directory(BASE, "logo-v5.jpg", mimetype="image/jpeg")
 
 
 NOT_FOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
@@ -309,7 +309,7 @@ def _login_page(message, nxt="/"):
     return Response(html, mimetype="text/html")
 
 
-# ---------- static sibling assets (logo.jpg, etc.) ----------
+# ---------- static sibling assets (logo-v5.jpg, etc.) ----------
 @app.route("/<path:path>")
 def assets(path):
     if path in BLOCKED_FILES or path.endswith((".py", ".json")):
@@ -537,7 +537,7 @@ document.querySelectorAll('.del').forEach(function(b){b.addEventListener('click'
 
 SCORECARD_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Growth Scorecard, __CLIENT__</title>
-<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1563,7 +1563,7 @@ def admin_bookings_delete():
 
 BOOK_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Book a Growth Audit call - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1704,7 +1704,7 @@ tr.upcoming .tg{background:rgba(35,79,61,.1);color:#234F3D}tr.past .tg{backgroun
 
 CANCEL_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Manage your call - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:40px 16px;
@@ -1727,7 +1727,7 @@ a{color:#a97f2a;font-weight:600}
 
 MEET_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Growth Audit call - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
 body{font-family:'Inter',system-ui,sans-serif;background:#12261d;color:#f6f4ec;display:flex;flex-direction:column}
@@ -1974,7 +1974,7 @@ def admin_settings_ai_key():
 
 SETTINGS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Admin Settings - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:30px 16px}
 .wrap{max-width:560px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
@@ -2666,7 +2666,7 @@ AUDIT_NOTFOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 
 AUDIT_REPORT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Your Facebook Profile Audit - MacRandle Acres</title>
-<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link rel="icon" type="image/jpeg" href="/logo-v5.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.6;padding:0 0 60px;
@@ -2868,7 +2868,7 @@ DESIGN_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta property="og:description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.macrandleacres.com/design">
-<meta property="og:image" content="https://www.macrandleacres.com/logo.jpg">
+<meta property="og:image" content="https://www.macrandleacres.com/logo-v5.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Website and App Design | Lucid Marketing, by MacRandle Acres">
 <meta name="twitter:description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
@@ -3144,7 +3144,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 <div id="prog"></div>
 <div class="head">
   <span class="aur a1"></span><span class="aur a2"></span><span class="aur a3"></span>
-  <div class="mark"><img src="/logo.jpg" alt="MacRandle Acres" onerror="this.parentNode.textContent='M'"></div>
+  <div class="mark"><img src="/logo-v5.jpg" alt="MacRandle Acres logo, Remove Friction. Accelerate Growth." onerror="this.parentNode.textContent='M'"></div>
   <div class="eyebrow">Design &amp; Build</div>
   <h1><span class="w" style="animation-delay:0.10s">Websites</span> <span class="w" style="animation-delay:0.18s">&amp;</span> <span class="w" style="animation-delay:0.26s">apps</span> <span class="w" style="animation-delay:0.34s">that</span> <em><span class="w" style="animation-delay:0.42s">stop</span> <span class="w" style="animation-delay:0.50s">the</span> <span class="w" style="animation-delay:0.58s">scroll.</span></em></h1>
   <p>Custom-designed, beautifully animated, and built to turn visitors into clients. Tell me what you're dreaming up and I'll handle everything from first sketch to launch day.</p>
