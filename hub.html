@@ -9,10 +9,12 @@
 <meta property="og:title" content="Jeff Randle, Lucid Marketing and Lucid Mage">
 <meta property="og:description" content="Business is Lucid Marketing at MacRandle Acres. Personal is Lucid Mage: lucid dreaming, music, and art.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://macrandleacres.com/logo.jpg">
-<link rel="icon" type="image/jpeg" href="logo.jpg">
+<meta property="og:url" content="https://www.macrandleacres.com/hub">
+<meta property="og:image" content="https://www.macrandleacres.com/logo.jpg">
+<link rel="canonical" href="https://www.macrandleacres.com/hub">
+<link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="logo.jpg">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Jeff Randle","alternateName":["Lucid Mage","Lucid Marketing"],"url":"https://macrandleacres.com/hub","email":"Macrandleacres@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Salisbury","addressRegion":"MD","addressCountry":"US"},"sameAs":["https://www.linkedin.com/in/jeff-randle-042a23196/","https://www.youtube.com/@JeffRandle89","https://www.instagram.com/lucidmage89/","https://www.facebook.com/TheLucidMage","https://www.tiktok.com/@lucidmage89","https://www.patreon.com/LucidMage","https://www.skool.com/lucid-mage-facebook-growth-lab-3725"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Jeff Randle","alternateName":["Lucid Mage","Lucid Marketing"],"url":"https://www.macrandleacres.com/hub","email":"Macrandleacres@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Salisbury","addressRegion":"MD","addressCountry":"US"},"sameAs":["https://www.linkedin.com/in/jeff-randle-042a23196/","https://www.youtube.com/@JeffRandle89","https://www.instagram.com/lucidmage89/","https://www.facebook.com/TheLucidMage","https://www.tiktok.com/@lucidmage89","https://www.patreon.com/LucidMage","https://www.skool.com/lucid-mage-facebook-growth-lab-3725"]}</script>
 
 <!--
  PERSONAL HUB (Gamma + Linktree replacement). Served at /hub via Flask.
@@ -61,8 +63,8 @@ a{color:inherit;text-decoration:none}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
 .brand{display:flex;align-items:center;gap:11px;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:18px;color:var(--green)}
 .brand .sub{color:var(--ink3);font-weight:500;font-family:'Inter';font-size:13px}
-.mark{width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;background:radial-gradient(circle at 38% 34%,#fbf7ea,#e9e3cf 60%,#d8cfb0);box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18);animation:markGlow 3.8s ease-in-out infinite}
-.mark span{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:18px;color:var(--green);margin-top:1px}
+.mark{width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;background:#234F3D;box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18)}
+.mark img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 @keyframes markGlow{0%,100%{box-shadow:0 0 0 1px rgba(35,79,61,.18),0 3px 10px rgba(35,49,40,.18)}50%{box-shadow:0 0 0 1px rgba(199,154,59,.45),0 3px 10px rgba(35,49,40,.18),0 0 15px rgba(199,154,59,.4)}}
 .btn{display:inline-block;font-weight:700;font-size:14px;border-radius:11px;padding:12px 24px;cursor:pointer;transition:transform .16s,box-shadow .16s,background .2s;border:1px solid transparent;white-space:nowrap;will-change:transform}
 .btn:hover{transform:translateY(-2px)}
@@ -147,7 +149,8 @@ footer .fbrand{display:flex;align-items:center;justify-content:center;gap:11px;f
 footer .ftag{font-family:'Inter',system-ui,sans-serif;font-style:italic;color:var(--gold-l);font-size:15px;margin-bottom:14px}
 footer .loc{color:rgba(246,244,236,.7);font-size:13.5px;margin-bottom:6px}
 footer small{color:rgba(246,244,236,.5);font-size:12.5px}
-.foot-admin{margin-top:16px}
+.foot-admin{margin-top:16px;display:none}
+body.is-admin .foot-admin{display:block}
 .foot-admin a{display:inline-flex;align-items:center;gap:7px;color:rgba(246,244,236,.45);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);padding:7px 15px;border-radius:9px;transition:.2s}
 .foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
 .nav-right{display:flex;align-items:center;gap:16px}
@@ -219,7 +222,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 
 <nav class="nav">
  <div class="wrap nav-in">
-  <a class="brand" href="#top"><span class="mark"><span>M</span></span> Jeff Randle <span class="sub">· Lucid Mage</span></a>
+  <a class="brand" href="#top"><span class="mark"><img src="/jeff-randle.jpg" alt="Jeff Randle"></span> Jeff Randle <span class="sub">· Lucid Mage</span></a>
   <div class="nav-right">
    <a class="nav-offer" href="/" title="MacRandle Acres, my growth-advisory offer">MacRandle Acres <span class="no-arr">↗</span></a>
    <a class="btn btn-primary nav-cta" href="/book"><span data-edit="nav_cta_ga">Book a Growth Audit</span></a>
@@ -232,8 +235,9 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
  <div class="halo"></div>
  <div class="wrap">
   <img class="hero-logo" src="logo.jpg" alt="MacRandle Acres" onerror="this.style.display='none'">
-  <div class="roles" data-edit="hero_roles">Chief Marketing Officer · AI Specialist · Software Developer · Consciousness Explorer</div>
+  <div class="roles" data-edit="hero_roles_v5">Fractional Growth Advisor · Lucid Marketing, by MacRandle Acres</div>
   <h1><span class="accent-text" data-edit="hero_name_lm">Jeff Randle</span></h1>
+  <p class="roles" data-edit="hero_tagline_v5" style="text-transform:none;letter-spacing:0;font-size:clamp(18px,2.4vw,24px);font-weight:700;color:var(--ink);margin:8px auto 14px">Remove Friction. Accelerate Growth.</p>
   <div class="sub-name" data-edit="hero_subname_lm">Lucid Mage in the dream world.<br>Lucid Marketing at MacRandle Acres.</div>
   <p class="lead" data-edit="hero_lead_lm">Business is growth and your first AI agent, set up with you at MacRandle Acres. Personal is lucid dreaming, music, and art as Lucid Mage.</p>
   <div class="hero-cta">
@@ -355,7 +359,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 
 <footer>
  <div class="wrap">
-  <div class="fbrand"><span class="mark"><span>M</span></span> <span data-edit="foot_brand">Jeff Randle · Lucid Mage</span></div>
+  <div class="fbrand"><span class="mark"><img src="/jeff-randle.jpg" alt=""></span> <span data-edit="foot_brand">Jeff Randle · Lucid Mage</span></div>
   <div class="ftag" data-edit="foot_tag">Marketing · AI · Creative · Consciousness</div>
   <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
   <small>© <span id="yr"></span> <span data-edit="foot_copy">Jeff Randle. All one place, on purpose.</span></small>
@@ -389,6 +393,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 <div id="adminToast"></div>
 
 <script>
+if(window.__ADMIN__) document.body.classList.add('is-admin');
 document.getElementById('yr').textContent = new Date().getFullYear();
 
 /* Ad conversion tracking: fire a Lead event when a booking button is clicked */
