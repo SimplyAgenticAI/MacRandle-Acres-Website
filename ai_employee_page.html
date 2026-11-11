@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Start your AI Virtual Employee setup - MacRandle Acres</title>
+<title>Your first AI agent, a Lucid Marketing setup</title>
 <meta name="description" content="Your first AI agent, set up with you on a call. $149 one-time. We build it around whatever takes up the most space on your digital plate, and it is working for you by the end.">
 <link rel="icon" type="image/jpeg" href="/logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -78,7 +78,7 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
 <header class="head">
   <div class="mark"><img src="/logo.jpg" alt="MacRandle Acres"></div>
   <div class="eyebrow">MacRandle Acres</div>
-  <h1>AI Virtual Employee Setup</h1>
+  <h1>Your first AI agent, a Lucid Marketing setup</h1>
   <p>Tell me about your business and the teammate you want. Or skip ahead and book the call.</p>
   <p class="price-line">Your first AI agent, set up with you on a call. <span style="white-space:nowrap">$149 one-time.</span></p>
   <p style="margin-top:16px"><a class="book" href="/book?type=agent">Book a Lucid Marketing call</a></p>
@@ -167,11 +167,6 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
       <span class="hint" id="tools-hint">Optional. Name the tools this teammate should work beside.</span>
       <span class="ae-err" id="tools-err" aria-live="polite"></span>
     </label>
-    <fieldset class="checks" id="package" aria-required="true" aria-describedby="package-err">
-      <legend>Package interest <span class="req">*</span></legend>
-      __PACKAGE_RADIOS__
-      <span class="ae-err" id="package-err" aria-live="polite"></span>
-    </fieldset>
   </section>
 
   <section class="pane" data-step="3" hidden aria-labelledby="step4-title">
@@ -220,10 +215,9 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
     autoOther: 'Please describe the other automation.',
     autoOtherLen: 'Please keep the other automation to 300 characters or fewer.',
     toolsLen: 'Please keep tools to 400 characters or fewer.',
-    package: 'Please choose a package, or Not sure.',
     retry: 'We could not send that just now. Your answers are still here. Please try again.'
   };
-  var STEP_OF = {name:0,email:0,phone:0,business:1,industry:1,industry_other:1,team:1,daily_task:1,teammate:2,automations:2,automation_other:2,tools:2,package:2};
+  var STEP_OF = {name:0,email:0,phone:0,business:1,industry:1,industry_other:1,team:1,daily_task:1,teammate:2,automations:2,automation_other:2,tools:2};
 
   function val(id){
     var el = document.getElementById(id);
@@ -313,7 +307,6 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
         else good('automation_other');
       } else good('automation_other');
       if(val('tools').length > 400) bad('tools', MSG.toolsLen); else good('tools');
-      if(!packageValue()) bad('package', MSG.package); else good('package');
     }
     if(!ok){
       var first = panes[n].querySelector('[aria-invalid="true"]');
@@ -354,7 +347,6 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
     addRow(root, 'AI teammate', val('teammate'));
     addRow(root, 'Automations', autos.join(', '));
     addRow(root, 'Tools', val('tools'));
-    addRow(root, 'Package', packageValue());
   }
   function show(n, opts){
     opts = opts || {};

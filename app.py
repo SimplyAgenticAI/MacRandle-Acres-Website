@@ -21,7 +21,7 @@ import hmac
 import hashlib
 import secrets
 
-from flask import (Flask, request, session, redirect, jsonify,
+from flask import (Flask, abort, request, session, redirect, jsonify,
                    send_from_directory, Response)
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -111,14 +111,38 @@ def rate_ok(bucket, key, limit, window):
 
 @app.route("/robots.txt")
 def robots_txt():
-    return Response("User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: %s/sitemap.xml\n" % SITE,
+    return Response("User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: %s/sitemap.xml\n" % CANONICAL_ORIGIN,
                     mimetype="text/plain")
+
+
+CANONICAL_ORIGIN = "https://www.macrandleacres.com"
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(BASE, "logo.jpg", mimetype="image/jpeg")
+
+
+NOT_FOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Page not found | Lucid Marketing, by MacRandle Acres</title>
+<link rel="icon" href="/favicon.ico">
+<style>body{font-family:Inter,system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px}
+h1{color:#234F3D;font-size:32px;margin:0 0 8px}p{color:#5c635e;font-size:17px}a{color:#a97f2a;font-weight:700}
+.tag{margin-top:18px;font-style:italic;color:#a97f2a}</style></head><body>
+<div><h1>Page not found</h1><p><a href="/">Back to MacRandle Acres</a></p>
+<p class="tag">Remove Friction. Accelerate Growth.</p></div></body></html>"""
+
+
+@app.errorhandler(404)
+def page_not_found(_e):
+    return Response(NOT_FOUND_HTML, status=404, mimetype="text/html")
 
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    urls = "".join("<url><loc>%s%s</loc></url>" % (SITE, u) for u in
-                   ("/", "/design", "/hub", "/ai-employee/start", "/privacy"))
+    urls = "".join("<url><loc>%s%s</loc></url>" % (CANONICAL_ORIGIN, u) for u in
+                   ("/", "/design", "/hub", "/book", "/ai-employee/start", "/privacy"))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
     return Response(xml, mimetype="application/xml")
@@ -289,15 +313,15 @@ def _login_page(message, nxt="/"):
 @app.route("/<path:path>")
 def assets(path):
     if path in BLOCKED_FILES or path.endswith((".py", ".json")):
-        return ("Not found", 404)
+        abort(404)
     full = os.path.join(BASE, path)
     if os.path.isfile(full):
         return send_from_directory(BASE, path)
-    return ("Not found", 404)
+    abort(404)
 
 
 LOGIN_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><title>MacRandle Acres — Admin</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>MacRandle Acres, Admin</title>
 <style>
 body{font-family:'Inter',system-ui,sans-serif;background:linear-gradient(160deg,#234F3D,#152e24);color:#f6f4ec;
   min-height:100vh;display:grid;place-items:center;margin:0}
@@ -542,7 +566,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
     <div class="grid">__TILES__</div>
     __NOTE__
     <div class="cta"><a href="__CAL__">Questions about your numbers? Book a call</a></div>
-    <div class="foot">Cultivating better businesses, MacRandle Acres</div>
+    <div class="foot">Remove Friction. Accelerate Growth.</div>
   </div>
 </div>
 <script>
@@ -842,7 +866,7 @@ PRIVACY_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 .wrap{max-width:680px;margin:0 auto}h1{color:#234F3D;font-size:28px;margin-bottom:6px}.sub{color:#8a8f88;font-size:13px;margin-bottom:24px}
 h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size:15px}a{color:#a97f2a;font-weight:600}
 .back{display:inline-block;margin-top:26px;font-size:14px}</style></head><body><div class="wrap">
-<h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle</div>
+<h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle<br>Last updated: November 11, 2026</div>
 <p>This site is operated by Jeff Randle (MacRandle Acres). We respect your privacy and keep things simple.</p>
 <h2>What we collect</h2>
 <p>If you book a call, we collect the name, email, and phone you provide. If you join the email list, we collect your email address. If you start an AI Virtual Employee setup, we collect your name, email, phone, business details, and the answers you provide so we can prepare your setup and consultation. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
@@ -2837,9 +2861,18 @@ def admin_projects():
 
 DESIGN_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
-<title>Website &amp; App Design - MacRandle Acres</title>
-<meta name="description" content="Custom website and app design that brings your vision to life. Tell me about your dream site and I'll build it.">
-<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<title>Website and App Design | Lucid Marketing, by MacRandle Acres</title>
+<meta name="description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
+<link rel="canonical" href="https://www.macrandleacres.com/design">
+<meta property="og:title" content="Website and App Design | Lucid Marketing, by MacRandle Acres">
+<meta property="og:description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.macrandleacres.com/design">
+<meta property="og:image" content="https://www.macrandleacres.com/logo.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Website and App Design | Lucid Marketing, by MacRandle Acres">
+<meta name="twitter:description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
+<link rel="icon" href="/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
 <script>document.documentElement.className+=' js'</script>
 __TRACK__
@@ -3131,16 +3164,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
   <h2>Sites people remember</h2>
   <p class="sc-sub">Three concept builds, each designed from scratch for a different kind of business, plus an app. Click through them. Your project gets the same craft, built around your brand.</p>
   <div class="sc-tabs" role="tablist">
-    <button class="sc-tab on auto" data-i="0">Luxury real estate<span class="tb"></span></button>
-    <button class="sc-tab" data-i="1">Restaurant<span class="tb"></span></button>
-    <button class="sc-tab" data-i="2">Coaching &amp; wellness<span class="tb"></span></button>
+    <button class="sc-tab on auto" data-i="0">Restaurant<span class="tb"></span></button>
+    <button class="sc-tab" data-i="1">Coaching &amp; wellness<span class="tb"></span></button>
+    <button class="sc-tab" data-i="2">Luxury real estate<span class="tb"></span></button>
   </div>
   <div class="stage">
     <div class="browser">
-      <div class="bbar"><i></i><i></i><i></i><span class="url" id="sc_url">oaklinecoastal.com</span></div>
+      <div class="bbar"><i></i><i></i><i></i><span class="url" id="sc_url">maisontable.com</span></div>
       <div class="vp" id="sc_vp">
 
-        <div class="site s-oak on" data-url="oaklinecoastal.com"><div class="sz"><div class="sc">
+        <div class="site s-oak" data-order="2" data-url="oaklinecoastal.com"><div class="sz"><div class="sc">
           <div class="o-hero">
             <svg class="o-scene" viewBox="0 0 760 410" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <defs>
@@ -3180,7 +3213,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
           <div class="o-quote">&ldquo;They sold our home in six days, over asking. It felt effortless.&rdquo;<span>THE CARTERS &middot; BERLIN, MD</span></div>
         </div></div></div>
 
-        <div class="site s-mai" data-url="maisontable.com"><div class="sz"><div class="sc">
+        <div class="site s-mai on" data-order="0" data-url="maisontable.com"><div class="sz"><div class="sc">
           <div class="m-nav"><span>Menu</span><span>Story</span><b>Maison</b><span>Events</span><span class="m-res">Reserve</span></div>
           <div class="m-hero">
             <div class="m-copy">
@@ -3219,7 +3252,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
           </div>
         </div></div></div>
 
-        <div class="site s-lum" data-url="lumenwellness.co"><div class="sz"><div class="sc">
+        <div class="site s-lum" data-order="1" data-url="lumenwellness.co"><div class="sz"><div class="sc">
           <div class="l-hero"><div class="l-blob b1"></div><div class="l-blob b2"></div><div class="l-blob b3"></div>
             <div class="l-nav"><b>lumen</b><span>Programs &middot; Journal &middot; About</span><span class="l-pill">Book a call</span></div>
             <div class="l-copy">
@@ -3263,13 +3296,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
   <a class="scbtn" href="#pbody">Start your project &darr;</a>
 </section>
 <div class="how rv">
-  <div class="how-step"><div class="hn">1</div><div class="ht">Share your vision</div><div class="hd">Fill out the quick form below &mdash; takes about two minutes.</div></div>
+  <div class="how-step"><div class="hn">1</div><div class="ht">Share your vision</div><div class="hd">Fill out the quick form below. It takes about two minutes.</div></div>
   <div class="how-step"><div class="hn">2</div><div class="ht">I design &amp; build</div><div class="hd">Custom-crafted to your brand, handled end to end.</div></div>
   <div class="how-step"><div class="hn">3</div><div class="ht">You launch</div><div class="hd">Go live and start bringing in business.</div></div>
 </div>
 <div class="card rv" id="pbody">
   <h2>Tell me about your dream site</h2>
-  <div class="sub">A few quick questions &mdash; no cost to reach out, and there are options for every budget, from a simple site to a full custom build.</div>
+  <div class="sub">A few quick questions. No cost to reach out, and there are options for every budget, from a simple site to a full custom build.</div>
   <div class="fg">
     <label class="fld"><span>Your name *</span><input id="pd_name" autocomplete="name"></label>
     <label class="fld"><span>Email *</span><input id="pd_email" type="email" autocomplete="email"></label>
@@ -3297,11 +3330,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 </div>
 <div class="faq rv">
   <h3>Common questions</h3>
-  <details><summary>Do I own the finished site?</summary><p>Yes &mdash; once it's done, it's yours to keep.</p></details>
-  <details><summary>Can you handle hosting, domain, and launch?</summary><p>Yes &mdash; I can take care of hosting, your domain, and getting everything live, so you don't have to.</p></details>
-  <details><summary>How long does it take?</summary><p>It depends on the scope &mdash; we'll agree on a clear timeline together before any work starts.</p></details>
-  <details><summary>What about changes and updates later?</summary><p>Absolutely &mdash; we'll set up an easy way to keep your site fresh so you're never stuck.</p></details>
+  <details><summary>Do I own the finished site?</summary><p>Yes. Once it's done, it's yours to keep.</p></details>
+  <details><summary>Can you handle hosting, domain, and launch?</summary><p>Yes. I can take care of hosting, your domain, and getting everything live, so you don't have to.</p></details>
+  <details><summary>How long does it take?</summary><p>It depends on the scope. We'll agree on a clear timeline together before any work starts.</p></details>
+  <details><summary>What about changes and updates later?</summary><p>Absolutely. We'll set up an easy way to keep your site fresh so you're never stuck.</p></details>
 </div>
+<footer style="text-align:center;padding:40px 18px 8px;color:#5c635e;font-size:14px">
+  <p style="font-style:italic;color:#a97f2a;margin-bottom:6px">Lucid Marketing, by MacRandle Acres.</p>
+  <p>Remove Friction. Accelerate Growth.</p>
+  <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a></p>
+</footer>
 <script>
 var b=document.getElementById('pbody');
 document.getElementById('pd_submit').onclick=function(){
@@ -3313,7 +3351,7 @@ document.getElementById('pd_submit').onclick=function(){
     name:name,email:email,dream:dream,goal:g('pd_goal'),type:g('pd_type'),timeline:g('pd_timeline'),budget:g('pd_budget'),inspo:g('pd_inspo'),website:g('pd_hp')})})
    .then(function(r){return r.json();}).then(function(j){
      if(j&&j.ok){ if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','design_inquiry');
-       b.innerHTML='<div class="done"><div class="ic">\\uD83C\\uDFA8</div><h2>Got it \\u2014 thank you!</h2><p>Your project just landed in my inbox. I\\'ll personally reply within one business day \\u2014 check your inbox for a confirmation. Talk soon!</p></div>';
+       b.innerHTML='<div class="done"><div class="ic">\\uD83C\\uDFA8</div><h2>Got it. Thank you!</h2><p>Your project just landed in my inbox. I\\'ll personally reply within one business day. Check your inbox for a confirmation. Talk soon!</p></div>';
        window.scrollTo({top:0,behavior:'smooth'});
      } else { btn.disabled=false; btn.textContent='Bring my vision to life \\u2192'; msg.textContent=(j&&j.error)||'Something went wrong, please try again.'; }
    }).catch(function(){ btn.disabled=false; btn.textContent='Bring my vision to life \\u2192'; msg.textContent='Network error, please try again.'; });
@@ -3329,6 +3367,7 @@ document.getElementById('pd_submit').onclick=function(){
   // Showcase: tabbed concept sites that auto-rotate and auto-scroll inside the browser frame
   var vp=document.getElementById('sc_vp'); if(!vp)return;
   var sites=[].slice.call(vp.querySelectorAll('.site')), tabs=[].slice.call(document.querySelectorAll('.sc-tab')), url=document.getElementById('sc_url'), cur=0, auto=true;
+  sites.sort(function(a,b){return (+a.getAttribute('data-order')||0)-(+b.getAttribute('data-order')||0);});
   function fit(){
     var w=vp.clientWidth, W=Math.max(760,w), s=w/W;
     sites.forEach(function(st){var sz=st.firstElementChild, sc=sz.firstElementChild;
@@ -3517,7 +3556,7 @@ def validate_ai_employee(data):
         automation_other = ""
     if len(tools) > 400:
         errors["tools"] = "Please keep tools to 400 characters or fewer."
-    if package not in AI_PACKAGES:
+    if package and package not in AI_PACKAGES:
         errors["package"] = "Please choose a package, or Not sure."
     if errors:
         return None, errors

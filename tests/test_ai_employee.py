@@ -205,7 +205,8 @@ class AiEmployeeTests(unittest.TestCase):
         start = self.client.get("/ai-employee/start")
         self.assertEqual(start.status_code, 200)
         html = start.get_data(as_text=True)
-        self.assertIn("Start your AI Virtual Employee setup - MacRandle Acres", html)
+        self.assertIn("Your first AI agent, a Lucid Marketing setup", html)
+        self.assertNotIn("Package interest", html)
         self.assertIn("Your first AI agent, set up with you on a call. $149 one-time.", html)
         self.assertNotIn("one-hour", html)
         self.assertNotIn("$200", html)
@@ -214,11 +215,10 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("$497", html)
         self.assertNotIn("stripe", html.lower())
         self.assertIn("Real estate", html)
-        self.assertIn("Not sure", html)
         self.assertIn('name="website"', html)
 
         home = self.client.get("/").get_data(as_text=True)
-        self.assertIn("Marketing, Web, Apps, and AI for Your Business", home)
+        self.assertIn("Lucid Marketing, by MacRandle Acres | Remove Friction. Accelerate Growth.", home)
         self.assertIn('content="summary_large_image"', home)
         hero = home.split('id="top"', 1)[1].split('id="voice"', 1)[0]
         self.assertIn("Fractional Growth Advisor · For growing businesses", hero)
@@ -288,6 +288,8 @@ class AiEmployeeTests(unittest.TestCase):
         sitemap = self.client.get("/sitemap.xml").get_data(as_text=True)
         self.assertIn("/ai-employee/start", sitemap)
         self.assertIn("/design", sitemap)
+        self.assertIn("/book", sitemap)
+        self.assertIn("https://www.macrandleacres.com/hub", sitemap)
 
         self.assertEqual(self.client.get("/ai_employee_page.html").status_code, 404)
         for path in ("/", "/design", "/book", "/hub", "/privacy", "/healthz"):
