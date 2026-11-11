@@ -143,6 +143,7 @@ a{color:inherit;text-decoration:none}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes logoIn{0%{opacity:0;transform:scale(.82) translateY(14px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 .hero h1{font-size:clamp(42px,7.6vw,86px);font-weight:600;margin-bottom:22px;letter-spacing:-.02em}
+.hero .method-line{font-style:italic;font-weight:600;color:var(--gold-d);font-size:clamp(18px,2.4vw,26px);margin:-8px auto 22px;max-width:760px}
 .hero .promise{font-size:clamp(17px,2.2vw,21px);color:var(--ink2);max-width:660px;margin:0 auto 30px}
 .hero .promise b{color:var(--ink);font-weight:600}
 .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
@@ -266,6 +267,15 @@ footer .ftag{font-family:'Inter',system-ui,sans-serif;font-style:italic;color:va
 footer .fvals{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,244,236,.6);margin-bottom:8px}
 footer .loc{color:rgba(246,244,236,.7);font-size:14px;margin-bottom:6px}
 footer small{color:rgba(246,244,236,.5);font-size:12.5px}
+.foot-social{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 18px;margin:0 0 16px}
+.foot-social a{color:var(--cream);font-weight:700;font-size:14px;border-bottom:1px solid rgba(224,184,98,.5);padding-bottom:1px}
+.foot-social a:hover{color:var(--gold-l)}
+#lucid{padding-top:28px;padding-bottom:12px}
+#lucid .lm-points{max-width:560px;margin:0 auto 22px;display:grid;gap:8px;text-align:center}
+#lucid .lm-points p{color:var(--ink2);font-size:17px}
+#lucid .lm-sig{text-align:center;font-style:italic;color:var(--gold-d);font-weight:600;font-size:18px}
+#ai-employee .ai-offer{max-width:740px;margin:0 auto;text-align:center}
+#ai-employee .ai-body{color:var(--ink2);font-size:17px;line-height:1.65;max-width:640px;margin:14px auto 22px}
 
 /* Reveal */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -662,6 +672,7 @@ footer{position:relative}
   </div>
   <span class="eyebrow reveal in" data-edit="hero_eyebrow">Fractional Growth Advisor · For growing businesses</span>
   <h1 class="reveal in"><span class="hl"><span class="accent-text shimmer" data-edit="hero_h1a">Remove Friction.</span></span><br><span class="hl h2"><span data-edit="hero_h1b">Accelerate Growth.</span></span></h1>
+  <p class="method-line reveal in" data-edit="hero_method_lm">That's Lucid Marketing, by MacRandle Acres.</p>
   <p class="promise reveal in" data-edit="hero_promise">Every month I find hidden opportunities to make your business <b>more profitable</b>, then I implement the systems to capture them.</p>
   <div class="hero-cta reveal in">
    <a class="btn btn-primary" href="/book"><span data-edit="hero_cta1">Book a Growth Audit</span></a>
@@ -679,6 +690,21 @@ footer{position:relative}
   </div>
  </div>
 </header>
+
+<section id="lucid" aria-labelledby="lucid-title">
+ <div class="wrap">
+  <div class="sec-head">
+   <h2 class="reveal" id="lucid-title" data-edit="lucid_h_lm">Lucid Marketing</h2>
+   <p class="reveal" data-edit="lucid_lead_lm">Marketing that is conscious, clear, and intentional.</p>
+  </div>
+  <div class="lm-points">
+   <p class="reveal" data-edit="lucid_l1_lm">You stay aware of where your time and money go.</p>
+   <p class="reveal d1" data-edit="lucid_l2_lm">Every message is intentional.</p>
+   <p class="reveal d2" data-edit="lucid_l3_lm">The next step stays clear.</p>
+  </div>
+  <p class="lm-sig reveal" data-edit="lucid_sig_lm">Lucid Marketing, by MacRandle Acres.</p>
+ </div>
+</section>
 
 <div class="ticker" aria-hidden="true"><div><span>Faster lead response</span><span>More appointments booked</span><span>No more leads gone cold</span><span>Smarter ad spend</span><span>A clear plan every month</span><span>Real numbers, no fluff</span><span>Websites that convert</span><span>Faster lead response</span><span>More appointments booked</span><span>No more leads gone cold</span><span>Smarter ad spend</span><span>A clear plan every month</span><span>Real numbers, no fluff</span><span>Websites that convert</span></div></div>
 
@@ -941,51 +967,16 @@ footer{position:relative}
  </div>
 </section>
 
-<!-- AI VIRTUAL EMPLOYEE -->
+<!-- FIRST AI AGENT -->
 <section id="ai-employee" aria-labelledby="ai-employee-title">
  <div class="wrap">
-  <div class="ws-grid">
-   <div class="ws-copy">
-    <span class="eyebrow reveal" data-edit="ai_eyebrow">Also built here</span>
-    <h2 class="reveal" id="ai-employee-title"><span data-edit="ai_h2a">AI Virtual Employee</span> <span class="accent-text" data-edit="ai_h2hi">Setup</span></h2>
-    <p class="reveal d1" data-edit="ai_tag">Turn AI into a real worker for your business.</p>
-    <ul class="ws-list reveal d2">
-     <li><span data-edit="ai_li1">Custom AI assistant built for your business</span></li>
-     <li><span data-edit="ai_li2">Can help with content, follow-ups, research and admin tasks</span></li>
-     <li><span data-edit="ai_li3">Built inside your own account</span></li>
-     <li><span data-edit="ai_li4">Live setup and walkthrough included</span></li>
-     <li><span data-edit="ai_li5">7 days of setup support</span></li>
-    </ul>
-    <p class="ai-price reveal d2" data-edit="ai_price">$497 <span>one-time setup</span></p>
-    <p class="ai-opt reveal d2" data-edit="ai_opt">Optional support: $97/mo.</p>
-    <p class="ai-fine reveal d3" data-edit="ai_fine">Client pays for any required AI subscription separately. Complex integrations, unattended automation and CRM connections are quoted separately.</p>
-    <div class="hero-cta reveal d3">
-     <a class="btn btn-primary" href="/ai-employee/start"><span data-edit="ai_cta">Start</span></a>
-    </div>
-   </div>
-   <div class="ai-pkgs reveal d2">
-    <span class="eyebrow">Packages</span>
-    <article class="card ai-pkg">
-     <div class="ico" aria-hidden="true">🌱</div>
-     <h3>Starter</h3>
-     <p>1 AI assistant</p>
-     <span class="cost">$497 setup</span>
-     <span class="mo">$97/mo optional support</span>
-    </article>
-    <article class="card ai-pkg">
-     <div class="ico" aria-hidden="true">🌿</div>
-     <h3>Growth</h3>
-     <p>3 AI assistants</p>
-     <span class="cost">$997 setup</span>
-     <span class="mo">$197/mo optional support</span>
-    </article>
-    <article class="card ai-pkg">
-     <div class="ico" aria-hidden="true">🌳</div>
-     <h3>Business</h3>
-     <p>5 AI assistants</p>
-     <span class="cost">$1,997 setup</span>
-     <span class="mo">$297/mo optional support</span>
-    </article>
+  <div class="ai-offer">
+   <span class="eyebrow reveal" data-edit="ai_eyebrow_lm">Lucid Marketing</span>
+   <h2 class="reveal" id="ai-employee-title" data-edit="ai_offer_h_lm">Your first AI agent, set up with you on a one-hour call.</h2>
+   <p class="ai-price reveal d1" data-edit="ai_offer_price_lm">$200 <span>one-time.</span></p>
+   <p class="ai-body reveal d2" data-edit="ai_offer_body_lm">We build it around whatever takes up the most space on your digital plate (emails, posting, follow-ups, scheduling), together on one call, and it is working for you by the end.</p>
+   <div class="hero-cta reveal d3" style="justify-content:center">
+    <a class="btn btn-primary" href="/book"><span data-edit="ai_cta_lm">Book a Lucid Marketing call</span></a>
    </div>
   </div>
  </div>
@@ -1043,7 +1034,15 @@ footer{position:relative}
  <svg class="foot-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,60 C240,8 480,52 720,30 C960,8 1200,52 1440,20 L1440,60 Z"/></svg>
  <div class="wrap">
   <div class="fbrand"><span class="mark"><span>M</span></span> <span data-edit="foot_brand">MacRandle Acres</span></div>
-  <div class="ftag" data-edit="foot_tag">Cultivating better businesses</div>
+  <div class="ftag" data-edit="foot_sig_lm">Lucid Marketing, by MacRandle Acres.</div>
+  <div class="fvals" data-edit="foot_tag">Cultivating better businesses</div>
+  <nav class="foot-social" aria-label="Connect">
+   <a href="https://www.linkedin.com/in/jeff-randle-042a23196/" target="_blank" rel="noopener">LinkedIn</a>
+   <a href="https://www.skool.com/lucid-mage-facebook-growth-lab-3725" target="_blank" rel="noopener">Skool</a>
+   <a href="https://www.facebook.com/TheLucidMage" target="_blank" rel="noopener">Facebook</a>
+   <a href="https://www.youtube.com/@JeffRandle89" target="_blank" rel="noopener">YouTube</a>
+   <a href="/hub">All links</a>
+  </nav>
   <div class="fvals" data-edit="foot_vals">Growth · Foundation · Freedom · Trust</div>
   <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
   <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. Helping ambitious real estate teams remove friction from growth.</span></small>
@@ -1086,7 +1085,8 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 
 /* Ad conversion tracking: fire a Lead event when a booking button is clicked */
 document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;
-  if((a.getAttribute('href')||'').indexOf('calendar.')>-1){
+  var href=a.getAttribute('href')||'';
+  if(href.indexOf('/book')>-1||href.indexOf('calendar.')>-1){
     if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','book_call_click');}
 });
 

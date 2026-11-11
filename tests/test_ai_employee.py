@@ -205,7 +205,11 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertEqual(start.status_code, 200)
         html = start.get_data(as_text=True)
         self.assertIn("Start your AI Virtual Employee setup - MacRandle Acres", html)
-        self.assertIn("Tell Jeff about your business and the AI teammate you want.", html)
+        self.assertIn("Your first AI agent, set up with you on a one-hour call. $200 one-time.", html)
+        self.assertIn('href="/book"', html)
+        self.assertIn("Book a Lucid Marketing call", html)
+        self.assertNotIn("$497", html)
+        self.assertNotIn("stripe", html.lower())
         self.assertIn("Real estate", html)
         self.assertIn("Not sure", html)
         self.assertIn('name="website"', html)
@@ -228,19 +232,49 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("Real estate", re_section)
         self.assertIn("more profitable", re_section)
         self.assertNotIn("\u2014", re_section)
+        self.assertIn("That's Lucid Marketing, by MacRandle Acres.", home)
+        self.assertIn("Marketing that is conscious, clear, and intentional.", home)
         section = home.split('id="ai-employee"', 1)[1].split("REAL ESTATE", 1)[0]
-        self.assertIn("AI Virtual Employee", section)
-        self.assertIn("Turn AI into a real worker for your business.", section)
-        self.assertIn("$497", section)
-        self.assertIn("$1,997", section)
-        self.assertIn('href="/ai-employee/start"', section)
+        self.assertIn("Your first AI agent, set up with you on a one-hour call.", section)
+        self.assertIn("$200", section)
+        self.assertIn("one-time.", section)
+        self.assertIn("Book a Lucid Marketing call", section)
+        self.assertIn('href="/book"', section)
+        self.assertNotIn("$497", section)
+        self.assertNotIn("$97/mo", section)
+        self.assertNotIn("$1,997", section)
         self.assertNotIn("\u2014", section)
         self.assertNotIn("ChatGPT", section)
         self.assertNotIn("OpenAI", section)
+        self.assertIn("https://www.linkedin.com/in/jeff-randle-042a23196/", home)
+        self.assertIn("https://www.facebook.com/TheLucidMage", home)
+        self.assertIn("Lucid Marketing, by MacRandle Acres.", home)
 
         hub = self.client.get("/hub").get_data(as_text=True)
-        self.assertIn("AI Virtual Employee Setup", hub)
-        self.assertIn('href="/ai-employee/start"', hub)
+        self.assertIn("Lucid Mage in the dream world.", hub)
+        self.assertIn("Lucid Marketing at MacRandle Acres.", hub)
+        self.assertIn("Business: Lucid Marketing, by MacRandle Acres", hub)
+        self.assertIn("Lucid Mage: dreams, music, art", hub)
+        self.assertIn("$200 one-time.", hub)
+        self.assertIn('href="/book"', hub)
+        self.assertIn("https://www.patreon.com/LucidMage", hub)
+        self.assertIn("https://www.youtube.com/@JeffRandle89", hub)
+        self.assertIn("https://www.tiktok.com/@lucidmage89", hub)
+        self.assertIn("https://www.instagram.com/lucidmage89/", hub)
+        self.assertIn("https://www.facebook.com/TheLucidMage", hub)
+        self.assertIn("Lucid dreaming techniques and dream music.", hub)
+        self.assertIn("Macrandleacres@gmail.com", hub)
+        self.assertNotIn("$497", hub)
+        self.assertNotIn("TheLucidMage89", hub)
+        self.assertNotIn("calendar.google.com/calendar/u/0/r/week/2026/7/26", hub)
+        self.assertNotIn("Live demo soon", hub)
+        self.assertNotIn("Frontier AI", hub)
+        self.assertNotIn("marketing wisdom", hub)
+        self.assertNotIn("jeffrandle.io", hub.lower())
+        self.assertNotIn("ChatGPT", hub)
+        self.assertNotIn('data-edit="hero_name"', hub)
+        self.assertIn('data-edit="hero_name_lm"', hub)
+        self.assertIn('data-link="lk_fbprofile_lm"', hub)
 
         sitemap = self.client.get("/sitemap.xml").get_data(as_text=True)
         self.assertIn("/ai-employee/start", sitemap)
@@ -271,6 +305,45 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("<img src=x", body)
         self.assertIn("Safe Co", body)
         self.assertIn("Book their consultation", body)
+
+    def test_disk_overrides_skip_renamed_keys(self):
+        """Saved JSON replaces a data-edit or data-link only when the key still matches."""
+        disk = {
+            "hero_name": "Not Jeff",
+            "hero_subname": "Old subname",
+            "nav_cta": "Schedule a Call",
+            "lk_fbprofile": "https://www.facebook.com/TheLucidMage89",
+            "lk_youtube": "https://jeffrandle.io",
+            "lk_patreon": "https://www.patreon.com/JeffRandle",
+            "ai_price": "$497 <span>one-time setup</span>",
+            "ai_opt": "Optional support: $97/mo.",
+            "aiemp_p": "$497 one-time setup",
+            "soc_yt": "marketing wisdom",
+            "saai_tag": "Live demo soon",
+            "saai_eyebrow": "Frontier AI",
+        }
+        with patch.object(site, "load_content", return_value=disk):
+            hub = self.client.get("/hub").get_data(as_text=True)
+            home = self.client.get("/").get_data(as_text=True)
+        # Old values ride along inside window.__CONTENT__, but no element still uses those keys.
+        self.assertIn("Not Jeff", hub)
+        self.assertIn('data-edit="hero_name_lm">Jeff Randle<', hub)
+        self.assertNotIn('data-edit="hero_name">', hub)
+        self.assertIn('data-link="lk_youtube_lm" href="https://www.youtube.com/@JeffRandle89"', hub)
+        self.assertNotIn('data-link="lk_youtube"', hub)
+        self.assertNotIn('data-link="lk_fbprofile"', hub)
+        self.assertIn('data-edit="ai_offer_price_lm">$200', home)
+        self.assertNotIn('data-edit="ai_price"', home)
+        shown = {}
+        for key, html_value in (
+            ("hero_name_lm", "Jeff Randle"),
+            ("lk_fbprofile_lm", "https://www.facebook.com/TheLucidMage"),
+            ("ai_offer_h_lm", "Your first AI agent, set up with you on a one-hour call."),
+        ):
+            shown[key] = disk[key] if key in disk and disk[key] is not None else html_value
+        self.assertEqual(shown["hero_name_lm"], "Jeff Randle")
+        self.assertEqual(shown["lk_fbprofile_lm"], "https://www.facebook.com/TheLucidMage")
+        self.assertNotEqual(shown["ai_offer_h_lm"], disk["ai_price"])
 
 
 if __name__ == "__main__":
