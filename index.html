@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MacRandle Acres, Marketing, Web, Apps, and AI for Your Business</title>
-<meta name="description" content="MacRandle Acres helps small businesses, service businesses, local businesses, and creators with marketing, web design, app development, and AI automation. Real estate teams are one specialty. Jeff Randle, Salisbury, MD.">
+<meta name="description" content="MacRandle Acres helps small businesses, service businesses, local businesses, and creators with marketing, web design, app development, and AI automation. Real estate is one specialty. Jeff Randle, Salisbury, MD.">
 <meta name="theme-color" content="#234F3D">
 
 <meta property="og:title" content="MacRandle Acres, marketing, web, apps, and AI for your business">
@@ -276,6 +276,28 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 #lucid .lm-sig{text-align:center;font-style:italic;color:var(--gold-d);font-weight:600;font-size:18px}
 #ai-employee .ai-offer{max-width:740px;margin:0 auto;text-align:center}
 #ai-employee .ai-body{color:var(--ink2);font-size:17px;line-height:1.65;max-width:640px;margin:14px auto 22px}
+.advisor-near{display:flex;gap:22px;align-items:center;max-width:760px;margin:0 auto 34px;text-align:left}
+.advisor-near img{width:148px;height:148px;object-fit:cover;border-radius:50%;flex:none;box-shadow:var(--shadow-sm)}
+.advisor-near h2{font-size:clamp(26px,3vw,34px);margin:6px 0 8px}
+.advisor-near p{color:var(--ink2);font-size:16px}
+.quote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.qcard{background:#fff;border:1px solid var(--bd-soft);border-radius:14px;padding:16px 16px 14px;box-shadow:var(--shadow-sm)}
+.qcard p{font-size:15px;color:var(--ink);margin:0}
+.qcard .q-by{display:block;margin-top:10px;font-weight:700;color:var(--green);font-size:13px}
+#quotes[hidden],.qcard[hidden]{display:none !important}
+body.editing #quotes[hidden]{display:block !important}
+body.editing .qcard[hidden]{display:block !important}
+body.editing .qcard p,body.editing .qcard .q-by{min-height:1.4em}
+.free-step{padding:8px 0 20px}
+.free-step .box{max-width:640px;margin:0 auto;text-align:center;border:1px dashed var(--bd);border-radius:16px;padding:20px 18px;background:rgba(255,255,255,.45)}
+.free-step p{color:var(--ink2);font-size:15.5px;margin-bottom:10px}
+.free-step .skool{font-weight:700;color:var(--green);font-size:14.5px}
+.free-step form{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.free-step input{font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);min-width:220px;background:#fff}
+.free-step button{font:inherit;font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px;border:1px solid var(--bd);background:#fff;color:var(--green);cursor:pointer}
+.free-step .sub-note{min-height:1.2em;font-size:13.5px;margin:8px 0 0}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}
+@media(max-width:700px){.advisor-near{flex-direction:column;text-align:center}.quote-grid{grid-template-columns:1fr}}
 
 /* Reveal */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -872,6 +894,22 @@ footer{position:relative}
 <!-- PRICING -->
 <section id="pricing">
  <div class="wrap">
+  <div class="advisor-near reveal">
+   <img src="/jeff-randle.jpg" width="600" height="600" alt="Jeff Randle, founder of MacRandle Acres">
+   <div>
+    <span class="eyebrow" data-edit="advisor_eye_sb">Meet your advisor</span>
+    <h2 data-edit="advisor_h_sb">Jeff Randle</h2>
+    <p data-edit="advisor_note_sb">I help small businesses remove friction and accelerate growth. That's Lucid Marketing, by MacRandle Acres.</p>
+   </div>
+  </div>
+  <!-- To publish a testimonial: sign in at /admin/login, click Edit page, and type a real quote plus a name in a card below. Cards with no quote stay hidden from visitors. -->
+  <div id="quotes" hidden>
+   <div class="quote-grid">
+    <article class="qcard" hidden><p class="q-text" data-edit="quote1_sb"></p><span class="q-by" data-edit="quote1_by_sb"></span></article>
+    <article class="qcard" hidden><p class="q-text" data-edit="quote2_sb"></p><span class="q-by" data-edit="quote2_by_sb"></span></article>
+    <article class="qcard" hidden><p class="q-text" data-edit="quote3_sb"></p><span class="q-by" data-edit="quote3_by_sb"></span></article>
+   </div>
+  </div>
   <div class="sec-head">
    <span class="eyebrow reveal" data-edit="pricing_eyebrow">Simple, outcome-based plans</span>
    <h2 class="reveal">Pick your <span class="accent-text" data-edit="pricing_h2hi">level of growth</span></h2>
@@ -976,8 +1014,23 @@ footer{position:relative}
    <p class="ai-price reveal d1" data-edit="ai_offer_price_149">$149 <span>one-time.</span></p>
    <p class="ai-body reveal d2" data-edit="ai_offer_body_lm">We build it around whatever takes up the most space on your digital plate (emails, posting, follow-ups, scheduling), together on one call, and it is working for you by the end.</p>
    <div class="hero-cta reveal d3" style="justify-content:center">
-    <a class="btn btn-primary" href="/book"><span data-edit="ai_cta_lm">Book a Lucid Marketing call</span></a>
+    <a class="btn btn-primary" href="/book?type=agent"><span data-edit="ai_cta_lm">Book a Lucid Marketing call</span></a>
    </div>
+  </div>
+ </div>
+</section>
+
+<section id="free-step" class="free-step" aria-label="A smaller next step">
+ <div class="wrap">
+  <div class="box">
+   <p data-edit="free_p_sb">Not ready for a call? Join the free MacRandle Acres community on Skool.</p>
+   <a class="skool" href="https://www.skool.com/lucid-mage-facebook-growth-lab-3725" target="_blank" rel="noopener">Join the free community</a>
+   <form id="subForm">
+    <label class="hp" aria-hidden="true">Company website <input name="website" tabindex="-1" autocomplete="off"></label>
+    <input type="email" name="email" required maxlength="160" placeholder="Email address" aria-label="Email address">
+    <button type="submit">Email me</button>
+   </form>
+   <p class="sub-note" id="subNote" role="status"></p>
   </div>
  </div>
 </section>
@@ -986,10 +1039,10 @@ footer{position:relative}
 <section id="real-estate" aria-labelledby="real-estate-title">
  <div class="wrap">
   <div class="sec-head">
-   <span class="eyebrow reveal" data-edit="re_eyebrow">For real estate teams</span>
+   <span class="eyebrow reveal" data-edit="re_eyebrow_sb">One specialty</span>
    <h2 class="reveal" id="real-estate-title">Real estate <span class="accent-text" data-edit="re_h2hi">specialists</span></h2>
-   <p class="reveal" data-edit="re_p">Every month I find hidden opportunities to make your real estate business <b>more profitable</b>, then I implement the systems to capture them.</p>
-   <p class="reveal" data-edit="re_also">Built for real estate teams, and the same growth system works for any local service business.</p>
+   <p class="reveal" data-edit="re_p_sb">Real estate is one specialty here. Every month I find hidden opportunities to make a real estate business <b>more profitable</b>, then I implement the systems to capture them.</p>
+   <p class="reveal" data-edit="re_also_sb">The same growth work fits any small business.</p>
   </div>
   <div class="hero-cta reveal" style="justify-content:center">
    <a class="btn btn-primary" href="/book"><span data-edit="re_cta">Book a Growth Audit</span></a>
@@ -1005,9 +1058,9 @@ footer{position:relative}
    <div class="jf-copy">
     <span class="eyebrow" data-edit="jeff_eyebrow">Meet your advisor</span>
     <h2 data-edit="jeff_h2">Hi, I'm Jeff Randle.</h2>
-    <p data-edit="jeff_p">I'm the founder of MacRandle Acres and a fractional growth advisor based in Salisbury, MD. I work alongside real estate teams to find what's quietly costing them deals, fix it, and show the results in plain numbers every month. You get a real person who knows your business, not a ticket queue.</p>
+    <p data-edit="jeff_p_sb">I'm the founder of MacRandle Acres and a fractional growth advisor based in Salisbury, MD. I work with small businesses to find what's quietly costing them growth, fix it, and show the results in plain numbers every month. You get a real person who knows your business, not a ticket queue.</p>
     <div class="hero-cta">
-     <a class="btn btn-gold" href="/book"><span data-edit="jeff_cta1">Book a call with Jeff</span></a>
+     <a class="btn btn-gold" href="/book"><span data-edit="jeff_cta1_sb">Book a Growth Audit</span></a>
      <a class="btn btn-ghost" href="/hub"><span data-edit="jeff_cta2">More about me &rarr;</span></a>
     </div>
    </div>
@@ -1045,7 +1098,7 @@ footer{position:relative}
   </nav>
   <div class="fvals" data-edit="foot_vals">Growth · Foundation · Freedom · Trust</div>
   <div class="loc" data-edit="foot_loc">📍 Salisbury, MD</div>
-  <small>© <span id="yr"></span> <span data-edit="foot_copy">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. Helping ambitious real estate teams remove friction from growth.</span></small>
+  <small>© <span id="yr"></span> <span data-edit="foot_copy_sb">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. Helping small businesses remove friction from growth.</span></small>
   <div class="foot-hub"><a href="/hub.html">🍃 Explore Jeff Randle's Landing Page <span class="fh-arr">↗</span></a></div>
   <div style="margin-top:12px"><a href="/privacy" style="color:rgba(246,244,236,.5);font-size:12px">Privacy</a></div>
   <div class="foot-admin"><a href="/admin/login" id="adminLink">🔒 Admin · Edit site</a></div>
@@ -1067,6 +1120,7 @@ footer{position:relative}
  <a class="ab-logout" href="/admin/audits">📋 FB Audits</a>
  <a class="ab-logout" href="/admin/projects">🎨 Projects</a>
  <a class="ab-logout" href="/admin/ai-employees">🤖 AI setups</a>
+ <a class="ab-logout" href="/admin/subscribers">✉️ Emails</a>
  <a class="ab-logout" href="/admin/settings">⚙️ Settings</a>
  <a class="ab-logout" href="/admin/logout">Log out</a>
 </div>
@@ -1081,6 +1135,22 @@ footer{position:relative}
 <div id="adminToast"></div>
 
 <script>
+(function(){
+ var form=document.getElementById('subForm'); if(!form) return;
+ var note=document.getElementById('subNote');
+ form.addEventListener('submit', function(e){
+  e.preventDefault();
+  var email=(form.email.value||'').trim();
+  var website=form.website?form.website.value:'';
+  note.textContent='Sending...';
+  fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,website:website})})
+   .then(function(r){return r.json().then(function(j){return {ok:r.ok, body:j};});})
+   .then(function(res){
+    if(res.ok && res.body && res.body.ok){form.email.value=''; note.textContent='You are on the list. Thank you.';}
+    else note.textContent=(res.body&&res.body.error)||'Please try again.';
+   }).catch(function(){note.textContent='Please try again.';});
+ });
+})();
 document.getElementById('yr').textContent = new Date().getFullYear();
 
 /* Ad conversion tracking: fire a Lead event when a booking button is clicked */
@@ -1107,7 +1177,21 @@ document.getElementById('hamb').addEventListener('click',function(){
   var k = el.getAttribute('data-edit');
   if(Object.prototype.hasOwnProperty.call(C,k) && C[k]!=null) el.innerHTML = C[k];
  });
+ if(window.refreshQuotes) window.refreshQuotes();
 })();
+function refreshQuotes(){
+ var any=false, editing=document.body.classList.contains('editing');
+ document.querySelectorAll('.qcard').forEach(function(card){
+  var q=card.querySelector('.q-text');
+  var t=((q&&q.textContent)||'').replace(/\s+/g,' ').trim().toLowerCase();
+  var real=t && t!=='placeholder' && t.indexOf('placeholder')!==0 && t!=='add a quote' && t!=='your quote';
+  card.hidden=!real && !editing;
+  if(real) any=true;
+ });
+ var box=document.getElementById('quotes');
+ if(box) box.hidden=!any && !editing;
+}
+refreshQuotes();
 
 var io=new IntersectionObserver(function(entries){
  entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
@@ -1196,12 +1280,13 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
    : '<b>Editing mode</b>, click any text to change it. Not live until you save.';
  }
  function blockNav(e){var a=e.target.closest('a');if(a && !a.classList.contains('ab-logout'))e.preventDefault();}
- function markDirty(){dirty=true;}
+ function markDirty(){dirty=true; if(window.refreshQuotes) window.refreshQuotes();}
  function setEditing(on){
   document.body.classList.toggle('editing',on);
   nodes().forEach(function(el){on?el.setAttribute('contenteditable','true'):el.removeAttribute('contenteditable');});
   if(on){document.addEventListener('click',blockNav,true);document.addEventListener('input',markDirty,true);}
   else {document.removeEventListener('click',blockNav,true);document.removeEventListener('input',markDirty,true);dirty=false;}
+  if(window.refreshQuotes) window.refreshQuotes();
  }
 
  function enterEdit(){ snapshot=collect(); dirty=false; setEditing(true);
