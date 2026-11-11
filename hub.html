@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeff Randle, The Lucid Mage · Everything I do</title>
-<meta name="description" content="Jeff Randle, the Lucid Mage, marketing, AI, software, art, and lucid dreaming. Explore MacRandle Acres, Simply Agentic AI, and find me everywhere.">
+<title>Jeff Randle, Lucid Marketing at MacRandle Acres and Lucid Mage</title>
+<meta name="description" content="Jeff Randle. Business is Lucid Marketing at MacRandle Acres: growth and AI agent setup. Personal is Lucid Mage: lucid dreaming, music, and art.">
 <meta name="theme-color" content="#234F3D">
-<meta property="og:title" content="Jeff Randle, The Lucid Mage">
-<meta property="og:description" content="Marketing, AI, creative, and consciousness, all in one place.">
+<meta property="og:title" content="Jeff Randle, Lucid Marketing and Lucid Mage">
+<meta property="og:description" content="Business is Lucid Marketing at MacRandle Acres. Personal is Lucid Mage: lucid dreaming, music, and art.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://macrandleacres.com/logo.jpg">
 <link rel="icon" type="image/jpeg" href="logo.jpg">
 <link rel="apple-touch-icon" href="logo.jpg">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Jeff Randle","alternateName":"The Lucid Mage","url":"https://macrandleacres.com/hub","email":"Macrandleacres@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Salisbury","addressRegion":"MD","addressCountry":"US"},"sameAs":["https://www.linkedin.com/in/jeff-randle-042a23196/","https://www.youtube.com/@JeffRandle89","https://www.instagram.com/lucidmage89/","https://www.facebook.com/TheLucidMage89","https://www.tiktok.com/@lucidmage89"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Jeff Randle","alternateName":["Lucid Mage","Lucid Marketing"],"url":"https://macrandleacres.com/hub","email":"Macrandleacres@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Salisbury","addressRegion":"MD","addressCountry":"US"},"sameAs":["https://www.linkedin.com/in/jeff-randle-042a23196/","https://www.youtube.com/@JeffRandle89","https://www.instagram.com/lucidmage89/","https://www.facebook.com/TheLucidMage","https://www.tiktok.com/@lucidmage89","https://www.patreon.com/LucidMage","https://www.skool.com/lucid-mage-facebook-growth-lab-3725"]}</script>
 
 <!--
  PERSONAL HUB (Gamma + Linktree replacement). Served at /hub via Flask.
@@ -80,8 +80,10 @@ a{color:inherit;text-decoration:none}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .hero .roles{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--pl,#a97f2a);font-weight:700;color:var(--gold-d);margin-bottom:14px}
 .hero h1{font-family:'Inter',system-ui,sans-serif;font-size:clamp(38px,7vw,70px);font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
-.hero .sub-name{font-family:'Inter',system-ui,sans-serif;font-style:italic;font-size:clamp(18px,3vw,26px);color:var(--gold-d);margin-bottom:18px}
-.hero .lead{font-size:clamp(16px,2.1vw,19px);color:var(--ink2);max-width:600px;margin:0 auto 26px}
+.hero .sub-name{font-family:'Inter',system-ui,sans-serif;font-style:italic;font-size:clamp(17px,2.6vw,24px);color:var(--gold-d);margin:0 auto 18px;max-width:740px;line-height:1.35}
+.hero .lead{font-size:clamp(16px,2.1vw,19px);color:var(--ink2);max-width:700px;margin:0 auto 26px}
+#business,#lucid-mage{scroll-margin-top:78px}
+#lucid-mage{background:linear-gradient(180deg,rgba(199,154,59,.08),transparent 120px)}
 .hero-cta{display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
 
 /* sections */
@@ -156,7 +158,12 @@ footer small{color:rgba(246,244,236,.5);font-size:12.5px}
 .foot-hub a{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--cream);border:1px solid rgba(246,244,236,.25);padding:9px 18px;border-radius:10px;text-decoration:none;transition:.2s}
 .foot-hub a:hover{background:rgba(255,255,255,.08);border-color:rgba(224,184,98,.5)}
 .foot-hub a .fh-note{color:rgba(246,244,236,.6);font-weight:500}
-@media(max-width:560px){.nav-offer{display:none}}
+@media(max-width:640px){
+ .nav-in{height:auto;min-height:64px;padding:8px 0;gap:8px}
+ .brand .sub{display:none}
+ .nav-offer{display:none}
+ .nav-cta{padding:8px 12px;font-size:13px}
+}
 
 /* reveal */
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -215,7 +222,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
   <a class="brand" href="#top"><span class="mark"><span>M</span></span> Jeff Randle <span class="sub">· Lucid Mage</span></a>
   <div class="nav-right">
    <a class="nav-offer" href="/" title="MacRandle Acres, my growth-advisory offer">MacRandle Acres <span class="no-arr">↗</span></a>
-   <a class="btn btn-primary nav-cta" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="nav_cta">Schedule a Call</span></a>
+   <a class="btn btn-primary nav-cta" href="/book"><span data-edit="nav_cta_lm">Book a Lucid Marketing call</span></a>
   </div>
  </div>
 </nav>
@@ -226,132 +233,108 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
  <div class="wrap">
   <img class="hero-logo" src="logo.jpg" alt="MacRandle Acres" onerror="this.style.display='none'">
   <div class="roles" data-edit="hero_roles">Chief Marketing Officer · AI Specialist · Software Developer · Consciousness Explorer</div>
-  <h1><span class="accent-text" data-edit="hero_name">Jeff Randle</span></h1>
-  <div class="sub-name" data-edit="hero_subname">The Lucid Mage</div>
-  <p class="lead" data-edit="hero_lead">I help brands grow on Facebook with smarter strategy, automation, and AI, and I explore the edges of human consciousness through lucid dreaming.</p>
+  <h1><span class="accent-text" data-edit="hero_name_lm">Jeff Randle</span></h1>
+  <div class="sub-name" data-edit="hero_subname_lm">Lucid Mage in the dream world.<br>Lucid Marketing at MacRandle Acres.</div>
+  <p class="lead" data-edit="hero_lead_lm">Business is growth and your first AI agent, set up with you at MacRandle Acres. Personal is lucid dreaming, music, and art as Lucid Mage.</p>
   <div class="hero-cta">
-   <a class="btn btn-primary" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="hero_cta1">Schedule a Call</span></a>
-   <a class="btn btn-ghost" href="#ventures"><span data-edit="hero_cta2">Explore my work</span></a>
+   <a class="btn btn-primary" href="/book"><span data-edit="hero_cta1_lm">Book a Lucid Marketing call</span></a>
+   <a class="btn btn-ghost" href="#business"><span data-edit="hero_cta2">Explore my work</span></a>
   </div>
  </div>
 </header>
 
-<!-- FEATURED VENTURES -->
-<section id="ventures">
+<style>
+.tg-wide{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center}
+.tg-wide .tg-ic{width:64px;height:64px;border-radius:18px;background:radial-gradient(circle at 35% 30%,#f4e9c4,#c79a3b);display:grid;place-items:center;font-size:32px;flex:0 0 auto}
+.tg-wide h3{margin:2px 0 6px}.tg-wide .v-desc{margin:0}.tg-wide .v-cta{margin-top:0}
+@media(max-width:640px){.tg-wide{grid-template-columns:1fr;text-align:center}.tg-wide .tg-ic{margin:0 auto}}
+</style>
+
+<!-- BUSINESS -->
+<section id="business">
  <div class="wrap">
+  <div class="sec-head">
+   <h2 class="reveal" data-edit="biz_h2_lm">Business: Lucid Marketing, by MacRandle Acres</h2>
+   <p class="reveal" data-edit="biz_p_lm">Growth advisory, your first AI agent, and the tools I use with businesses.</p>
+  </div>
   <div class="feat-grid">
    <div class="venture v-green reveal">
     <span class="halo-c"></span>
-    <span class="v-eyebrow" data-edit="ma_eyebrow">For real estate teams</span>
-    <h3 data-edit="ma_title">MacRandle Acres</h3>
-    <p class="v-desc" data-edit="ma_desc">Your Fractional Growth Advisor, every month I find hidden opportunities to make your business more profitable, then build the systems to capture them.</p>
-    <div class="v-cta"><a class="btn btn-gold" href="/"><span data-edit="ma_cta">See the offer →</span></a></div>
+    <span class="v-eyebrow" data-edit="ma_eyebrow_lm">Growth advisory</span>
+    <h3 data-edit="ma_title_lm">MacRandle Acres</h3>
+    <p class="v-desc" data-edit="ma_desc_lm">Your Fractional Growth Advisor. Every month I find hidden opportunities to make your business more profitable, then build the systems to capture them.</p>
+    <div class="v-cta"><a class="btn btn-gold" href="/"><span data-edit="ma_cta_lm">See the offer →</span></a></div>
    </div>
    <div class="venture v-light reveal d1">
-    <span class="v-tag" data-edit="saai_tag">Live demo soon</span>
-    <span class="v-eyebrow" data-edit="saai_eyebrow">Frontier AI</span>
-    <h3 data-edit="saai_title">Simply Agentic AI</h3>
-    <p class="v-desc" data-edit="saai_desc">Coordinated AI teammates that remember, adapt, and act together inside the LLM you already use.</p>
-    <ul>
-     <li><span class="ck">✓</span><span data-edit="saai_li1">Memory, alignment, and autonomy</span></li>
-     <li><span class="ck">✓</span><span data-edit="saai_li2">Works inside ChatGPT and your favorite LLM</span></li>
-     <li><span class="ck">✓</span><span data-edit="saai_li3">Persistent and adaptive, not disposable prompts</span></li>
-    </ul>
-    <div class="v-cta"><a class="btn btn-ghost" data-link="lk_saai" href="https://simplyagenticai.com/"><span data-edit="saai_cta">Explore AI Solutions →</span></a></div>
+    <span class="v-eyebrow" data-edit="aiemp_eye_lm">One hour, together</span>
+    <h3 data-edit="aiemp_h3_lm">Your first AI agent, set up with you on a one-hour call.</h3>
+    <p class="v-desc" data-edit="aiemp_price_lm">$200 one-time.</p>
+    <p class="v-desc" data-edit="aiemp_p_lm">We build it around whatever takes up the most space on your digital plate (emails, posting, follow-ups, scheduling), together on one call, and it is working for you by the end.</p>
+    <div class="v-cta"><a class="btn btn-gold" href="/book"><span data-edit="aiemp_cta_lm">Book a Lucid Marketing call</span></a></div>
    </div>
-   <style>
-   .tg-wide{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center}
-   .tg-wide .tg-ic{width:64px;height:64px;border-radius:18px;background:radial-gradient(circle at 35% 30%,#f4e9c4,#c79a3b);display:grid;place-items:center;font-size:32px;flex:0 0 auto}
-   .tg-wide h3{margin:2px 0 6px}.tg-wide .v-desc{margin:0}.tg-wide .v-cta{margin-top:0}
-   @media(max-width:640px){.tg-wide{grid-template-columns:1fr;text-align:center}.tg-wide .tg-ic{margin:0 auto}}
-   </style>
-   <div class="venture v-green reveal d2" style="grid-column:1/-1">
-    <span class="v-tag" data-edit="tg_tag">Live</span>
+   <div class="venture v-light reveal d2">
+    <span class="v-eyebrow" data-edit="saai_eyebrow_lm">AI teammates</span>
+    <h3 data-edit="saai_title_lm">Simply Agentic AI</h3>
+    <p class="v-desc" data-edit="saai_desc_lm">Coordinated AI teammates that remember, adapt, and act together inside the account you already use.</p>
+    <ul>
+     <li><span class="ck">✓</span><span data-edit="saai_li1_lm">Memory, alignment, and autonomy</span></li>
+     <li><span class="ck">✓</span><span data-edit="saai_li2_lm">Works inside the AI account you already use</span></li>
+     <li><span class="ck">✓</span><span data-edit="saai_li3_lm">Persistent and adaptive, not disposable prompts</span></li>
+    </ul>
+    <div class="v-cta"><a class="btn btn-ghost" data-link="lk_saai_lm" href="https://simplyagenticai.com/"><span data-edit="saai_cta_lm">Explore AI Solutions →</span></a></div>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">✨</div>
+    <h3 data-edit="cr2_h3_lm">Graphic Design</h3>
+    <p data-edit="cr2_p_lm">Custom branding, video editing, and animation that make your ideas stand out and stay memorable.</p>
+    <a class="clink" data-link="lk_design_lm" href="https://www.facebook.com/TheLucidMageGraphicDesign/"><span data-edit="cr2_cta_lm">Explore Graphics</span> →</a>
+   </div>
+   <div class="venture v-green reveal" style="grid-column:1/-1">
+    <span class="v-tag" data-edit="tg_tag_lm">Live</span>
     <div class="tg-wide">
      <div class="tg-ic">🌾</div>
      <div>
-      <span class="v-eyebrow" data-edit="tg_eyebrow">Facebook Growth Tool</span>
-      <h3 data-edit="tg_title">Tallgrass</h3>
-      <p class="v-desc" data-edit="tg_desc">Tallgrass finds the outlier posts in any Facebook group, the ones pulling far more engagement than everything around them, so you can model what already works instead of guessing.</p>
+      <span class="v-eyebrow" data-edit="tg_eyebrow_lm">Facebook Growth Tool</span>
+      <h3 data-edit="tg_title_lm">Tallgrass</h3>
+      <p class="v-desc" data-edit="tg_desc_lm">Tallgrass finds the outlier posts in any Facebook group, the ones pulling far more engagement than everything around them, so you can model what already works instead of guessing.</p>
      </div>
-     <div class="v-cta"><a class="btn btn-gold" data-link="lk_tallgrass" href="https://tallgrassapp.com" target="_blank" rel="noopener"><span data-edit="tg_cta">Explore Tallgrass →</span></a></div>
+     <div class="v-cta"><a class="btn btn-gold" data-link="lk_tallgrass_lm" href="https://tallgrassapp.com" target="_blank" rel="noopener"><span data-edit="tg_cta_lm">Explore Tallgrass →</span></a></div>
     </div>
    </div>
   </div>
- </div>
-</section>
-
-<!-- FACEBOOK GROWTH TOOLKIT -->
-<section id="toolkit">
- <div class="wrap">
-  <div class="sec-head">
-   <span class="eyebrow reveal" data-edit="tk_eyebrow">Facebook Growth</span>
-   <h2 class="reveal">Grow your audience on <span class="accent-text" data-edit="tk_h2hi">Facebook</span></h2>
+  <div class="social-grid" style="margin-top:22px">
+   <a class="soc reveal d1" data-link="lk_skool_lm" href="https://www.skool.com/lucid-mage-facebook-growth-lab-3725" target="_blank" rel="noopener"><span class="se">🎓</span><span><h4 data-edit="soc_sk_h_lm">MacRandle Acres | Meta &amp; AI</h4><p data-edit="soc_sk_lm">My Skool community: Meta ads, AI, and growth strategies with entrepreneurs building alongside you.</p><span class="go">Join on Skool →</span></span></a>
+   <a class="soc reveal d2" data-link="lk_linkedin_lm" href="https://www.linkedin.com/in/jeff-randle-042a23196/" target="_blank" rel="noopener"><span class="se">💼</span><span><h4 data-edit="soc_li_h_lm">LinkedIn</h4><p data-edit="soc_li_lm">Professional insights, collaboration, and conversations on growth.</p><span class="go">Connect →</span></span></a>
   </div>
-  <div class="grid g2" style="max-width:660px;margin:0 auto">
-   <div class="card reveal d1"><div class="ico">🎓</div><h3 data-edit="tk1_h3">Facebook Growth Lab</h3><p data-edit="tk1_p">Strategies, training, and a community of growth-focused entrepreneurs, inside my Skool.</p><a class="clink" data-link="lk_strategy" href="https://www.skool.com/lucid-mage-facebook-growth-lab-3725"><span data-edit="tk1_cta">Join the Lab</span> →</a></div>
-   <div class="card reveal d2"><div class="ico">📘</div><h3 data-edit="tk2_h3">Follow on Facebook</h3><p data-edit="tk2_p">Daily posts, lives, and behind-the-scenes on my main Facebook page.</p><a class="clink" data-link="lk_fbprofile" href="https://www.facebook.com/TheLucidMage89"><span data-edit="tk2_cta">Follow Me</span> →</a></div>
+  <div class="grid g2" style="margin-top:22px;max-width:520px">
+   <a class="card reveal d3" href="/design" style="text-decoration:none;color:inherit">
+    <div class="ico">💻</div>
+    <h3 data-edit="webdev_h3_lm">Website &amp; App Design</h3>
+    <p data-edit="webdev_p_lm">Custom websites and apps designed and built to bring your vision to life. Tell me about your dream site and I'll make it real.</p>
+    <span class="clink"><span data-edit="webdev_cta_lm">Start your project</span> →</span>
+   </a>
   </div>
  </div>
 </section>
 
-<!-- CREATIVE -->
-<section id="creative">
+<!-- LUCID MAGE -->
+<section id="lucid-mage">
  <div class="wrap">
   <div class="sec-head">
-   <span class="eyebrow reveal" data-edit="cr_eyebrow">Creative Services</span>
-   <h2 class="reveal">Custom art & design to <span class="gold-text" data-edit="cr_h2hi">bring ideas to life</span></h2>
-  </div>
-  <div class="grid g2" style="margin-bottom:16px">
-  <a class="card reveal" href="/design" style="display:block;text-decoration:none;color:inherit;border:1.5px solid rgba(199,154,59,.45);background:linear-gradient(150deg,rgba(199,154,59,.08),#fff)">
-   <div class="ico">💻</div>
-   <h3 data-edit="webdev_h3">Website &amp; App Design</h3>
-   <p data-edit="webdev_p">Custom websites and apps designed and built to bring your vision to life. Tell me about your dream site and I'll make it real.</p>
-   <span class="clink"><span data-edit="webdev_cta">Start your project</span> →</span>
-  </a>
-  <a class="card reveal d1" href="/ai-employee/start" style="display:block;text-decoration:none;color:inherit;border:1.5px solid rgba(199,154,59,.45);background:linear-gradient(150deg,rgba(199,154,59,.08),#fff)">
-   <div class="ico">🤖</div>
-   <h3 data-edit="aiemp_h3">AI Virtual Employee Setup</h3>
-   <p data-edit="aiemp_p">Turn AI into a real worker for your business. A custom assistant in your own account, with a live setup and walkthrough. $497 one-time setup. Optional support: $97/mo.</p>
-   <span class="clink"><span data-edit="aiemp_cta">Start</span> →</span>
-  </a>
-  </div>
-  <div class="grid g2">
-   <div class="card reveal d1"><div class="ico">🎨</div><h3 data-edit="cr1_h3">Acrylic Pour Art</h3><p data-edit="cr1_p">Commission a one-of-a-kind fluid painting filled with movement and color, a living piece for your space.</p><a class="clink" data-link="lk_art" href="https://www.facebook.com/TheLucidMageAcrylicArts/"><span data-edit="cr1_cta">Check Out My Art</span> →</a></div>
-   <div class="card reveal d2"><div class="ico">✨</div><h3 data-edit="cr2_h3">Graphic Design</h3><p data-edit="cr2_p">Custom branding, video editing, and animation that make your ideas stand out and stay memorable.</p><a class="clink" data-link="lk_design" href="https://www.facebook.com/TheLucidMageGraphicDesign/"><span data-edit="cr2_cta">Explore Graphics</span> →</a></div>
-  </div>
- </div>
-</section>
-
-<!-- CONSCIOUSNESS -->
-<section id="dreaming">
- <div class="wrap">
-  <div class="sec-head">
-   <span class="eyebrow reveal" data-edit="dr_eyebrow">Consciousness & Lucid Dreaming</span>
-   <h2 class="reveal">Unlock <span class="gold-text" data-edit="dr_h2hi">Your Dreams</span></h2>
-   <p class="reveal" data-edit="dr_p">Join a supportive community focused on lucid dreaming, self-awareness, and intentional sleep, practical techniques, coaching, and sleep-hygiene support to make your nights more vivid.</p>
-  </div>
-  <div class="grid g2">
-   <div class="card reveal d1"><div class="ico">🌙</div><h3 data-edit="dr1_h3">Dreamers Community</h3><p data-edit="dr1_p">Connect with dreamers and share breakthroughs with supportive, experienced guidance.</p><a class="clink" data-link="lk_lucid" href="https://www.facebook.com/TheLucidMageLucidDreaming/"><span data-edit="dr1_cta">Get Lucid</span> →</a></div>
-   <div class="card reveal d2"><div class="ico">🔮</div><h3 data-edit="dr2_h3">Patreon Access</h3><p data-edit="dr2_p">Unlock premium tools and exclusive resources to deepen your practice, night after night.</p><a class="clink" data-link="lk_patreon" href="https://www.patreon.com/JeffRandle"><span data-edit="dr2_cta">Join Patreon</span> →</a></div>
-  </div>
- </div>
-</section>
-
-<!-- FIND ME EVERYWHERE -->
-<section id="connect">
- <div class="wrap">
-  <div class="sec-head">
-   <span class="eyebrow reveal" data-edit="fm_eyebrow">Find Me Everywhere</span>
-   <h2 class="reveal">Follow the <span class="accent-text" data-edit="fm_h2hi">journey</span></h2>
+   <h2 class="reveal" data-edit="mage_h2_lm">Lucid Mage: dreams, music, art</h2>
+   <p class="reveal" data-edit="mage_p_lm">Lucid dreaming, dream music, and art, shared as Lucid Mage.</p>
   </div>
   <div class="social-grid">
-   <a class="soc reveal d1" data-link="lk_skool" href="https://www.skool.com/lucid-mage-facebook-growth-lab-3725" target="_blank" rel="noopener"><span class="se">🎓</span><span><h4 data-edit="soc_sk_h">MacRandle Acres | Meta &amp; AI</h4><p data-edit="soc_sk">My Skool community: Meta ads, AI, and growth strategies with entrepreneurs building alongside you.</p><span class="go">Join on Skool →</span></span></a>
-   <a class="soc reveal d1" data-link="lk_fbcommunity" href="https://www.facebook.com/groups/772086297362063"><span class="se">🌙</span><span><h4>Facebook Community</h4><p data-edit="soc_fb">Consciousness Explorers, lucid dreaming, astral projection, deeper awareness.</p><span class="go">Join Community →</span></span></a>
-   <a class="soc reveal d2" data-link="lk_youtube" href="https://www.youtube.com/@JeffRandle89"><span class="se">🎬</span><span><h4>YouTube</h4><p data-edit="soc_yt">Lucid dreaming tips, consciousness insights, and marketing wisdom.</p><span class="go">Subscribe →</span></span></a>
-   <a class="soc reveal d2" data-link="lk_instagram" href="https://www.instagram.com/lucidmage89/"><span class="se">📸</span><span><h4>Instagram</h4><p data-edit="soc_ig">Daily inspiration, reflections, and behind-the-scenes moments.</p><span class="go">Follow Me →</span></span></a>
-   <a class="soc reveal d3" data-link="lk_linkedin" href="https://www.linkedin.com/in/jeff-randle-042a23196/"><span class="se">💼</span><span><h4>LinkedIn</h4><p data-edit="soc_li">Professional insights, collaboration, and conversations on growth.</p><span class="go">Connect →</span></span></a>
-   <a class="soc reveal d3" data-link="lk_tiktok" href="https://www.tiktok.com/@lucidmage89"><span class="se">🎵</span><span><h4>TikTok</h4><p data-edit="soc_tt">Concise lucid dreaming tips and techniques you can try right away.</p><span class="go">Watch Now →</span></span></a>
+   <a class="soc reveal d1" data-link="lk_youtube_lm" href="https://www.youtube.com/@JeffRandle89" target="_blank" rel="noopener"><span class="se">🎬</span><span><h4 data-edit="soc_yt_h_lm">YouTube</h4><p data-edit="soc_yt_lm">Lucid dreaming techniques and dream music.</p><span class="go">Subscribe →</span></span></a>
+   <a class="soc reveal d1" data-link="lk_patreon_lm" href="https://www.patreon.com/LucidMage" target="_blank" rel="noopener"><span class="se">🔮</span><span><h4 data-edit="dr2_h3_lm">Patreon</h4><p data-edit="dr2_p_lm">Unlock premium tools and exclusive resources to deepen your practice, night after night.</p><span class="go">Join Patreon →</span></span></a>
+   <a class="soc reveal d2" data-link="lk_tiktok_lm" href="https://www.tiktok.com/@lucidmage89" target="_blank" rel="noopener"><span class="se">🎵</span><span><h4 data-edit="soc_tt_h_lm">TikTok</h4><p data-edit="soc_tt_lm">Concise lucid dreaming tips and techniques you can try right away.</p><span class="go">Watch Now →</span></span></a>
+   <a class="soc reveal d2" data-link="lk_instagram_lm" href="https://www.instagram.com/lucidmage89/" target="_blank" rel="noopener"><span class="se">📸</span><span><h4 data-edit="soc_ig_h_lm">Instagram</h4><p data-edit="soc_ig_lm">Daily inspiration, reflections, and behind-the-scenes moments.</p><span class="go">Follow Me →</span></span></a>
+   <a class="soc reveal d3" data-link="lk_fbprofile_lm" href="https://www.facebook.com/TheLucidMage" target="_blank" rel="noopener"><span class="se">📘</span><span><h4 data-edit="tk2_h3_lm">Facebook</h4><p data-edit="tk2_p_lm">Daily posts, lives, and behind-the-scenes on my main Facebook page.</p><span class="go"><span data-edit="tk2_cta_lm">Follow Me</span> →</span></span></a>
+   <a class="soc reveal d3" data-link="lk_fbcommunity_lm" href="https://www.facebook.com/groups/772086297362063" target="_blank" rel="noopener"><span class="se">🌙</span><span><h4 data-edit="soc_fb_h_lm">Facebook Community</h4><p data-edit="soc_fb_lm">Consciousness Explorers, lucid dreaming, astral projection, deeper awareness.</p><span class="go">Join Community →</span></span></a>
+  </div>
+  <div class="grid g2" style="margin-top:22px">
+   <div class="card reveal d1"><div class="ico">🌙</div><h3 data-edit="dr1_h3_lm">Lucid dreaming</h3><p data-edit="dr1_p_lm">Connect with dreamers and share breakthroughs with supportive, experienced guidance.</p><a class="clink" data-link="lk_lucid_lm" href="https://www.facebook.com/TheLucidMageLucidDreaming/"><span data-edit="dr1_cta_lm">Get Lucid</span> →</a></div>
+   <div class="card reveal d2"><div class="ico">🎨</div><h3 data-edit="cr1_h3_lm">Art</h3><p data-edit="cr1_p_lm">Commission a one-of-a-kind fluid painting filled with movement and color, a living piece for your space.</p><a class="clink" data-link="lk_art_lm" href="https://www.facebook.com/TheLucidMageAcrylicArts/"><span data-edit="cr1_cta_lm">Check Out My Art</span> →</a></div>
   </div>
  </div>
 </section>
@@ -360,10 +343,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 <section class="final">
  <div class="wrap">
   <div class="final-box reveal">
-   <h2 data-edit="final_h2">Let's connect</h2>
-   <p data-edit="final_p">Whether you want to scale on Facebook, explore AI, commission art, or go deeper into dreaming, reach out.</p>
+   <h2 data-edit="final_h2_lm">Let's connect</h2>
+   <p data-edit="final_p_lm">Growth and your first AI agent are a Lucid Marketing call. Dreams, music, and art live with Lucid Mage.</p>
    <div class="hero-cta" style="justify-content:center">
-    <a class="btn btn-gold" href="https://calendar.google.com/calendar/u/0/r/week/2026/7/26?pli=1"><span data-edit="final_cta1">Schedule a Call</span></a>
+    <a class="btn btn-gold" href="/book"><span data-edit="final_cta1_lm">Book a Lucid Marketing call</span></a>
     <a class="btn btn-ghost" href="mailto:Macrandleacres@gmail.com" style="border-color:rgba(246,244,236,.4);color:var(--cream)"><span data-edit="final_cta2">Email Jeff</span></a>
    </div>
   </div>
@@ -409,7 +392,8 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 
 /* Ad conversion tracking: fire a Lead event when a booking button is clicked */
 document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;
-  if((a.getAttribute('href')||'').indexOf('calendar.')>-1){
+  var href=a.getAttribute('href')||'';
+  if(href.indexOf('/book')>-1||href.indexOf('calendar.')>-1){
     if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','book_call_click');}
 });
 var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
