@@ -5,6 +5,7 @@ os.environ["RUN_REMINDERS"] = "0"
 os.environ["SECRET_KEY"] = "test-secret-key"
 os.environ["ADMIN_PASSWORD"] = "test-admin"
 
+import datetime
 import json
 import re
 import tempfile
@@ -208,7 +209,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("Your first AI agent, set up with you on a call. $149 one-time.", html)
         self.assertNotIn("one-hour", html)
         self.assertNotIn("$200", html)
-        self.assertIn('href="/book"', html)
+        self.assertIn('href="/book?type=agent"', html)
         self.assertIn("Book a Lucid Marketing call", html)
         self.assertNotIn("$497", html)
         self.assertNotIn("stripe", html.lower())
@@ -243,7 +244,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("$200", section)
         self.assertIn("one-time.", section)
         self.assertIn("Book a Lucid Marketing call", section)
-        self.assertIn('href="/book"', section)
+        self.assertIn('href="/book?type=agent"', section)
         self.assertNotIn("$497", section)
         self.assertNotIn("$97/mo", section)
         self.assertNotIn("$1,997", section)
@@ -360,6 +361,64 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertEqual(shown["hero_name_lm"], "Jeff Randle")
         self.assertEqual(shown["lk_fbprofile_lm"], "https://www.facebook.com/TheLucidMage")
         self.assertNotEqual(shown["ai_offer_h_149"], disk["ai_price"])
+
+    def test_blackout_agent_booking_and_signup(self):
+        fixed = datetime.datetime(2026, 11, 16, 9, 0, tzinfo=site.BOOK_TZ)
+
+        class Frozen(datetime.datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return fixed.astimezone(tz) if tz is not None else fixed
+
+        with patch.object(site.datetime, "datetime", Frozen):
+            days = {d["date"] for d in site.gen_slots()}
+        self.assertNotIn("2026-11-26", days)
+        self.assertIn("2026-11-25", days)
+
+        agent = self.client.get("/book?type=agent").get_data(as_text=True)
+        self.assertIn("<h1>Book a Lucid Marketing call</h1>", agent)
+        self.assertIn('<p id="sub">Pick a time that works.</p>', agent)
+        self.assertNotIn("30 minutes with Jeff Randle. Pick a time that works.", agent)
+        plain = self.client.get("/book").get_data(as_text=True)
+        self.assertIn("<h1>Book your Growth Audit call</h1>", plain)
+        self.assertIn("30 minutes with Jeff Randle. Pick a time that works.", plain)
+
+        path = os.path.join(self.tmp.name, "subscribers.json")
+        orig = site.SUBSCRIBERS_PATH
+        site.SUBSCRIBERS_PATH = path
+        self.addCleanup(setattr, site, "SUBSCRIBERS_PATH", orig)
+        ok = self.client.post("/api/subscribe", json={"email": "Ada@Example.com", "website": ""})
+        self.assertEqual(ok.status_code, 200)
+        self.assertTrue(ok.get_json()["ok"])
+        self.assertEqual(site.load_subscribers()[0]["email"], "Ada@Example.com")
+        self.client.post("/api/subscribe", json={"email": "ada@example.com"})
+        self.assertEqual(len(site.load_subscribers()), 1)
+        self.assertEqual(self.client.post("/api/subscribe", json={"email": "nope"}).status_code, 400)
+        self.client.post("/admin/login", data={"password": "test-admin", "next": "/admin/subscribers"})
+        admin = self.client.get("/admin/subscribers")
+        self.assertEqual(admin.status_code, 200)
+        self.assertIn("Ada@Example.com", admin.get_data(as_text=True))
+
+        home = self.client.get("/").get_data(as_text=True)
+        self.assertIn('alt="Jeff Randle, founder of MacRandle Acres"', home)
+        self.assertIn('src="/jeff-randle.jpg"', home)
+        self.assertIn('id="quotes" hidden', home)
+        self.assertIn("Helping small businesses remove friction from growth.", home)
+        self.assertNotIn("real estate teams", home.lower())
+        self.assertIn("Not ready for a call? Join the free MacRandle Acres community on Skool.", home)
+        self.assertIn("Most popular", home)
+        nav = home.split("<nav", 1)[1].split("</nav>", 1)[0]
+        self.assertIn("Book a Growth Audit", nav)
+        self.assertNotIn("Lucid Marketing call", nav)
+        offer = home.split('id="ai-employee"', 1)[1].split('id="free-step"', 1)[0]
+        self.assertIn('href="/book?type=agent"', offer)
+        self.assertIn("Book a Lucid Marketing call", offer)
+        privacy = self.client.get("/privacy").get_data(as_text=True)
+        self.assertNotIn("Growth Audit form", privacy)
+        self.assertIn("join the email list", privacy)
+        hub = self.client.get("/hub").get_data(as_text=True)
+        self.assertIn('data-edit="nav_cta_ga">Book a Growth Audit', hub)
+        self.assertIn('href="/book?type=agent"', hub)
 
 
 if __name__ == "__main__":

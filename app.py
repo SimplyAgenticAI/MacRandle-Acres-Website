@@ -64,7 +64,8 @@ PAGES = {
 }
 BLOCKED_FILES = {"app.py", "requirements.txt", ".gitignore", "render.yaml", "README.md",
                  "index.html", "content.json", "hub_content.json", "scorecards.json", "visits.json",
-                 "leads.json", "bookings.json", "ai_employees.json", "ai_employee_page.html"}
+                 "leads.json", "bookings.json", "ai_employees.json", "subscribers.json",
+                 "ai_employee_page.html"}
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
@@ -844,7 +845,7 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 <h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle</div>
 <p>This site is operated by Jeff Randle (MacRandle Acres). We respect your privacy and keep things simple.</p>
 <h2>What we collect</h2>
-<p>If you submit the Growth Audit form, we collect the name, email, phone, and answers you provide. If you start an AI Virtual Employee setup, we collect your name, email, phone, business details, and the answers you provide so we can prepare your setup and consultation. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
+<p>If you book a call, we collect the name, email, and phone you provide. If you join the email list, we collect your email address. If you start an AI Virtual Employee setup, we collect your name, email, phone, business details, and the answers you provide so we can prepare your setup and consultation. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
 <h2>How we use it</h2>
 <p>Only to respond to your request, prepare your growth audit, and improve the site. We do not sell your information.</p>
 <h2>Your choices</h2>
@@ -863,9 +864,14 @@ except Exception:
     BOOK_TZ = datetime.timezone(datetime.timedelta(hours=-4))  # Eastern fallback
 BOOK_TZ_LABEL = os.getenv("BOOK_TZ_LABEL", "Eastern")
 BOOKINGS_PATH = os.path.join(DATA, "bookings.json")
+SUBSCRIBERS_PATH = os.path.join(DATA, "subscribers.json")
 BOOK_SLOT_MIN = int(os.getenv("BOOK_SLOT_MIN", "30"))
 BOOK_DAYS_AHEAD = 14
 BOOK_MIN_NOTICE_H = 3
+# Dates with no open slots, as YYYY-MM-DD. Add or remove dates in this set.
+BOOK_BLACKOUT = {
+    "2026-11-26",  # Thanksgiving
+}
 # weekday (Mon=0) -> list of (start_hour, end_hour), Eastern
 BOOK_WINDOWS = {0: [(10, 16)], 1: [(10, 16)], 2: [(10, 16)], 3: [(10, 16)], 4: [(10, 15)]}
 ORG_EMAIL = (os.getenv("LEAD_EMAIL") or "Macrandleacres@gmail.com").strip()
@@ -891,6 +897,8 @@ def gen_slots():
     out = []
     for dd in range(BOOK_DAYS_AHEAD + 1):
         day = (now + datetime.timedelta(days=dd)).date()
+        if day.isoformat() in BOOK_BLACKOUT:
+            continue
         wins = BOOK_WINDOWS.get(day.weekday())
         if not wins:
             continue
@@ -917,6 +925,78 @@ def healthz():
 @app.route("/api/slots")
 def api_slots():
     return jsonify(ok=True, tz=BOOK_TZ_LABEL, days=gen_slots())
+
+
+def load_subscribers():
+    try:
+        with open(SUBSCRIBERS_PATH, encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+def save_subscribers(rows):
+    with open(SUBSCRIBERS_PATH, "w", encoding="utf-8") as f:
+        json.dump(rows, f, ensure_ascii=False, indent=2)
+
+
+@app.route("/api/subscribe", methods=["POST"])
+def api_subscribe():
+    if not rate_ok("sub", client_ip(), 8, 600):
+        return jsonify(ok=False, error="Please try again shortly."), 429
+    data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        data = {}
+    if _clean_line(data.get("website") or ""):
+        return jsonify(ok=True)
+    email = _clean_line(data.get("email") or "")[:160]
+    if not _EMAIL_RE.match(email):
+        return jsonify(ok=False, error="Please enter a valid email."), 400
+    key = email.lower()
+    with _leads_lock:
+        rows = load_subscribers()
+        if not any((r.get("email") or "").lower() == key for r in rows):
+            rows.append({
+                "email": email,
+                "t": datetime.datetime.utcnow().isoformat(timespec="seconds"),
+            })
+            if len(rows) > 5000:
+                rows = rows[-5000:]
+            try:
+                save_subscribers(rows)
+            except Exception:
+                return jsonify(ok=False, error="Could not save that just now. Please try again."), 500
+    return jsonify(ok=True)
+
+
+@app.route("/admin/subscribers")
+def admin_subscribers():
+    if not session.get("admin"):
+        return redirect("/admin/login?next=/admin/subscribers")
+    rows = ""
+    for rec in sorted(load_subscribers(), key=lambda r: r.get("t", ""), reverse=True):
+        rows += "<li><a href='mailto:%s'>%s</a> <span>%s</span></li>" % (
+            _esc(rec.get("email", "")), _esc(rec.get("email", "")),
+            _esc((rec.get("t") or "").replace("T", " ")[:16]))
+    if not rows:
+        rows = "<li class='empty'>No email signups yet.</li>"
+    return Response(SUBSCRIBERS_HTML.replace("__ROWS__", rows), mimetype="text/html")
+
+
+SUBSCRIBERS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Email signups</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:26px 16px}
+.wrap{max-width:560px;margin:0 auto}h1{font-size:23px;color:#234F3D;margin-bottom:14px}
+a.back{font-size:13px;color:#5c635e;text-decoration:none}ul{list-style:none;margin-top:16px}
+li{background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
+li a{color:#a97f2a;font-weight:700;text-decoration:none}li span{color:#8a918b;font-size:12px}
+.empty{color:#5c635e}</style></head><body><div class="wrap">
+<p><a class="back" href="/">&larr; Site</a></p>
+<h1>Email signups</h1>
+<ul>__ROWS__</ul>
+</div></body></html>"""
 
 
 def _clean_line(s):
@@ -1241,14 +1321,25 @@ def book_page():
         "email": _clean_line(request.args.get("email", ""))[:160],
         "phone": _clean_line(request.args.get("phone", ""))[:40],
         "service": service,
+        "type": "agent" if request.args.get("type") == "agent" else "",
     }
     pre_json = json.dumps(pre, ensure_ascii=True).replace("<", "\\u003c")
     html = BOOK_HTML.replace("</head>", head + "\n</head>", 1)
     html = html.replace(
-        'var PREFILL={"name":"","email":"","phone":"","service":""};',
+        'var PREFILL={"name":"","email":"","phone":"","service":"","type":""};',
         "var PREFILL=%s;" % pre_json,
         1)
-    if service == "ai-employee":
+    if request.args.get("type") == "agent":
+        html = html.replace(
+            "<title>Book a Growth Audit call - MacRandle Acres</title>",
+            "<title>Book a Lucid Marketing call - MacRandle Acres</title>", 1)
+        html = html.replace(
+            "<h1>Book your Growth Audit call</h1>",
+            "<h1>Book a Lucid Marketing call</h1>", 1)
+        html = html.replace(
+            '<p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p>',
+            '<p id="sub">Pick a time that works.</p>', 1)
+    elif service == "ai-employee":
         html = html.replace(
             "<title>Book a Growth Audit call - MacRandle Acres</title>",
             "<title>Book your setup consultation - MacRandle Acres</title>", 1)
@@ -1493,14 +1584,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
   <div class="body" id="body"><div class="empty">Loading available times…</div></div>
 </div>
 <script>
-var PREFILL={"name":"","email":"","phone":"","service":""};
+var PREFILL={"name":"","email":"","phone":"","service":"","type":""};
 var entered={name:PREFILL.name||'',email:PREFILL.email||'',phone:PREFILL.phone||''};
 var TZ='', DAYS=[], di=0, slot=null, body=document.getElementById('body');
 fetch('/api/slots').then(function(r){return r.json();}).then(function(j){
   TZ=j.tz||''; DAYS=j.days||[];
-  var intro = PREFILL.service==='ai-employee'
+  var intro = PREFILL.type==='agent'
+    ? 'Pick a time that works. All times '
+    : (PREFILL.service==='ai-employee'
     ? '30 minutes with Jeff Randle to plan your AI virtual employee. All times '
-    : '30 minutes with Jeff Randle. All times ';
+    : '30 minutes with Jeff Randle. All times ');
   document.getElementById('sub').textContent=intro+TZ+'.';
   render();
 }).catch(function(){body.innerHTML='<div class="empty">Could not load times. Please email Macrandleacres@gmail.com.</div>';});
@@ -2611,7 +2704,7 @@ ul.str .none{opacity:.6;font-weight:500}
   <div class="cta"><h3>Want to walk through this together?</h3>
     <p>Happy to hop on a quick call, go through these with you, and answer anything that comes up. No pressure &mdash; just a friendly working session.</p>
     <a href="/book">Grab a time to chat &rarr;</a></div>
-  <div class="foot">MacRandle Acres &middot; Growth advisory for real estate teams</div>
+  <div class="foot">MacRandle Acres &middot; Growth advisory for small businesses</div>
 </div>
 </body></html>"""
 
@@ -3472,6 +3565,7 @@ def ai_employee_book_path(rec):
     from urllib.parse import urlencode
     return "/book?" + urlencode({
         "service": "ai-employee",
+        "type": "agent",
         "name": rec.get("name", ""),
         "email": rec.get("email", ""),
         "phone": rec.get("phone", ""),
