@@ -20,12 +20,6 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Jeff Randle","alternateName":["Lucid Mage","Lucid Marketing"],"url":"https://www.macrandleacres.com/hub","email":"Macrandleacres@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Salisbury","addressRegion":"MD","addressCountry":"US"},"sameAs":["https://www.linkedin.com/in/jeff-randle-042a23196/","https://www.youtube.com/@JeffRandle89","https://www.instagram.com/lucidmage89/","https://www.facebook.com/TheLucidMage","https://www.tiktok.com/@lucidmage89","https://www.patreon.com/LucidMage","https://www.skool.com/lucid-mage-facebook-growth-lab-3725"]}</script>
 
-<!--
- PERSONAL HUB (Gamma + Linktree replacement). Served at /hub via Flask.
- Editable like the main site: sign in at /admin/login, then "Edit page".
- Fill placeholder links: search this file for [[LINK]]
--->
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -153,10 +147,6 @@ footer .fbrand{display:flex;align-items:center;justify-content:center;gap:11px;f
 footer .ftag{font-family:'Inter',system-ui,sans-serif;font-style:italic;color:var(--gold-l);font-size:15px;margin-bottom:14px}
 footer .loc{color:rgba(246,244,236,.7);font-size:13.5px;margin-bottom:6px}
 footer small{color:rgba(246,244,236,.5);font-size:12.5px}
-.foot-admin{margin-top:16px;display:none}
-body.is-admin .foot-admin{display:block}
-.foot-admin a{display:inline-flex;align-items:center;gap:7px;color:rgba(246,244,236,.45);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);padding:7px 15px;border-radius:9px;transition:.2s}
-.foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
 .nav-right{display:flex;align-items:center;gap:16px}
 .nav-offer{font-size:14px;font-weight:600;color:var(--ink2);display:inline-flex;align-items:center;gap:5px;transition:color .2s;white-space:nowrap}
 .nav-offer:hover{color:var(--green)}
@@ -369,7 +359,6 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
   <small>© <span id="yr"></span> <span data-edit="foot_copy">Jeff Randle. All one place, on purpose.</span></small>
   <div class="foot-hub"><a href="/">← Back to MacRandle Acres</a></div>
   <div style="margin-top:12px"><a href="/privacy" style="color:rgba(246,244,236,.5);font-size:12px">Privacy</a></div>
-  <div class="foot-admin"><a href="/admin/login?next=/hub" id="adminLink">🔒 Admin · Edit site</a></div>
  </div>
 </footer>
 
@@ -446,7 +435,6 @@ document.querySelectorAll('.reveal:not(.in)').forEach(function(el){io.observe(el
 (function(){
  var SERVED=(typeof window.__CONTENT__!=='undefined'), SERVER_ADMIN=(window.__ADMIN__===true), LKEY='macra_hub_content_v1';
  var bar=document.getElementById('adminBar'); if(!bar)return;
- var link=document.getElementById('adminLink');
  var eEdit=bar.querySelector('.ab-edit'),eLogout=bar.querySelector('.ab-logout'),eLbl=bar.querySelector('.ab-lbl');
  var eSave=document.querySelector('.eb-save'),eCancel=document.querySelector('.eb-cancel'),eExport=document.querySelector('.eb-export'),eTxt=document.querySelector('#editBanner .eb-txt');
  var snapshot={},mode=null,dirty=false;
@@ -489,7 +477,6 @@ document.querySelectorAll('.reveal:not(.in)').forEach(function(el){io.observe(el
  window.addEventListener('beforeunload',function(e){if(editing()&&dirty){e.preventDefault();e.returnValue='';}});
  function enter(){if(SERVER_ADMIN){showBar('server');return;}if(SERVED){window.location.href='/admin/login?next=/hub';return;}showBar('local');}
  if(SERVER_ADMIN)showBar('server');
- if(link)link.addEventListener('click',function(e){e.preventDefault();enter();});
  document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='E'||e.key==='e')){e.preventDefault();enter();}});
  if(location.hash==='#admin'||location.hash==='#edit')enter();
 })();
