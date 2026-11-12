@@ -265,7 +265,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("one-hour", hub)
         self.assertNotIn("One hour", hub)
         self.assertNotIn("$200", hub)
-        self.assertIn('href="/book"', hub)
+        self.assertIn('href="/book?utm_source=hub&utm_medium=link&utm_campaign=booking"', hub)
         self.assertIn("https://www.patreon.com/LucidMage", hub)
         self.assertIn("https://www.youtube.com/@JeffRandle89", hub)
         self.assertIn("https://www.tiktok.com/@lucidmage89", hub)
@@ -420,7 +420,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("join the email list", privacy)
         hub = self.client.get("/hub").get_data(as_text=True)
         self.assertIn('data-edit="nav_cta_ga">Book a Growth Audit', hub)
-        self.assertIn('href="/book?type=agent"', hub)
+        self.assertIn('href="/book?type=agent&utm_source=hub&utm_medium=link&utm_campaign=booking"', hub)
 
 
 if __name__ == "__main__":
