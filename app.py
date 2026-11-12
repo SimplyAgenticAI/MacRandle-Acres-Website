@@ -52,12 +52,13 @@ def _resolve_data_dir():
 
 DATA = _resolve_data_dir()
 DATA_IS_PERSISTENT = (os.path.abspath(DATA) != os.path.abspath(BASE))
+CANONICAL_ORIGIN = "https://www.macrandleacres.com"
 try:
     os.makedirs(DATA, exist_ok=True)
 except Exception:
     DATA = BASE
     DATA_IS_PERSISTENT = False
-SITE = (os.getenv("SITE_URL") or "https://macrandleacres.com").rstrip("/")
+SITE = (os.getenv("SITE_URL") or CANONICAL_ORIGIN).rstrip("/")
 PAGES = {
     "main": {"html": "index.html", "content": "content.json"},
     "hub":  {"html": "hub.html",   "content": "hub_content.json"},
@@ -115,7 +116,11 @@ def robots_txt():
                     mimetype="text/plain")
 
 
-CANONICAL_ORIGIN = "https://www.macrandleacres.com"
+@app.route("/llms.txt")
+def llms_txt():
+    with open(os.path.join(BASE, "llms.txt"), encoding="utf-8") as f:
+        body = f.read()
+    return Response(body, mimetype="text/plain; charset=utf-8")
 
 
 @app.route("/favicon.ico")
@@ -479,6 +484,7 @@ def public_scorecard(sid):
     note_html = ('<div class="sc-note"><b>Next month\'s focus:</b> %s</div>' % note) if note else ""
     html = (SCORECARD_HTML.replace("__CLIENT__", _esc(sc.get("client") or "your team"))
             .replace("__MONTH__", _esc(sc.get("month") or "Growth Scorecard"))
+            .replace("__SID__", _esc(sid))
             .replace("__TILES__", tiles).replace("__NOTE__", note_html).replace("__CAL__", CAL_URL))
     resp = Response(html, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
@@ -563,6 +569,8 @@ document.querySelectorAll('.del').forEach(function(b){b.addEventListener('click'
 
 SCORECARD_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Growth Scorecard, __CLIENT__</title>
+<meta name="description" content="Monthly Growth Scorecard for __CLIENT__. Lucid Marketing, by MacRandle Acres.">
+<link rel="canonical" href="https://www.macrandleacres.com/s/__SID__">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
@@ -1720,7 +1728,7 @@ function wireForm(){
         if(j.ok){ if(window.fbq)fbq('track','Schedule'); if(window.gtag)gtag('event','book_call');
           var icsHref='data:text/calendar;charset=utf-8,'+encodeURIComponent(j.ics||'');
           var joinBtn = j.meet ? '<a class="cbtn join" href="'+esc(j.meet)+'" target="_blank" rel="noopener">🎥 Join the video call</a>' : '';
-          body.innerHTML='<div class="done"><div class="ic">🌱</div><h2>You\\'re booked!</h2><p>'+esc(j.when)+'. Your call happens right here on the site \\u2014 no downloads. Save the link:</p>'+
+          body.innerHTML='<div class="done"><div class="ic">🌱</div><h2>You\\'re booked!</h2><p>'+esc(j.when)+'. Your call happens right here on the site. No downloads. Save the link:</p>'+
             '<div class="cal-btns">'+
             joinBtn+
             '<a class="cbtn g" href="'+esc(j.gcal||'#')+'" target="_blank" rel="noopener">📅 Add to Google Calendar</a>'+
@@ -1762,6 +1770,8 @@ tr.upcoming .tg{background:rgba(35,79,61,.1);color:#234F3D}tr.past .tg{backgroun
 
 CANCEL_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Manage your call - MacRandle Acres</title>
+<meta name="description" content="Manage or cancel a booked call with Jeff Randle. Lucid Marketing, by MacRandle Acres.">
+<link rel="canonical" href="https://www.macrandleacres.com/book/cancel">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
@@ -1786,6 +1796,8 @@ a{color:#a97f2a;font-weight:600}
 
 MEET_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Growth Audit call - MacRandle Acres</title>
+<meta name="description" content="Join your booked video call with Jeff Randle. Lucid Marketing, by MacRandle Acres.">
+<link rel="canonical" href="https://www.macrandleacres.com/m/__ROOM__">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
@@ -2361,7 +2373,8 @@ def audit_report(aid):
             .replace("__PASSN__", str(len(passes)))
             .replace("__FIXN__", str(len(fixes)))
             .replace("__STRENGTHS__", strengths)
-            .replace("__FIXES__", fixes_html))
+            .replace("__FIXES__", fixes_html)
+            .replace("__AID__", _esc(aid)))
     resp = Response(html, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
     return resp
@@ -2718,7 +2731,10 @@ render();
 
 
 AUDIT_NOTFOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><title>Audit not found</title>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Audit not found | Lucid Marketing, by MacRandle Acres</title>
+<meta name="description" content="This Facebook profile audit link is not available. Lucid Marketing, by MacRandle Acres.">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;display:grid;place-items:center;min-height:100vh;padding:24px;text-align:center}
 .c{max-width:420px}h1{font-size:22px;color:#234F3D;margin-bottom:8px}p{color:#5c635e}a{color:#a97f2a;font-weight:700}</style></head>
@@ -2727,6 +2743,8 @@ AUDIT_NOTFOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 
 AUDIT_REPORT_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Your Facebook Profile Audit - MacRandle Acres</title>
+<meta name="description" content="Facebook profile audit prepared for __CLIENT__. Lucid Marketing, by MacRandle Acres.">
+<link rel="canonical" href="https://www.macrandleacres.com/audit/__AID__">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel=stylesheet>
@@ -2852,7 +2870,7 @@ def send_project_email(rec):
         ack["From"] = sender
         ack["To"] = rec["email"]
         ack["Reply-To"] = ORG_EMAIL
-        ack["Subject"] = "Thanks — I got your project"
+        ack["Subject"] = "Thanks, I got your project"
         ack.set_content(
             "Hi %s,\n\nThank you for sharing your project with MacRandle Acres. I've got the details, "
             "and I'll personally review them and reply within one business day to talk through your "

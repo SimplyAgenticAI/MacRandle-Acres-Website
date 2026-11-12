@@ -22,15 +22,6 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Lucid Marketing, by MacRandle Acres","description":"Lucid Marketing, by MacRandle Acres, helps small businesses remove friction and accelerate growth. Real estate is one specialty.","url":"https://www.macrandleacres.com","telephone":"+1-862-254-7839","email":"Macrandleacres@gmail.com","logo":"https://www.macrandleacres.com/logo-v5.jpg","image":"https://www.macrandleacres.com/logo-v5.jpg","areaServed":"US","founder":{"@type":"Person","name":"Jeff Randle"},"address":{"@type":"PostalAddress","addressLocality":"Salisbury","addressRegion":"MD","addressCountry":"US"},"sameAs":["https://www.linkedin.com/in/jeff-randle-042a23196/","https://www.skool.com/lucid-mage-facebook-growth-lab-3725","https://www.youtube.com/@JeffRandle89","https://www.patreon.com/LucidMage","https://www.instagram.com/lucidmage89","https://www.tiktok.com/@lucidmage89","https://www.facebook.com/TheLucidMage"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the first AI agent setup?","acceptedAnswer":{"@type":"Answer","text":"It's $149 one-time. We build your first AI agent together on a call, around whatever takes up the most space on your digital plate."}},{"@type":"Question","name":"How long is the call?","acceptedAnswer":{"@type":"Answer","text":"There's no fixed time. We stay on until your agent is set up."}},{"@type":"Question","name":"Who is it for?","acceptedAnswer":{"@type":"Answer","text":"Small business owners who want time back."}},{"@type":"Question","name":"How do I book?","acceptedAnswer":{"@type":"Answer","text":"Use Book a Lucid Marketing call. That opens https://www.macrandleacres.com/book?type=agent."}},{"@type":"Question","name":"What's the free Growth Audit call?","acceptedAnswer":{"@type":"Answer","text":"It's a free call to look at your business and find the friction in the way of growth. Book it at https://www.macrandleacres.com/book."}}]}</script>
 
-<!--
- ┌────────────────────────────────────────────────────────────────┐
- │ ADMIN EDITING: run via Flask (app.py). Sign in at /admin/login │
- │ with the ADMIN_PASSWORD env var, then an "Edit page" bar    │
- │ appears, click any text to type. Save writes to content.json. │
- │ Visitors see the saved content, read-only.           │
- └────────────────────────────────────────────────────────────────┘
--->
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -350,12 +341,6 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 #adminToast{position:fixed;right:20px;bottom:88px;z-index:230;background:#234F3D;color:#fff;padding:11px 16px;border-radius:10px;
  font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;box-shadow:var(--shadow);max-width:min(360px,86vw)}
 #adminToast.show{opacity:1;transform:none}
-.foot-admin{margin-top:18px;display:none}
-body.is-admin .foot-admin{display:block}
-.foot-admin a{display:inline-flex;align-items:center;gap:7px;color:rgba(246,244,236,.45);font-size:11.5px;font-weight:700;
- letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(246,244,236,.16);
- padding:7px 15px;border-radius:9px;transition:.2s}
-.foot-admin a:hover{color:var(--gold-l);border-color:rgba(224,184,98,.45);background:rgba(224,184,98,.08)}
 
 /* Visitor polish: scroll progress, nav shadow, active nav, back-to-top */
 #progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
@@ -909,7 +894,6 @@ footer{position:relative}
     <p data-edit="advisor_note_sb">I help small businesses remove friction and accelerate growth. That's Lucid Marketing, by MacRandle Acres.</p>
    </div>
   </div>
-  <!-- To publish a testimonial: sign in at /admin/login, click Edit page, and type a real quote plus a name in a card below. Cards with no quote stay hidden from visitors. -->
   <div id="quotes" hidden>
    <div class="quote-grid">
     <article class="qcard" hidden><p class="q-text" data-edit="quote1_sb"></p><span class="q-by" data-edit="quote1_by_sb"></span></article>
@@ -1136,7 +1120,6 @@ footer{position:relative}
   <small>© <span id="yr"></span> <span data-edit="foot_copy_sb">MacRandle Acres · Jeff Randle, Fractional Growth Advisor. Helping small businesses remove friction from growth.</span></small>
   <div class="foot-hub"><a href="/hub.html">🍃 Explore Jeff Randle's Landing Page <span class="fh-arr">↗</span></a></div>
   <div style="margin-top:12px"><a href="/privacy" style="color:rgba(246,244,236,.5);font-size:12px">Privacy</a></div>
-  <div class="foot-admin"><a href="/admin/login" id="adminLink">🔒 Admin · Edit site</a></div>
  </div>
 </footer>
 
@@ -1288,7 +1271,6 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
  var SERVER_ADMIN = (window.__ADMIN__ === true);       // signed in via /admin/login
  var LKEY = 'macra_content_v1';
  var bar=document.getElementById('adminBar'); if(!bar) return;
- var link=document.getElementById('adminLink');
  var eEdit=bar.querySelector('.ab-edit'), eLogout=bar.querySelector('.ab-logout'), eLbl=bar.querySelector('.ab-lbl');
  var eSave=document.querySelector('.eb-save'), eCancel=document.querySelector('.eb-cancel'),
    eExport=document.querySelector('.eb-export'), eTxt=document.querySelector('#editBanner .eb-txt');
@@ -1369,7 +1351,6 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
   showBar('local');                      // opened as a file / static host
  }
  if(SERVER_ADMIN) showBar('server');              // already signed in → bar appears
- if(link) link.addEventListener('click',function(e){ e.preventDefault(); enter(); });
  document.addEventListener('keydown',function(e){
   if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='E'||e.key==='e')){ e.preventDefault(); enter(); }
  });
