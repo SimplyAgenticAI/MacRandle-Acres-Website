@@ -16,7 +16,7 @@ import app as site
 
 SITEMAP_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 ORIGIN = "https://www.macrandleacres.com"
-MARKETING_PAGES = ("/", "/design", "/book", "/hub", "/ai-employee/start", "/privacy")
+MARKETING_PAGES = ("/", "/design", "/book", "/hub", "/ai-employee/start", "/privacy", "/starter-prompts")
 
 
 def _meta_description(html):
@@ -113,6 +113,7 @@ class PublicSiteTests(unittest.TestCase):
             "/hub": ORIGIN + "/hub",
             "/ai-employee/start": ORIGIN + "/ai-employee/start",
             "/privacy": ORIGIN + "/privacy",
+            "/starter-prompts": ORIGIN + "/starter-prompts",
         }
         for path, canonical in expected.items():
             html = self.client.get(path).get_data(as_text=True)
@@ -182,6 +183,7 @@ class PublicSiteTests(unittest.TestCase):
             ORIGIN + "/",
             ORIGIN + "/design",
             ORIGIN + "/hub",
+            ORIGIN + "/starter-prompts",
             ORIGIN + "/book",
             ORIGIN + "/ai-employee/start",
             ORIGIN + "/privacy",
@@ -235,6 +237,82 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn("$149 one-time", joined)
         self.assertIn(ORIGIN + "/book", joined)
         self.assertNotIn("\u2014", joined)
+
+    def test_starter_prompts_page(self):
+        html = self.client.get("/starter-prompts").get_data(as_text=True)
+        self.assertEqual(self.client.get("/starter-prompts").status_code, 200)
+        self.assertIn("<h1", html)
+        self.assertIn("Free Grok Starter Prompts", html)
+        self.assertIn("From Lucid Marketing, by MacRandle Acres.", html)
+        self.assertIn("Remove Friction. Accelerate Growth.", html)
+        self.assertIn(
+            "These 10 prompts are ones we have actually used to grow a channel, "
+            "write posts, follow up with clients, and fix a website.",
+            html,
+        )
+        prompts = [
+            "Look at my website the way a new visitor would.",
+            "Write 5 posts for this week in my voice",
+            "Find 5 recent posts or videos in my niche",
+            "Look at who I work with and who has gone quiet.",
+            "What are people searching for right now in my niche?",
+            "Pick the best idea for my next video.",
+            "Find my old videos that didn't get many views but people liked.",
+            "Pick my best long video.",
+            "Find 5 popular channels in my niche.",
+            "Rewrite the titles, descriptions, and tags on my videos",
+            "Look at all my routines and how often each one runs.",
+        ]
+        for prompt in prompts:
+            self.assertIn(prompt, html)
+        self.assertEqual(len(re.findall(r'data-copy-for="sp_\d+_text"', html)), 11)
+        self.assertIn('data-edit="sp_01_text"', html)
+        self.assertIn('data-edit="sp_10_text"', html)
+        self.assertIn('data-edit="sp_11_text"', html)
+        self.assertIn("Find My Bot Waste", html)
+        self.assertIn("Don't change anything yet.", html)
+        cheaper = html.split('id="cheaper"', 1)[1].split('id="sp-cta"', 1)[0]
+        self.assertIn("Make Your Bots Cheaper to Run", cheaper)
+        self.assertIn("trimming waste lets you do the same work for less.", cheaper)
+        self.assertIn("Cut idle wake-ups", cheaper)
+        self.assertIn("every 15 or 30 minutes just to see if there's work.", cheaper)
+        self.assertIn("Stop repeating checks", cheaper)
+        self.assertIn("Shrink big prompts and tool calls", cheaper)
+        self.assertIn("No chatter", cheaper)
+        self.assertIn("Only message when something needs you.", cheaper)
+        self.assertIn("Estimate your savings", cheaper)
+        self.assertIn("about 140 times a week", cheaper)
+        self.assertIn("dropped that to 5 wake-ups a week", cheaper)
+        self.assertLess(html.index('id="cheaper"'), html.index('id="sp-cta"'))
+        self.assertLess(html.index("Refresh My Titles and Thumbnails"), html.index("Make Your Bots Cheaper to Run"))
+        self.assertIn(">Copy</button>", html)
+        cta = html.split('id="sp-cta"', 1)[1].split("</section>", 1)[0]
+        self.assertIn("Want help setting up your first AI agent?", cta)
+        self.assertIn("Book a Lucid Marketing call", cta)
+        self.assertIn('href="/book?type=agent"', cta)
+        self.assertNotIn("Grok", cta)
+        self.assertNotIn("$", cta)
+        self.assertNotIn("\u2014", html)
+        self.assertNotIn("\u2013", html)
+        self.assertIn('window.__PAGE__="prompts"', html)
+
+        home = self.client.get("/").get_data(as_text=True)
+        home_nav = home.split("<nav", 1)[1].split("</nav>", 1)[0]
+        home_footer = home.split("<footer>", 1)[1].split("</footer>", 1)[0]
+        self.assertNotIn("/starter-prompts", home_nav)
+        self.assertIn('href="/starter-prompts"', home_footer)
+        self.assertIn("Free Grok Starter Prompts", home_footer)
+
+        hub = self.client.get("/hub").get_data(as_text=True)
+        hub_nav = hub.split("<nav", 1)[1].split("</nav>", 1)[0]
+        hub_footer = hub.split("<footer>", 1)[1].split("</footer>", 1)[0]
+        self.assertNotIn("/starter-prompts", hub_nav)
+        self.assertIn('href="/starter-prompts"', hub)
+        self.assertIn("Free Grok Starter Prompts", hub)
+        self.assertIn('href="/starter-prompts"', hub_footer)
+
+        design = self.client.get("/design").get_data(as_text=True)
+        self.assertIn('href="/starter-prompts"', design)
 
 
 if __name__ == "__main__":
