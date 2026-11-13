@@ -62,11 +62,12 @@ SITE = (os.getenv("SITE_URL") or CANONICAL_ORIGIN).rstrip("/")
 PAGES = {
     "main": {"html": "index.html", "content": "content.json"},
     "hub":  {"html": "hub.html",   "content": "hub_content.json"},
+    "prompts": {"html": "starter_prompts.html", "content": "starter_prompts_content.json"},
 }
 BLOCKED_FILES = {"app.py", "requirements.txt", ".gitignore", "render.yaml", "README.md",
                  "index.html", "content.json", "hub_content.json", "scorecards.json", "visits.json",
                  "leads.json", "bookings.json", "ai_employees.json", "subscribers.json",
-                 "ai_employee_page.html"}
+                 "ai_employee_page.html", "starter_prompts.html", "starter_prompts_content.json"}
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or os.urandom(24)
@@ -173,7 +174,7 @@ def page_not_found(_e):
 @app.route("/sitemap.xml")
 def sitemap_xml():
     urls = "".join("<url><loc>%s%s</loc></url>" % (CANONICAL_ORIGIN, u) for u in
-                   ("/", "/design", "/hub", "/book", "/ai-employee/start", "/privacy"))
+                   ("/", "/design", "/hub", "/starter-prompts", "/book", "/ai-employee/start", "/privacy"))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
     return Response(xml, mimetype="application/xml")
@@ -280,6 +281,11 @@ def hub():
 def hub_html_redirect():
     # So cross-links to /hub.html work on the web service too (and on a static site).
     return redirect("/hub")
+
+
+@app.route("/starter-prompts")
+def starter_prompts():
+    return render_page("prompts")
 
 
 @app.route("/api/content", methods=["GET", "POST"])
@@ -3420,7 +3426,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 <footer style="text-align:center;padding:40px 18px 8px;color:#5c635e;font-size:14px">
   <p style="font-style:italic;color:#a97f2a;margin-bottom:6px">Lucid Marketing, by MacRandle Acres.</p>
   <p>Remove Friction. Accelerate Growth.</p>
-  <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a></p>
+  <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/starter-prompts" style="color:#a97f2a;font-weight:700;text-decoration:none">Free Grok Starter Prompts</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a></p>
 </footer>
 <script>
 var b=document.getElementById('pbody');
