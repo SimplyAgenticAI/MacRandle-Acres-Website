@@ -174,7 +174,7 @@ def page_not_found(_e):
 @app.route("/sitemap.xml")
 def sitemap_xml():
     urls = "".join("<url><loc>%s%s</loc></url>" % (CANONICAL_ORIGIN, u) for u in
-                   ("/", "/design", "/hub", "/starter-prompts", "/book", "/ai-employee/start", "/privacy"))
+                   ("/", "/design", "/hub", "/starter-prompts", "/book", "/ai-employee/start", "/privacy", "/terms"))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
     return Response(xml, mimetype="application/xml")
@@ -183,6 +183,11 @@ def sitemap_xml():
 @app.route("/privacy")
 def privacy():
     return Response(PRIVACY_HTML.replace("__SITE__", SITE), mimetype="text/html")
+
+
+@app.route("/terms")
+def terms():
+    return Response(TERMS_HTML, mimetype="text/html")
 
 
 # ---------- content store ----------
@@ -762,6 +767,57 @@ _leads_lock = threading.Lock()
 LEAD_QS = [("role", "Role"), ("team", "Team size"), ("response", "Lead response time"),
            ("ads", "Running ads"), ("pain", "Biggest frustration"), ("goal", "90-day win")]
 
+# Exact sentence next to the optional SMS checkbox. Stored with each phone submission
+# so the record shows the consent language the person was shown.
+SMS_CONSENT_TEXT = (
+    "I agree to receive text messages from Lucid Marketing by MacRandle Acres "
+    "about my inquiry, appointments, and occasional offers. Message frequency varies. "
+    "Msg & data rates may apply. Reply STOP to opt out, HELP for help. "
+    "See our Terms and Privacy Policy."
+)
+
+
+def sms_consent_agreed(value):
+    """True only for a real opt-in. Missing, false, and junk stay opted out."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in ("1", "true", "yes", "on")
+    if type(value) is int:
+        return value == 1
+    return False
+
+
+def sms_consent_fields(data):
+    agreed = sms_consent_agreed(data.get("sms_consent")) if isinstance(data, dict) else False
+    return {
+        "sms_consent": agreed,
+        "sms_consent_at": datetime.datetime.utcnow().isoformat(timespec="seconds"),
+        "sms_consent_text": SMS_CONSENT_TEXT,
+    }
+
+
+def sms_consent_plain(rec):
+    agreed = "Yes" if rec.get("sms_consent") else "No"
+    return (
+        "SMS consent: %s\nSMS consent time: %s\nSMS consent text: %s"
+        % (agreed, rec.get("sms_consent_at") or "-", rec.get("sms_consent_text") or "-")
+    )
+
+
+def sms_consent_label_html(input_id):
+    """Checkbox label. Terms and Privacy Policy open in a new tab. Unchecked, not required."""
+    before, after_terms = SMS_CONSENT_TEXT.split("Terms", 1)
+    between, after_privacy = after_terms.split("Privacy Policy", 1)
+    safe_id = _esc(input_id)
+    return (
+        '<label class="sms-consent" for="%s">'
+        '<input id="%s" name="sms_consent" type="checkbox" value="yes">'
+        '<span>%s<a href="/terms" target="_blank" rel="noopener">Terms</a>%s'
+        '<a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>%s</span>'
+        "</label>"
+    ) % (safe_id, safe_id, _esc(before), _esc(between), _esc(after_privacy))
+
 
 def load_leads():
     try:
@@ -790,7 +846,8 @@ def send_lead_email(rec):
         lines = ["New lead from macrandleacres.com", "",
                  "Name:  %s" % rec.get("name", ""),
                  "Email: %s" % rec.get("email", ""),
-                 "Phone: %s" % rec.get("phone", "")]
+                 "Phone: %s" % rec.get("phone", ""),
+                 sms_consent_plain(rec)]
         for key, lbl in LEAD_QS:
             if rec.get(key):
                 lines.append("%s: %s" % (lbl, rec[key]))
@@ -817,6 +874,7 @@ def api_lead():
         return jsonify(ok=False, error="Please add your name and a valid email."), 400
     rec = {"t": datetime.datetime.utcnow().isoformat(timespec="seconds"),
            "name": name, "email": email, "phone": str(data.get("phone", "")).strip()[:40]}
+    rec.update(sms_consent_fields(data))
     for key, _ in LEAD_QS:
         rec[key] = str(data.get(key, "")).strip()[:600]
     with _leads_lock:
@@ -848,6 +906,13 @@ def admin_leads():
         phone = ""
         if r.get("phone"):
             phone = " &middot; <a class='le' href='tel:%s'>%s</a>" % (_esc(r["phone"]), _esc(r["phone"]))
+        if "sms_consent" in r:
+            ans += ("<div class='ans'><b>SMS consent:</b> %s</div>"
+                    "<div class='ans'><b>SMS consent time:</b> %s</div>"
+                    "<div class='ans'><b>SMS consent text:</b> %s</div>") % (
+                    "Yes" if r.get("sms_consent") else "No",
+                    _esc(r.get("sms_consent_at") or "-"),
+                    _esc(r.get("sms_consent_text") or "-"))
         cards += ("<div class='lead'><div class='lh'><div class='lhl'>"
                   "<span class='ln'>%s</span><a class='le' href='mailto:%s'>%s</a>%s</div>"
                   "<span class='lt'>%s</span></div>%s</div>") % (
@@ -891,10 +956,13 @@ def admin_leads_csv():
     import io
     out = io.StringIO()
     w = csv.writer(out)
-    w.writerow(["date", "name", "email", "phone"] + [lbl for _, lbl in LEAD_QS])
+    w.writerow(["date", "name", "email", "phone"] + [lbl for _, lbl in LEAD_QS]
+               + ["sms_consent", "sms_consent_at", "sms_consent_text"])
     for r in load_leads():
         w.writerow([r.get("t", ""), r.get("name", ""), r.get("email", ""), r.get("phone", "")]
-                   + [r.get(k, "") for k, _ in LEAD_QS])
+                   + [r.get(k, "") for k, _ in LEAD_QS]
+                   + ["yes" if r.get("sms_consent") else "no",
+                      r.get("sms_consent_at", ""), r.get("sms_consent_text", "")])
     resp = Response(out.getvalue(), mimetype="text/csv")
     resp.headers["Content-Disposition"] = "attachment; filename=leads.csv"
     return resp
@@ -902,16 +970,16 @@ def admin_leads_csv():
 
 PRIVACY_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Privacy Policy | Lucid Marketing, by MacRandle Acres</title>
-<meta name="description" content="How MacRandle Acres handles booking details, email signups, and your first AI agent setup.">
+<meta name="description" content="How MacRandle Acres handles booking details, email signups, text messages, and your first AI agent setup.">
 <link rel="canonical" href="https://www.macrandleacres.com/privacy">
 <meta property="og:title" content="Privacy Policy | Lucid Marketing, by MacRandle Acres">
-<meta property="og:description" content="How MacRandle Acres handles booking details, email signups, and your first AI agent setup.">
+<meta property="og:description" content="How MacRandle Acres handles booking details, email signups, text messages, and your first AI agent setup.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.macrandleacres.com/privacy">
 <meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Privacy Policy | Lucid Marketing, by MacRandle Acres">
-<meta name="twitter:description" content="How MacRandle Acres handles booking details, email signups, and your first AI agent setup.">
+<meta name="twitter:description" content="How MacRandle Acres handles booking details, email signups, text messages, and your first AI agent setup.">
 <meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -919,8 +987,11 @@ PRIVACY_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.7;padding:40px 18px}
 .wrap{max-width:680px;margin:0 auto}h1{color:#234F3D;font-size:28px;margin-bottom:6px}.sub{color:#8a8f88;font-size:13px;margin-bottom:24px}
 h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size:15px}a{color:#a97f2a;font-weight:600}
-.back{display:inline-block;margin-top:26px;font-size:14px}</style></head><body><div class="wrap">
-<h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle<br>Last updated: November 11, 2026</div>
+.sms-box{background:#fff;border:1px solid rgba(35,79,61,.14);border-radius:14px;padding:4px 16px 8px;margin:18px 0}
+.sms-box h2{margin-top:12px}
+.back{display:inline-block;margin-top:26px;font-size:14px}
+.legal{margin-top:14px;font-size:14px}</style></head><body><div class="wrap">
+<h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle<br>Last updated: November 14, 2026</div>
 <p>This site is operated by Jeff Randle (MacRandle Acres). We respect your privacy and keep things simple.</p>
 <h2>What we collect</h2>
 <p>If you book a call, we collect the name, email, and phone you provide. If you join the email list, we collect your email address. If you start a first AI agent setup, we collect your name, email, phone, business details, and the answers you provide so we can prepare your setup and consultation. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
@@ -928,9 +999,79 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 <p>Only to respond to your request, prepare your growth audit, and improve the site. We do not sell your information.</p>
 <h2>Your choices</h2>
 <p>To access, correct, or delete your information, email <a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> and we will take care of it.</p>
+<section class="sms-box" id="sms">
+<h2>Text messages (SMS)</h2>
+<p>If you opt in on a form, we store your mobile number, whether you agreed to receive text messages, the time of that choice, and the consent language shown to you.</p>
+<p>Mobile numbers and SMS opt-in consent are never shared with or sold to third parties or affiliates for marketing or promotional purposes.</p>
+<p>Text messaging originator opt-in data and consent are not shared with any third parties.</p>
+<p>You can opt out at any time. Reply STOP to opt out. Reply HELP for help.</p>
+<p>Program details, including message types and frequency, are in our <a href="/terms">Terms and Conditions</a>.</p>
+</section>
 <h2>Contact</h2>
 <p><a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> &middot; Salisbury, MD.</p>
 <a class="back" href="/">&larr; Back to site</a>
+<p class="legal"><a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></p>
+</div></body></html>"""
+
+
+TERMS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Terms and Conditions | Lucid Marketing, by MacRandle Acres</title>
+<meta name="description" content="Terms and Conditions for Lucid Marketing, by MacRandle Acres in Salisbury, MD. Site use, bookings, payments, and text messages.">
+<link rel="canonical" href="https://www.macrandleacres.com/terms">
+<meta property="og:title" content="Terms and Conditions | Lucid Marketing, by MacRandle Acres">
+<meta property="og:description" content="Terms and Conditions for Lucid Marketing, by MacRandle Acres in Salisbury, MD. Site use, bookings, payments, and text messages.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.macrandleacres.com/terms">
+<meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Terms and Conditions | Lucid Marketing, by MacRandle Acres">
+<meta name="twitter:description" content="Terms and Conditions for Lucid Marketing, by MacRandle Acres in Salisbury, MD. Site use, bookings, payments, and text messages.">
+<meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel=stylesheet>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;line-height:1.7;padding:40px 18px}
+.wrap{max-width:680px;margin:0 auto}h1{color:#234F3D;font-size:28px;margin-bottom:6px}.sub{color:#8a8f88;font-size:13px;margin-bottom:24px}
+h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size:15px}a{color:#a97f2a;font-weight:600}
+.sms-box{background:#fff;border:1px solid rgba(35,79,61,.14);border-radius:14px;padding:4px 16px 8px;margin:18px 0}
+.sms-box h2{margin-top:12px}
+.back{display:inline-block;margin-top:26px;font-size:14px}
+.legal{margin-top:14px;font-size:14px}</style></head><body><div class="wrap">
+<h1>Terms and Conditions</h1>
+<div class="sub">Lucid Marketing, by MacRandle Acres<br>MacRandle Acres, Salisbury, MD<br>Effective date: November 14, 2026</div>
+<p>These terms cover your use of macrandleacres.com and the services offered by MacRandle Acres, doing business as Lucid Marketing, by MacRandle Acres, in Salisbury, Maryland.</p>
+<h2>Use of the site</h2>
+<p>You may browse this website and use its public pages for lawful personal or business purposes. Do not attempt to disrupt the site, or submit information you are not allowed to share. We may refuse, limit, or end access if the site is being misused.</p>
+<h2>Services and booking</h2>
+<p>The site describes marketing, growth advisory, websites, apps, and the first AI agent setup. Requesting a time on the booking page is a request for a conversation with Jeff Randle. A time is confirmed only when the booking page accepts it. If a time needs to move, we will contact you. Details you submit are used to prepare for that conversation.</p>
+<h2>No guarantees of results</h2>
+<p>We work to remove friction and help you grow. We do not guarantee any particular result, including revenue, leads, rankings, audience growth, or that a message will arrive at a specific time.</p>
+<h2>Payments</h2>
+<p>Some services are paid, including the first AI agent setup. Payments are handled by Stripe. MacRandle Acres does not store your full card number on this website. Stripe's own terms apply to the payment.</p>
+<h2>Limitation of liability</h2>
+<p>To the fullest extent allowed by Maryland law, MacRandle Acres is not liable for indirect, incidental, special, or consequential damages, or for lost profits, arising from your use of the site or our services. Our total liability for a claim about a paid service is limited to the amount you paid us for that service. These terms do not limit liability that cannot be limited under the law.</p>
+<h2>Maryland governing law</h2>
+<p>These terms are governed by the laws of the State of Maryland, without regard to conflict of law rules. MacRandle Acres is based in Salisbury, MD.</p>
+<h2>Changes to these terms</h2>
+<p>We may update these terms from time to time. When we do, we change the effective date at the top of this page. The updated terms apply to your use of the site after that date.</p>
+<h2>Contact</h2>
+<p>MacRandle Acres<br>Salisbury, MD<br>
+Email: <a href="mailto:macrandleacres@gmail.com">macrandleacres@gmail.com</a><br>
+Phone: <a href="tel:+14433890330">443-389-0330</a></p>
+<section class="sms-box" id="sms">
+<h2>SMS program</h2>
+<p>Program name: Lucid Marketing by MacRandle Acres.</p>
+<p>If you opt in, you agree to receive text messages from Lucid Marketing by MacRandle Acres. Message types include lead follow-up, appointment reminders, and occasional offers.</p>
+<p>Message frequency varies.</p>
+<p>Message and data rates may apply.</p>
+<p>Reply STOP to opt out, HELP for help.</p>
+<p>Carriers are not liable for delayed or undelivered messages.</p>
+<p>Consent to receive text messages is not a condition of purchase.</p>
+<p>See our <a href="/privacy">Privacy Policy</a> for how we handle your information, including mobile numbers and text message consent.</p>
+<p>Contact us at <a href="mailto:macrandleacres@gmail.com">macrandleacres@gmail.com</a> or 443-389-0330.</p>
+</section>
+<a class="back" href="/">&larr; Back to site</a>
+<p class="legal"><a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></p>
 </div></body></html>"""
 
 
@@ -1184,10 +1325,11 @@ def send_booking_emails(bk):
                 join = meeting_url(bk)
                 m.set_content(
                     "New Growth Audit call booked.\n\n"
-                    "Name:  %s\nEmail: %s\nPhone: %s\nWhen:  %s\n\n"
+                    "Name:  %s\nEmail: %s\nPhone: %s\nWhen:  %s\n%s\n\n"
                     "Join the video call:\n%s\n\n"
                     "Add it to your calendar:\n%s\n"
-                    % (bk["name"], bk["email"], bk.get("phone", "") or "-", when, join or "(n/a)", gcal))
+                    % (bk["name"], bk["email"], bk.get("phone", "") or "-", when,
+                       sms_consent_plain(bk), join or "(n/a)", gcal))
             else:
                 m["Subject"] = "Your Growth Audit call is booked"
                 join = meeting_url(bk)
@@ -1372,6 +1514,7 @@ def api_book():
     bk = {"t": datetime.datetime.utcnow().isoformat(timespec="seconds"), "slot": slot,
           "name": name, "email": email, "phone": phone,
           "room": "MacRandleAcres-" + secrets.token_urlsafe(9)}
+    bk.update(sms_consent_fields(data))
     with _leads_lock:
         v = load_bookings()
         if any(b.get("slot") == slot for b in v):
@@ -1514,17 +1657,24 @@ def admin_bookings():
         join = meeting_url(b)
         join_html = ("<a class='join' href='%s' target='_blank' rel='noopener'>&#127909; Join</a>"
                      % _esc(join)) if join else ""
+        if "sms_consent" in b:
+            sms_cell = ("<div class='smsnote'><b>%s</b><br>%s<br>%s</div>"
+                        % ("Yes" if b.get("sms_consent") else "No",
+                           _esc(b.get("sms_consent_at") or "-"),
+                           _esc(b.get("sms_consent_text") or "-")))
+        else:
+            sms_cell = "<span class='smsnote'>-</span>"
         rows += ("<tr class='%s'><td>%s <span class='tg'>%s</span></td><td>%s</td>"
-                 "<td><a href='mailto:%s'>%s</a></td><td>%s</td>"
+                 "<td><a href='mailto:%s'>%s</a></td><td>%s</td><td>%s</td>"
                  "<td class='act'>%s<a class='addcal' href='%s' target='_blank' rel='noopener'>Add &#8599;</a>"
                  "<form method='post' action='/admin/bookings/delete' class='delf' "
                  "onsubmit=\"return confirm('Remove this booking? This frees the time slot.')\">"
                  "<input type='hidden' name='slot' value='%s'>"
                  "<button class='del' title='Delete booking'>&#10005;</button></form></td></tr>") % (
                  tag, _esc(when), tag, _esc(b.get("name", "")), _esc(b.get("email", "")),
-                 _esc(b.get("email", "")), _esc(b.get("phone", "")), join_html, _esc(gl), _esc(b.get("slot", "")))
+                 _esc(b.get("email", "")), _esc(b.get("phone", "")), sms_cell, join_html, _esc(gl), _esc(b.get("slot", "")))
     if not rows:
-        rows = "<tr><td colspan=5 style='opacity:.5'>No calls booked yet.</td></tr>"
+        rows = "<tr><td colspan=6 style='opacity:.5'>No calls booked yet.</td></tr>"
     return Response(BOOKINGS_HTML.replace("__ROWS__", rows), mimetype="text/html")
 
 
@@ -1673,15 +1823,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .cbtn.join{background:linear-gradient(135deg,#e0b862,#a97f2a);color:#2a2005;box-shadow:0 6px 18px rgba(169,127,42,.3);font-size:15.5px;padding:15px 16px}
 .done .cn{margin-top:16px;font-size:14px;color:#8a918b}
 .empty{padding:26px 4px;color:#5c635e;font-size:15px}
+.sms-consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;font-weight:500;line-height:1.55;color:#3a4038}
+.sms-consent input{width:18px;height:18px;margin-top:3px;flex:none;accent-color:#234F3D}
+.sms-consent a{color:#a97f2a;font-weight:700}
+.legal{text-align:center;margin:18px auto 0;font-size:13px;color:#5c635e}
+.legal a{color:#a97f2a;font-weight:700;text-decoration:none}
 @media(max-width:560px){.fg{grid-template-columns:1fr}}
 </style></head><body>
 <div class="card">
   <div class="head"><div class="mark">M</div><div class="brand">MacRandle Acres</div><h1>Book your Growth Audit call</h1><p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p></div>
   <div class="body" id="body"><div class="empty">Loading available times…</div></div>
 </div>
+<footer class="legal"><a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></footer>
 <script>
 var PREFILL={"name":"","email":"","phone":"","service":"","type":""};
-var entered={name:PREFILL.name||'',email:PREFILL.email||'',phone:PREFILL.phone||''};
+var entered={name:PREFILL.name||'',email:PREFILL.email||'',phone:PREFILL.phone||'',sms:false};
 var TZ='', DAYS=[], di=0, slot=null, body=document.getElementById('body');
 fetch('/api/slots').then(function(r){return r.json();}).then(function(j){
   TZ=j.tz||''; DAYS=j.days||[];
@@ -1695,8 +1851,14 @@ fetch('/api/slots').then(function(r){return r.json();}).then(function(j){
 }).catch(function(){body.innerHTML='<div class="empty">Could not load times. Please email Macrandleacres@gmail.com.</div>';});
 function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function captureContact(){
-  var n=document.getElementById('bn'), e=document.getElementById('be'), p=document.getElementById('bp');
+  var n=document.getElementById('bn'), e=document.getElementById('be'), p=document.getElementById('bp'), s=document.getElementById('bsms');
   if(n) entered.name=n.value; if(e) entered.email=e.value; if(p) entered.phone=p.value;
+  if(s) entered.sms=!!s.checked;
+}
+function smsMarkup(){
+  var html='__SMS_CONSENT__';
+  if(entered.sms) html=html.replace('type="checkbox"','type="checkbox" checked');
+  return html;
 }
 function render(){
   captureContact();
@@ -1719,6 +1881,7 @@ function formHtml(){
     '<label class="fld"><span>Your name *</span><input id="bn" autocomplete="name" value="'+esc(entered.name)+'"></label>'+
     '<label class="fld"><span>Email *</span><input id="be" type="email" autocomplete="email" value="'+esc(entered.email)+'"></label>'+
     '<label class="fld full"><span>Phone (optional)</span><input id="bp" autocomplete="tel" value="'+esc(entered.phone)+'"></label></div>'+
+    smsMarkup()+
     '<input type="text" id="bw" class="hp" tabindex="-1" autocomplete="off">'+
     '<button class="confirm" id="bc">Confirm booking</button><div id="bm" class="msg"></div></div>';
 }
@@ -1726,10 +1889,11 @@ function wireForm(){
   var b=document.getElementById('bc'); if(!b)return;
   b.onclick=function(){
     var name=(document.getElementById('bn').value||'').trim(), email=(document.getElementById('be').value||'').trim(),
-        phone=(document.getElementById('bp').value||'').trim(), hp=(document.getElementById('bw').value||'').trim(), m=document.getElementById('bm');
+        phone=(document.getElementById('bp').value||'').trim(), hp=(document.getElementById('bw').value||'').trim(),
+        sms=!!(document.getElementById('bsms')&&document.getElementById('bsms').checked), m=document.getElementById('bm');
     if(!name||email.indexOf('@')<0){m.textContent='Please add your name and a valid email.';return;}
     m.textContent='';b.disabled=true;b.textContent='Booking…';
-    fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot:slot,name:name,email:email,phone:phone,website:hp})})
+    fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot:slot,name:name,email:email,phone:phone,website:hp,sms_consent:sms})})
       .then(function(r){return r.json();}).then(function(j){
         if(j.ok){ if(window.fbq)fbq('track','Schedule'); if(window.gtag)gtag('event','book_call');
           var icsHref='data:text/calendar;charset=utf-8,'+encodeURIComponent(j.ics||'');
@@ -1747,16 +1911,17 @@ function wireForm(){
       }).catch(function(){b.disabled=false;b.textContent='Confirm booking';m.textContent='Network error, please try again.';});
   };
 }
-</script></body></html>"""
+</script></body></html>""".replace("__SMS_CONSENT__", sms_consent_label_html("bsms"))
 
 
 BOOKINGS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Booked calls</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel=stylesheet>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;padding:26px 16px}
-.wrap{max-width:720px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.wrap{max-width:980px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 h1{font-size:23px;color:#234F3D}a.back{font-size:13px;color:#5c635e;text-decoration:none}
 table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 22px rgba(35,49,40,.06)}
+.smsnote{font-size:12px;line-height:1.45;color:#3a4038;max-width:320px}
 td,th{text-align:left;padding:12px 14px;border-bottom:1px solid rgba(35,79,61,.09)}th{color:#5c635e;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
 a{color:#a97f2a;font-weight:600;text-decoration:none}
 a.addcal{display:inline-block;padding:5px 11px;border:1px solid rgba(35,79,61,.2);border-radius:100px;font-size:12.5px;color:#234F3D}
@@ -1770,7 +1935,7 @@ tr.past{opacity:.5}.tg{font-size:10px;font-weight:700;text-transform:uppercase;p
 tr.upcoming .tg{background:rgba(35,79,61,.1);color:#234F3D}tr.past .tg{background:rgba(0,0,0,.06);color:#888}
 </style></head><body><div class="wrap">
 <div class="top"><h1>Booked calls</h1><a class="back" href="/">&larr; Site</a></div>
-<table><thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>Calendar</th></tr></thead><tbody>__ROWS__</tbody></table>
+<table><thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>SMS consent</th><th>Calendar</th></tr></thead><tbody>__ROWS__</tbody></table>
 </div></body></html>"""
 
 
@@ -3426,7 +3591,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 <footer style="text-align:center;padding:40px 18px 8px;color:#5c635e;font-size:14px">
   <p style="font-style:italic;color:#a97f2a;margin-bottom:6px">Lucid Marketing, by MacRandle Acres.</p>
   <p>Remove Friction. Accelerate Growth.</p>
-  <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/starter-prompts" style="color:#a97f2a;font-weight:700;text-decoration:none">Free Grok Starter Prompts</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a></p>
+  <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/starter-prompts" style="color:#a97f2a;font-weight:700;text-decoration:none">Free Grok Starter Prompts</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a> &middot; <a href="/terms" style="color:#a97f2a;font-weight:700;text-decoration:none">Terms</a></p>
 </footer>
 <script>
 var b=document.getElementById('pbody');
@@ -3732,6 +3897,7 @@ def send_ai_employee_email(rec):
             "Name: %s" % esc_text(rec.get("name")),
             "Email: %s" % esc_text(rec.get("email")),
             "Phone: %s" % esc_text(rec.get("phone")),
+            sms_consent_plain(rec),
             "Business: %s" % esc_text(rec.get("business")),
             "Industry: %s" % esc_text(industry),
             "Team size: %s" % esc_text(rec.get("team")),
@@ -3811,7 +3977,8 @@ def _ai_employee_page():
             .replace("__INDUSTRY_OPTIONS__", _select_options(AI_INDUSTRIES))
             .replace("__TEAM_OPTIONS__", _select_options(AI_TEAM_SIZES))
             .replace("__AUTO_CHECKS__", _auto_checks())
-            .replace("__PACKAGE_RADIOS__", _package_radios()))
+            .replace("__PACKAGE_RADIOS__", _package_radios())
+            .replace("__SMS_CONSENT__", sms_consent_label_html("sms_consent")))
 
 
 @app.route("/ai-employee/start")
@@ -3840,6 +4007,7 @@ def api_ai_employee():
     if errors:
         return jsonify(ok=False, error="Please fix the highlighted fields.", fields=errors), 400
     rec["t"] = datetime.datetime.utcnow().isoformat(timespec="seconds")
+    rec.update(sms_consent_fields(data))
     with _leads_lock:
         rows = load_ai_employees()
         rows.append(rec)
@@ -3870,6 +4038,9 @@ def admin_ai_employees():
             "<div class='proj'><div class='ph'><b>%s</b> <span class='tp'>%s</span>"
             "<span class='dt'>%s</span></div>"
             "<div class='pmeta'><a href='mailto:%s'>%s</a> &middot; %s &middot; %s</div>"
+            "<div class='pl'><span class='k'>SMS consent:</span> %s</div>"
+            "<div class='pl'><span class='k'>SMS consent time:</span> %s</div>"
+            "<div class='pl'><span class='k'>SMS consent text:</span> %s</div>"
             "<div class='pl'><span class='k'>Business:</span> %s &middot; Team: %s</div>"
             "<div class='pl'><span class='k'>Daily task:</span> %s</div>"
             "<div class='pl'><span class='k'>Teammate:</span> %s</div>"
@@ -3880,6 +4051,9 @@ def admin_ai_employees():
             _esc(rec.get("name", "")), _esc(rec.get("package", "") or "-"), when,
             _esc(rec.get("email", "")), _esc(rec.get("email", "")),
             _esc(rec.get("phone", "") or "-"), _esc(industry or "-"),
+            "Yes" if rec.get("sms_consent") else "No",
+            _esc(rec.get("sms_consent_at") or "-"),
+            _esc(rec.get("sms_consent_text") or "-"),
             _esc(rec.get("business", "") or "-"), _esc(rec.get("team", "") or "-"),
             _esc(rec.get("daily_task", "") or "-").replace("\n", "<br>"),
             _esc(rec.get("teammate", "") or "-").replace("\n", "<br>"),

@@ -16,7 +16,7 @@ import app as site
 
 SITEMAP_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 ORIGIN = "https://www.macrandleacres.com"
-MARKETING_PAGES = ("/", "/design", "/book", "/hub", "/ai-employee/start", "/privacy", "/starter-prompts")
+MARKETING_PAGES = ("/", "/design", "/book", "/hub", "/ai-employee/start", "/privacy", "/terms", "/starter-prompts")
 
 
 def _meta_description(html):
@@ -113,6 +113,7 @@ class PublicSiteTests(unittest.TestCase):
             "/hub": ORIGIN + "/hub",
             "/ai-employee/start": ORIGIN + "/ai-employee/start",
             "/privacy": ORIGIN + "/privacy",
+            "/terms": ORIGIN + "/terms",
             "/starter-prompts": ORIGIN + "/starter-prompts",
         }
         for path, canonical in expected.items():
@@ -187,6 +188,7 @@ class PublicSiteTests(unittest.TestCase):
             ORIGIN + "/book",
             ORIGIN + "/ai-employee/start",
             ORIGIN + "/privacy",
+            ORIGIN + "/terms",
         ])
         blob = " ".join(locs)
         for blocked in ("/admin", "/book/cancel", "/audit/", "/s/", "/m/"):

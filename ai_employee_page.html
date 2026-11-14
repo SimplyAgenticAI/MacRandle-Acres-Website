@@ -79,6 +79,11 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
 .secondary{display:inline-block;margin-top:14px;color:#a97f2a;font-weight:700;font-size:14.5px}
 .foot{text-align:center;margin-top:16px;font-size:13px;color:#8a918b}
 .foot a{color:#a97f2a;font-weight:700;text-decoration:none}
+.sms-consent{display:flex;gap:10px;align-items:flex-start;margin:4px 0 16px;font-size:13.5px;font-weight:500;line-height:1.55;color:#2D2D2D;background:#F8F7F3;border:1px solid rgba(35,79,61,.12);border-radius:12px;padding:12px}
+.sms-consent input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:#234F3D}
+.sms-consent a{color:#a97f2a;font-weight:700}
+.site-legal{text-align:center;margin:18px auto 0;max-width:680px;font-size:13px;color:#8a918b}
+.site-legal a{color:#a97f2a;font-weight:700;text-decoration:none;margin:0 6px}
 .noscript{max-width:680px;margin:16px auto 0;background:#fff;border-radius:14px;padding:16px;color:#5c635e}
 @media(min-width:640px){.checks.cols{grid-template-columns:1fr 1fr}.card{padding:30px 28px 32px}}
 @media(max-width:359px){.head{padding:28px 14px 24px}.card{padding:18px 14px}}
@@ -126,6 +131,7 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
       <span class="hint" id="phone-hint">US numbers like (410) 555-0199, or an international number starting with +.</span>
       <span class="ae-err" id="phone-err" aria-live="polite"></span>
     </label>
+    __SMS_CONSENT__
   </section>
 
   <section class="pane" data-step="1" hidden aria-labelledby="step2-title">
@@ -199,6 +205,7 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
   <div class="banner" id="formAlert" role="alert"></div>
   <p class="foot">You cover any subscription your own account needs. <a href="/#ai-employee">See the offer</a></p>
 </form>
+<footer class="site-legal"><a href="/">Home</a><span aria-hidden="true">·</span><a href="/privacy">Privacy</a><span aria-hidden="true">·</span><a href="/terms">Terms</a></footer>
 <script>
 (function(){
   var form = document.getElementById('aiForm');
@@ -351,6 +358,7 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
     addRow(root, 'Name', val('name'));
     addRow(root, 'Email', val('email'));
     addRow(root, 'Phone', val('phone'));
+    addRow(root, 'Text messages', (document.getElementById('sms_consent') && document.getElementById('sms_consent').checked) ? 'Opted in' : 'Not requested');
     addRow(root, 'Business', val('business'));
     addRow(root, 'Industry', industry);
     addRow(root, 'Team size', val('team'));
@@ -420,6 +428,7 @@ fieldset[aria-invalid="true"]{padding:8px;border-radius:10px}
       name: val('name'),
       email: val('email'),
       phone: val('phone'),
+      sms_consent: !!(document.getElementById('sms_consent') && document.getElementById('sms_consent').checked),
       business: val('business'),
       industry: val('industry'),
       industry_other: val('industry_other'),
