@@ -609,7 +609,7 @@ class PublicSiteTests(unittest.TestCase):
             "\u2014",
         ):
             self.assertNotIn(gone, home, gone)
-        self.assertEqual(home.count(">Fast<"), 1)
+        self.assertEqual(home.count(">Fast<"), 0)
         self.assertIn("Growth Partner · Lucid Marketing, by MacRandle Acres", hub)
         self.assertIn(
             "Your Growth Partner. I help you get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
@@ -726,7 +726,7 @@ class PublicSiteTests(unittest.TestCase):
 
 
 class HomeLayoutTests(unittest.TestCase):
-    """Final CTA clearance and the websites mock browser."""
+    """Final CTA clearance and the homepage websites section."""
 
     def setUp(self):
         self.client = site.app.test_client()
@@ -767,33 +767,22 @@ class HomeLayoutTests(unittest.TestCase):
         # The section rhythm itself stays put. Only the card gains space under it.
         self.assertNotRegex(css, r"\.final\{[^}]*padding")
 
-    def test_website_mock_is_a_readable_sample_site(self):
-        home = self._home()
-        css = self._css(home)
-        art = home.split('class="ws-art', 1)[1].split("</section>", 1)[0]
-        for label in ("Home", "Work", "Contact", "Your business", "starts here", "A clear next step.", "Book a visit", "Design", "Forms", "Speed"):
-            self.assertIn(label, art)
-        self.assertIn(">yourbusiness.com<", art)
-        self.assertNotIn("\u2014", art)
-        self.assertNotIn("\u2013", art)
-        # Marketing copy around the mock is unchanged.
-        self.assertIn('data-edit="ws_h2hi">stop the scroll', home)
-        self.assertIn("Your website is often the first handshake.", home)
-        # The old mock was empty bars: width 0, grown to 62%, then collapsed, with a cursor parked off-canvas.
-        self.assertNotRegex(css, r"\.wb-t\{[^}]*width:\s*0")
-        self.assertNotIn("width:62%", css)
-        self.assertNotIn("translate(380px", css)
-        self.assertNotRegex(css, r"\.wb-pg\{[^}]*height:\s*280px")
-        self.assertIn(".wb-pg{position:relative;height:auto;", css)
-        self.assertNotRegex(css, r"@keyframes wbin\{[^}]*width:\s*0")
-        self.assertNotRegex(css, r"\.wb-t\{[^}]*infinite")
-        self.assertIn("@keyframes wbcur{0%{left:64%;top:76%;opacity:0}", css)
-        self.assertIn("100%{left:22%;top:58%;opacity:0}", css)
-        # Narrow screens drop the 3D tilt that clipped the mock, and reduced motion still shows the sample.
-        self.assertIn(".wb,.ws-art:hover .wb{transform:none}", css)
-        self.assertIn(".wb-bar em{margin-left:10px;margin-right:auto}", css)
-        self.assertIn("@media(prefers-reduced-motion:reduce){.wb-cur{display:none}", css)
-        self.assertIn(".wb-hero{position:relative;border-radius:14px;padding:22px 18px 18px;background:linear-gradient(135deg,#26543f,#1a3b2d)", css)
+    def test_index_has_no_website_mockup(self):
+        path = os.path.join(os.path.dirname(__file__), "..", "index.html")
+        with open(path, encoding="utf-8") as f:
+            html = f.read()
+        self.assertNotIn("yourbusiness.com", html)
+        self.assertNotIn("wb-", html)
+        section = html.split('id="websites"', 1)[1].split("</section>", 1)[0]
+        self.assertIn('data-edit="ws_eyebrow">Also built here', section)
+        self.assertIn('data-edit="ws_h2a">Websites &amp; apps that', section)
+        self.assertIn('data-edit="ws_h2hi">stop the scroll', section)
+        self.assertIn("Your website is often the first handshake.", section)
+        self.assertIn('data-edit="ws_li1">Custom design, never a template', section)
+        self.assertIn('data-edit="ws_li2">Booking, forms &amp; lead capture built in', section)
+        self.assertIn('data-edit="ws_li3">Mobile-first, fast, and SEO-ready', section)
+        self.assertIn('data-edit="ws_cta1">See the work', section)
+        self.assertIn('data-edit="ws_cta2">Start a project', section)
 
 
 if __name__ == "__main__":
