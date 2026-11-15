@@ -118,7 +118,7 @@ a{color:inherit;text-decoration:none}
 .hamb{display:none;background:none;border:none;color:var(--green);font-size:22px;cursor:pointer}
 
 /* Hero */
-.hero{position:relative;padding:96px 0 28px;text-align:center}
+.hero{position:relative;padding:96px 0 14px;text-align:center}
 .hero .halo{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:min(560px,88vw);height:360px;z-index:-1;
  background:radial-gradient(circle at 50% 30%,rgba(199,154,59,.16),transparent 62%)}
 .hero-logo-wrap{position:relative;width:max-content;margin:0 auto 24px;display:block}
@@ -150,7 +150,7 @@ a{color:inherit;text-decoration:none}
 .val-item .vl{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green)}
 
 /* Sections */
-section{position:relative;padding:74px 0}
+section{position:relative;padding:40px 0}
 .sec-head{text-align:center;max-width:760px;margin:0 auto 48px}
 .sec-head h2{font-size:clamp(30px,4.6vw,50px);font-weight:600;margin-bottom:15px}
 .sec-head p{color:var(--ink2);font-size:17px}
@@ -158,6 +158,7 @@ section{position:relative;padding:74px 0}
 /* Client-voice chips */
 .voice-lead{text-align:center;max-width:720px;margin:0 auto 38px;color:var(--ink2);font-size:18px}
 .voice-lead b{color:var(--ink)}
+#voice .sec-head{margin-bottom:24px}
 .chips{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:900px;margin:0 auto}
 .chip{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:15px 22px;font-size:16px;
  font-weight:500;color:var(--ink);display:flex;align-items:center;gap:11px;box-shadow:var(--shadow-sm);
@@ -223,9 +224,15 @@ section{position:relative;padding:74px 0}
  box-shadow:0 6px 16px rgba(91,44,111,.5)}
 .tier .tname{font-family:'Inter',system-ui,sans-serif;font-size:22px;font-weight:700;margin-bottom:4px;color:var(--green)}
 .tier .tdesc{font-size:13.5px;color:var(--ink3);margin-bottom:18px;min-height:38px}
-.tier .price{font-family:'Inter',system-ui,sans-serif;font-weight:700;margin-bottom:2px}
+.tier .price{display:flex;flex-direction:column;align-items:flex-start;font-family:'Inter',system-ui,sans-serif;font-weight:700;margin-bottom:2px;line-height:1.15}
 .tier .price .amt{font-size:32px;color:var(--green)}
 .tier .price .per{font-size:14px;color:var(--ink3);font-weight:500;font-family:'Inter'}
+.tier .price .was{display:block;font-size:15px;font-weight:600;color:var(--ink3);line-height:1.3}
+.tier .price .was .amt,.tier .price .was .per{font-size:15px;font-weight:600;color:inherit}
+.tier .price .week{display:block;margin:8px 0 2px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-d)}
+.tier .price .now{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 6px;max-width:100%}
+.tier.feature .price .was,.tier.feature .price .was .amt,.tier.feature .price .was .per{color:rgba(246,244,236,.62)}
+.tier.feature .price .week{color:var(--gold-l)}
 .tier ul{list-style:none;display:grid;gap:12px;margin:22px 0 26px}
 .tier li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink)}
 .tier li .ck{flex:0 0 20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:800;
@@ -243,7 +250,6 @@ section{position:relative;padding:74px 0}
 .promise2 p{color:var(--ink2);font-size:18px;max-width:620px;margin:0 auto}
 
 /* Final CTA */
-.final{padding:88px 0}
 .final-box{position:relative;border-radius:26px;padding:62px 40px;text-align:center}
 .final h2{font-size:clamp(32px,5vw,54px);font-weight:600;margin-bottom:16px}
 .final p{color:rgba(246,244,236,.8);font-size:18px;max-width:560px;margin:0 auto 30px}
@@ -261,13 +267,11 @@ footer .alice-call:hover{color:var(--cream)}
 .foot-social{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 18px;margin:0 0 16px}
 .foot-social a{color:var(--cream);font-weight:700;font-size:14px;border-bottom:1px solid rgba(224,184,98,.5);padding-bottom:1px}
 .foot-social a:hover{color:var(--gold-l)}
-#lucid{padding-top:16px;padding-bottom:12px}
 #lucid .lm-points{max-width:560px;margin:0 auto 22px;display:grid;gap:8px;text-align:center}
 #lucid .lm-points p{color:var(--ink2);font-size:17px}
 #lucid .lm-sig{text-align:center;font-style:italic;color:var(--gold-d);font-weight:600;font-size:18px}
 #ai-employee .ai-offer{max-width:740px;margin:0 auto;text-align:center}
 #ai-employee .ai-body{color:var(--ink2);font-size:17px;line-height:1.65;max-width:640px;margin:14px auto 22px}
-#offer-faq{padding-top:10px}
 #offer-faq details{background:#fff;border:1px solid var(--bd-soft);border-radius:14px;padding:2px 18px;margin:0 auto 10px;max-width:720px;box-shadow:var(--shadow-sm)}
 #offer-faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:16px;padding:14px 0;list-style:none}
 #offer-faq summary::-webkit-details-marker{display:none}
@@ -287,7 +291,6 @@ footer .alice-call:hover{color:var(--cream)}
 body.editing #quotes[hidden]{display:block !important}
 body.editing .qcard[hidden]{display:block !important}
 body.editing .qcard p,body.editing .qcard .q-by{min-height:1.4em}
-.free-step{padding:8px 0 20px}
 .free-step .box{max-width:640px;margin:0 auto;text-align:center;border:1px dashed var(--bd);border-radius:16px;padding:20px 18px;background:rgba(255,255,255,.45)}
 .free-step p{color:var(--ink2);font-size:15.5px;margin-bottom:10px}
 .free-step .skool{font-weight:700;color:var(--green);font-size:14.5px}
@@ -475,7 +478,10 @@ body.editing #cursorGlow{display:none}
 @media(max-width:620px){
  .nav-links{display:none}.hamb{display:block}
  .g3{grid-template-columns:1fr}
- .hero{padding:64px 0 20px}section{padding:52px 0}
+ .hero{padding:64px 0 10px}section{padding:28px 0}
+ #voice .sec-head{margin-bottom:16px}
+ .tier .price .amt{font-size:28px}
+ .tier .price .was,.tier .price .was .amt,.tier .price .was .per{font-size:14px}
  .val-item{padding:0 20px;min-width:44%}
  .final-box{padding:44px 24px}
 }
@@ -506,7 +512,6 @@ footer{position:relative}
 .foot-wave path{fill:#1c4032}
 
 /* #9 Impact band */
-.impact{padding:18px 0 6px}
 .impact-box{position:relative;border-radius:24px;overflow:hidden;padding:42px 30px;text-align:center;
  background:linear-gradient(160deg,#26543f,#1a3b2d);color:var(--cream);box-shadow:var(--shadow)}
 .impact-box::after{content:'';position:absolute;top:-70px;right:-50px;width:280px;height:280px;border-radius:50%;
@@ -548,7 +553,6 @@ footer{position:relative}
  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:orbit 4.5s linear infinite}
 @keyframes orbit{to{--ang:360deg}}
 /* Websites & apps */
-#websites{padding-top:40px}
 .ws-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center}
 .ws-copy h2{font-size:clamp(30px,4.2vw,44px);margin:4px 0 16px}
 .ws-copy p{font-size:17px;color:var(--ink2);line-height:1.65;max-width:520px}
@@ -595,7 +599,6 @@ footer{position:relative}
 .wb-badge.b1{top:6px;right:0}.wb-badge.b2{bottom:0;left:-14px;animation-delay:-1.7s}.wb-badge.b3{top:46%;right:-8px;animation-delay:-3.3s}
 @keyframes bfloat{50%{transform:translateY(-10px)}}
 /* Meet Jeff */
-#jeff{padding-top:30px}
 .jeff{display:grid;grid-template-columns:auto 1fr;gap:46px;align-items:center;background:var(--card);border:1px solid var(--bd-soft);border-radius:26px;padding:44px 48px;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .jeff:before{content:'';position:absolute;width:420px;height:420px;right:-160px;top:-200px;border-radius:50%;background:radial-gradient(circle,rgba(224,184,98,.18),transparent 65%);animation:drift2 12s ease-in-out infinite alternate}
 @keyframes drift2{to{transform:translate(-60px,50px)}}
@@ -613,8 +616,8 @@ footer{position:relative}
 .final-box{position:relative;overflow:hidden}
 .final-box .spk{position:absolute;bottom:-10px;width:6px;height:6px;border-radius:50%;background:var(--gold-l);box-shadow:0 0 10px var(--gold-l);opacity:0;animation:spark 6s linear infinite;pointer-events:none}
 @keyframes spark{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-320px) translateX(30px)}}
-/* AI Virtual Employee, placed directly after websites and apps */
-#ai-employee{padding-top:10px}
+/* First section under the hero. Top padding is the halved values gap; the bottom uses the section rhythm. */
+#ai-employee{padding-top:8px}
 #ai-employee .ai-price{margin:8px 0 2px;font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;color:var(--green);line-height:1.05}
 #ai-employee .ai-price span{font-size:.42em;font-weight:700;color:var(--ink2);letter-spacing:0;margin-left:8px}
 #ai-employee .ai-opt{margin:8px 0 12px;font-weight:700;color:var(--gold-d);font-size:15.5px}
@@ -707,6 +710,21 @@ footer{position:relative}
   </div>
  </div>
 </header>
+
+<!-- FIRST AI AGENT -->
+<section id="ai-employee" aria-labelledby="ai-employee-title">
+ <div class="wrap">
+  <div class="ai-offer">
+   <span class="eyebrow reveal" data-edit="ai_eyebrow_lm">Lucid Marketing</span>
+   <h2 class="reveal" id="ai-employee-title" data-edit="ai_offer_h_149">Your first AI agent, set up with you on a call.</h2>
+   <p class="ai-price reveal d1" data-edit="ai_offer_price_149">$149 <span>one-time.</span></p>
+   <p class="ai-body reveal d2" data-edit="ai_offer_body_lm">We build it around whatever takes up the most space on your digital plate (emails, posting, follow-ups, scheduling), together on one call, and it is working for you by the end.</p>
+   <div class="hero-cta reveal d3" style="justify-content:center">
+    <a class="btn btn-primary" href="/book?type=agent&utm_source=site&utm_medium=cta"><span data-edit="ai_cta_lm">Book a Lucid Marketing call</span></a>
+   </div>
+  </div>
+ </div>
+</section>
 
 <section id="lucid" aria-labelledby="lucid-title">
  <div class="wrap">
@@ -909,7 +927,7 @@ footer{position:relative}
    <div class="tier reveal d1">
     <div class="tname" data-edit="t1_name">Momentum</div>
     <div class="tdesc" data-edit="t1_desc">Each month I audit your business, find the highest-impact growth moves, and put them in motion.</div>
-    <div class="price" data-edit="t1_price"><span class="amt">$997–1,250</span> <span class="per">/mo</span></div>
+    <div class="price" data-edit="t1_price"><span class="was"><s><span class="amt">$997–1,250</span> <span class="per">/mo</span></s></span><span class="week">This week</span><span class="now"><span class="amt">$698–875</span> <span class="per">/mo</span></span></div>
     <ul>
      <li><span class="ck">✓</span><span data-edit="t1_li1">Monthly growth audit + game plan</span></li>
      <li><span class="ck">✓</span><span data-edit="t1_li2">Leaks plugged and untapped growth found, ranked by impact</span></li>
@@ -922,7 +940,7 @@ footer{position:relative}
     <span class="tag" data-edit="t2_tag">Most popular</span>
     <div class="tname" data-edit="t2_name">Growth Partner</div>
     <div class="tdesc" data-edit="t2_desc_v5">Done-with-you growth. I build and run the systems alongside your team.</div>
-    <div class="price" data-edit="t2_price"><span class="amt">$1,997–2,500</span> <span class="per">/mo</span></div>
+    <div class="price" data-edit="t2_price"><span class="was"><s><span class="amt">$1,997–2,500</span> <span class="per">/mo</span></s></span><span class="week">This week</span><span class="now"><span class="amt">$1,398–1,750</span> <span class="per">/mo</span></span></div>
     <ul>
      <li><span class="ck">✓</span><span data-edit="t2_li1">Everything in Momentum</span></li>
      <li><span class="ck">✓</span><span data-edit="t2_li2">Done-with-you implementation</span></li>
@@ -934,7 +952,7 @@ footer{position:relative}
    <div class="tier reveal d3">
     <div class="tname" data-edit="t3_name">Rainmaker Elite</div>
     <div class="tdesc" data-edit="t3_desc">Your Fractional Growth Advisor, all-in on scaling the business.</div>
-    <div class="price" data-edit="t3_price"><span class="amt">$3,500–5,000</span> <span class="per">/mo</span></div>
+    <div class="price" data-edit="t3_price"><span class="was"><s><span class="amt">$3,500–5,000</span> <span class="per">/mo</span></s></span><span class="week">This week</span><span class="now"><span class="amt">$2,450–3,500</span> <span class="per">/mo</span></span></div>
     <ul>
      <li><span class="ck">✓</span><span data-edit="t3_li1">Dedicated Fractional Growth Advisor</span></li>
      <li><span class="ck">✓</span><span data-edit="t3_li2">On-call strategic guidance</span></li>
@@ -990,21 +1008,6 @@ footer{position:relative}
     <span class="wb-badge b1"><b>&#10003;</b>Mobile-first</span>
     <span class="wb-badge b2"><b>&#10003;</b>Built to convert</span>
     <span class="wb-badge b3"><b>&#10003;</b>Lightning fast</span>
-   </div>
-  </div>
- </div>
-</section>
-
-<!-- FIRST AI AGENT -->
-<section id="ai-employee" aria-labelledby="ai-employee-title">
- <div class="wrap">
-  <div class="ai-offer">
-   <span class="eyebrow reveal" data-edit="ai_eyebrow_lm">Lucid Marketing</span>
-   <h2 class="reveal" id="ai-employee-title" data-edit="ai_offer_h_149">Your first AI agent, set up with you on a call.</h2>
-   <p class="ai-price reveal d1" data-edit="ai_offer_price_149">$149 <span>one-time.</span></p>
-   <p class="ai-body reveal d2" data-edit="ai_offer_body_lm">We build it around whatever takes up the most space on your digital plate (emails, posting, follow-ups, scheduling), together on one call, and it is working for you by the end.</p>
-   <div class="hero-cta reveal d3" style="justify-content:center">
-    <a class="btn btn-primary" href="/book?type=agent&utm_source=site&utm_medium=cta"><span data-edit="ai_cta_lm">Book a Lucid Marketing call</span></a>
    </div>
   </div>
  </div>

@@ -240,14 +240,15 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("\u2014", re_section)
         self.assertIn("That's Lucid Marketing, by MacRandle Acres.", home)
         self.assertIn("Marketing that is conscious, clear, and intentional.", home)
-        section = home.split('id="ai-employee"', 1)[1].split("REAL ESTATE", 1)[0]
+        section = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
+        self.assertLess(home.index('id="ai-employee"'), home.index('id="websites"'))
         self.assertIn("Your first AI agent, set up with you on a call.", section)
         self.assertIn("$149", section)
         self.assertNotIn("one-hour", section)
         self.assertNotIn("$200", section)
         self.assertIn("one-time.", section)
         self.assertIn("Book a Lucid Marketing call", section)
-        self.assertIn('href="/book?type=agent"', section)
+        self.assertIn('href="/book?type=agent&utm_source=site&utm_medium=cta"', section)
         self.assertNotIn("$497", section)
         self.assertNotIn("$97/mo", section)
         self.assertNotIn("$1,997", section)
@@ -415,8 +416,12 @@ class AiEmployeeTests(unittest.TestCase):
         nav = home.split("<nav", 1)[1].split("</nav>", 1)[0]
         self.assertIn("Book a Growth Audit", nav)
         self.assertNotIn("Lucid Marketing call", nav)
-        offer = home.split('id="ai-employee"', 1)[1].split('id="free-step"', 1)[0]
-        self.assertIn('href="/book?type=agent"', offer)
+        offer = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
+        self.assertLess(home.index('id="top"'), home.index('id="ai-employee"'))
+        self.assertLess(home.index('id="ai-employee"'), home.index('id="lucid"'))
+        self.assertLess(home.index('id="ai-employee"'), home.index('id="websites"'))
+        self.assertLess(home.index('id="websites"'), home.index('id="offer-faq"'))
+        self.assertIn('href="/book?type=agent&utm_source=site&utm_medium=cta"', offer)
         self.assertIn("Book a Lucid Marketing call", offer)
         privacy = self.client.get("/privacy").get_data(as_text=True)
         self.assertNotIn("Growth Audit form", privacy)
