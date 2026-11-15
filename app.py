@@ -770,10 +770,10 @@ LEAD_QS = [("role", "Role"), ("team", "Team size"), ("response", "Lead response 
 # Exact sentence next to the optional SMS checkbox. Stored with each phone submission
 # so the record shows the consent language the person was shown.
 SMS_CONSENT_TEXT = (
-    "I agree to receive text messages from Lucid Marketing by MacRandle Acres "
-    "about my inquiry, appointments, and occasional offers. Message frequency varies. "
-    "Msg & data rates may apply. Reply STOP to opt out, HELP for help. "
-    "See our Terms and Privacy Policy."
+    "I agree to receive text messages from Lucid Marketing by MacRandle Acres, "
+    "including appointment reminders, inquiry follow-ups, and promotional offers. "
+    "Message frequency varies. Msg & data rates may apply. Reply STOP to opt out, "
+    "HELP for help. Consent is not a condition of purchase."
 )
 
 
@@ -806,17 +806,16 @@ def sms_consent_plain(rec):
 
 
 def sms_consent_label_html(input_id):
-    """Checkbox label. Terms and Privacy Policy open in a new tab. Unchecked, not required."""
-    before, after_terms = SMS_CONSENT_TEXT.split("Terms", 1)
-    between, after_privacy = after_terms.split("Privacy Policy", 1)
+    """One optional checkbox. Unchecked, not required. Policy links sit beside the sentence."""
     safe_id = _esc(input_id)
     return (
-        '<label class="sms-consent" for="%s">'
+        '<div class="sms-consent">'
         '<input id="%s" name="sms_consent" type="checkbox" value="yes">'
-        '<span>%s<a href="/terms" target="_blank" rel="noopener">Terms</a>%s'
-        '<a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>%s</span>'
-        "</label>"
-    ) % (safe_id, safe_id, _esc(before), _esc(between), _esc(after_privacy))
+        '<span><label for="%s">%s</label> '
+        '<a href="/terms" target="_blank" rel="noopener">Terms</a> '
+        '<a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a></span>'
+        "</div>"
+    ) % (safe_id, safe_id, _esc(SMS_CONSENT_TEXT))
 
 
 def load_leads():
@@ -991,7 +990,7 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 .sms-box h2{margin-top:12px}
 .back{display:inline-block;margin-top:26px;font-size:14px}
 .legal{margin-top:14px;font-size:14px}</style></head><body><div class="wrap">
-<h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle<br>Last updated: November 14, 2026</div>
+<h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle<br>Last updated: November 15, 2026</div>
 <p>This site is operated by Jeff Randle (MacRandle Acres). We respect your privacy and keep things simple.</p>
 <h2>What we collect</h2>
 <p>If you book a call, we collect the name, email, and phone you provide. If you join the email list, we collect your email address. If you start a first AI agent setup, we collect your name, email, phone, business details, and the answers you provide so we can prepare your setup and consultation. We also collect basic, cookieless visit counts (page, referring site, device type) with no personal data. If analytics or advertising pixels are enabled, those third parties (Google, Meta) may set their own cookies per their policies.</p>
@@ -999,6 +998,8 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 <p>Only to respond to your request, prepare your growth audit, and improve the site. We do not sell your information.</p>
 <h2>Your choices</h2>
 <p>To access, correct, or delete your information, email <a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> and we will take care of it.</p>
+<h2>Data security</h2>
+<p>We use reasonable administrative, technical, and physical safeguards to protect personal information, including encrypted connections (HTTPS) and access controls that limit who can view your information. No method of transmission or storage is completely secure.</p>
 <section class="sms-box" id="sms">
 <h2>Text messages (SMS)</h2>
 <p>If you opt in on a form, we store your mobile number, whether you agreed to receive text messages, the time of that choice, and the consent language shown to you.</p>
@@ -1038,7 +1039,7 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 .back{display:inline-block;margin-top:26px;font-size:14px}
 .legal{margin-top:14px;font-size:14px}</style></head><body><div class="wrap">
 <h1>Terms and Conditions</h1>
-<div class="sub">Lucid Marketing, by MacRandle Acres<br>MacRandle Acres, Salisbury, MD<br>Effective date: November 14, 2026</div>
+<div class="sub">Lucid Marketing, by MacRandle Acres<br>MacRandle Acres, Salisbury, MD<br>Effective date: November 15, 2026</div>
 <p>These terms cover your use of macrandleacres.com and the services offered by MacRandle Acres, doing business as Lucid Marketing, by MacRandle Acres, in Salisbury, Maryland.</p>
 <h2>Use of the site</h2>
 <p>You may browse this website and use its public pages for lawful personal or business purposes. Do not attempt to disrupt the site, or submit information you are not allowed to share. We may refuse, limit, or end access if the site is being misused.</p>
@@ -1061,6 +1062,7 @@ Phone: <a href="tel:+14433890330">443-389-0330</a></p>
 <section class="sms-box" id="sms">
 <h2>SMS program</h2>
 <p>Program name: Lucid Marketing by MacRandle Acres.</p>
+<p>You must be 18 years of age or older to use this SMS service.</p>
 <p>If you opt in, you agree to receive text messages from Lucid Marketing by MacRandle Acres. Message types include lead follow-up, appointment reminders, and occasional offers.</p>
 <p>Message frequency varies.</p>
 <p>Message and data rates may apply.</p>
@@ -1825,7 +1827,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .empty{padding:26px 4px;color:#5c635e;font-size:15px}
 .sms-consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;font-weight:500;line-height:1.55;color:#3a4038}
 .sms-consent input{width:18px;height:18px;margin-top:3px;flex:none;accent-color:#234F3D}
+.sms-consent label{font-weight:inherit;cursor:pointer}
 .sms-consent a{color:#a97f2a;font-weight:700}
+.sms-slot{padding:0 26px 22px}
+.sms-slot:empty{display:none}
 .legal{text-align:center;margin:18px auto 0;font-size:13px;color:#5c635e}
 .legal a{color:#a97f2a;font-weight:700;text-decoration:none}
 @media(max-width:560px){.fg{grid-template-columns:1fr}}
@@ -1833,11 +1838,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 <div class="card">
   <div class="head"><div class="mark">M</div><div class="brand">MacRandle Acres</div><h1>Book your Growth Audit call</h1><p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p></div>
   <div class="body" id="body"><div class="empty">Loading available times…</div></div>
+  <div class="sms-slot" id="smsSlot">__SMS_CONSENT__</div>
 </div>
 <footer class="legal"><a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></footer>
 <script>
 var PREFILL={"name":"","email":"","phone":"","service":"","type":""};
-var entered={name:PREFILL.name||'',email:PREFILL.email||'',phone:PREFILL.phone||'',sms:false};
+var entered={name:PREFILL.name||'',email:PREFILL.email||'',phone:PREFILL.phone||''};
 var TZ='', DAYS=[], di=0, slot=null, body=document.getElementById('body');
 fetch('/api/slots').then(function(r){return r.json();}).then(function(j){
   TZ=j.tz||''; DAYS=j.days||[];
@@ -1851,17 +1857,34 @@ fetch('/api/slots').then(function(r){return r.json();}).then(function(j){
 }).catch(function(){body.innerHTML='<div class="empty">Could not load times. Please email Macrandleacres@gmail.com.</div>';});
 function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function captureContact(){
-  var n=document.getElementById('bn'), e=document.getElementById('be'), p=document.getElementById('bp'), s=document.getElementById('bsms');
+  var n=document.getElementById('bn'), e=document.getElementById('be'), p=document.getElementById('bp');
   if(n) entered.name=n.value; if(e) entered.email=e.value; if(p) entered.phone=p.value;
-  if(s) entered.sms=!!s.checked;
 }
-function smsMarkup(){
-  var html='__SMS_CONSENT__';
-  if(entered.sms) html=html.replace('type="checkbox"','type="checkbox" checked');
-  return html;
+function smsChecked(){
+  var s=document.getElementById('sms_consent');
+  return !!(s && s.checked);
+}
+function smsBlock(){
+  var input=document.getElementById('sms_consent');
+  if(!input) return null;
+  var node=input.parentNode;
+  if(node && node.classList && node.classList.contains('sms-consent')) return node;
+  return input;
+}
+function parkSms(){
+  var node=smsBlock(), home=document.getElementById('smsSlot');
+  if(node && home && node.parentNode!==home) home.appendChild(node);
+}
+function placeSms(form){
+  var node=smsBlock();
+  if(!node || !form) return;
+  var btn=form.querySelector('.confirm');
+  if(btn) form.insertBefore(node, btn);
+  else form.appendChild(node);
 }
 function render(){
   captureContact();
+  parkSms();
   if(!DAYS.length){body.innerHTML='<div class="empty">No open times in the next couple of weeks. Please email <a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> and we\\'ll find a time.</div>';return;}
   var h='<div class="lbl">Choose a day</div><div class="days">';
   DAYS.forEach(function(d,i){h+='<div class="day'+(i===di?' on':'')+'" data-d="'+i+'">'+esc(d.label)+'</div>';});
@@ -1869,6 +1892,8 @@ function render(){
   DAYS[di].slots.forEach(function(s){h+='<div class="slot'+(slot===s.iso?' on':'')+'" data-s="'+s.iso+'">'+esc(s.label)+'</div>';});
   h+='</div>'+formHtml();
   body.innerHTML=h;
+  var shown=body.querySelector('.form');
+  if(shown) placeSms(shown);
   body.querySelectorAll('.day').forEach(function(el){el.onclick=function(){di=+el.getAttribute('data-d');slot=null;render();};});
   body.querySelectorAll('.slot').forEach(function(el){el.onclick=function(){slot=el.getAttribute('data-s');render();var f=document.querySelector('.form');if(f)f.classList.add('show');window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});};});
   wireForm();
@@ -1881,7 +1906,6 @@ function formHtml(){
     '<label class="fld"><span>Your name *</span><input id="bn" autocomplete="name" value="'+esc(entered.name)+'"></label>'+
     '<label class="fld"><span>Email *</span><input id="be" type="email" autocomplete="email" value="'+esc(entered.email)+'"></label>'+
     '<label class="fld full"><span>Phone (optional)</span><input id="bp" autocomplete="tel" value="'+esc(entered.phone)+'"></label></div>'+
-    smsMarkup()+
     '<input type="text" id="bw" class="hp" tabindex="-1" autocomplete="off">'+
     '<button class="confirm" id="bc">Confirm booking</button><div id="bm" class="msg"></div></div>';
 }
@@ -1890,7 +1914,7 @@ function wireForm(){
   b.onclick=function(){
     var name=(document.getElementById('bn').value||'').trim(), email=(document.getElementById('be').value||'').trim(),
         phone=(document.getElementById('bp').value||'').trim(), hp=(document.getElementById('bw').value||'').trim(),
-        sms=!!(document.getElementById('bsms')&&document.getElementById('bsms').checked), m=document.getElementById('bm');
+        sms=smsChecked(), m=document.getElementById('bm');
     if(!name||email.indexOf('@')<0){m.textContent='Please add your name and a valid email.';return;}
     m.textContent='';b.disabled=true;b.textContent='Booking…';
     fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot:slot,name:name,email:email,phone:phone,website:hp,sms_consent:sms})})
@@ -1911,7 +1935,7 @@ function wireForm(){
       }).catch(function(){b.disabled=false;b.textContent='Confirm booking';m.textContent='Network error, please try again.';});
   };
 }
-</script></body></html>""".replace("__SMS_CONSENT__", sms_consent_label_html("bsms"))
+</script></body></html>""".replace("__SMS_CONSENT__", sms_consent_label_html("sms_consent"))
 
 
 BOOKINGS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
