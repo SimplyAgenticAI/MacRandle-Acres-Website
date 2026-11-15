@@ -967,6 +967,13 @@ def admin_leads_csv():
     return resp
 
 
+# Tap-to-call. Straight apostrophe inside double quotes. No SMS wording and no em dash.
+ALICE_CALL_LABEL = "Talk to Alice, Jeff's AI assistant: (443) 389-0330"
+ALICE_CALL_LINK = (
+    '<a class="alice-call" href="tel:+14433890330">%s</a>' % ALICE_CALL_LABEL
+)
+
+
 PRIVACY_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1"><title>Privacy Policy | Lucid Marketing, by MacRandle Acres</title>
 <meta name="description" content="How MacRandle Acres handles booking details, email signups, text messages, and your first AI agent setup.">
@@ -989,7 +996,8 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 .sms-box{background:#fff;border:1px solid rgba(35,79,61,.14);border-radius:14px;padding:4px 16px 8px;margin:18px 0}
 .sms-box h2{margin-top:12px}
 .back{display:inline-block;margin-top:26px;font-size:14px}
-.legal{margin-top:14px;font-size:14px}</style></head><body><div class="wrap">
+.legal{margin-top:14px;font-size:14px}
+.legal .alice-call{display:block;margin:0 0 8px;font-size:15px;font-weight:700;line-height:1.45;text-decoration:underline;text-underline-offset:3px}</style></head><body><div class="wrap">
 <h1>Privacy Policy</h1><div class="sub">MacRandle Acres &middot; Jeff Randle<br>Last updated: November 15, 2026</div>
 <p>This site is operated by Jeff Randle (MacRandle Acres). We respect your privacy and keep things simple.</p>
 <h2>What we collect</h2>
@@ -1011,8 +1019,8 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 <h2>Contact</h2>
 <p><a href="mailto:Macrandleacres@gmail.com">Macrandleacres@gmail.com</a> &middot; Salisbury, MD.</p>
 <a class="back" href="/">&larr; Back to site</a>
-<p class="legal"><a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></p>
-</div></body></html>"""
+<footer class="legal">__ALICE_CALL__<a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></footer>
+</div></body></html>""".replace("__ALICE_CALL__", ALICE_CALL_LINK)
 
 
 TERMS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
@@ -1037,7 +1045,8 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 .sms-box{background:#fff;border:1px solid rgba(35,79,61,.14);border-radius:14px;padding:4px 16px 8px;margin:18px 0}
 .sms-box h2{margin-top:12px}
 .back{display:inline-block;margin-top:26px;font-size:14px}
-.legal{margin-top:14px;font-size:14px}</style></head><body><div class="wrap">
+.legal{margin-top:14px;font-size:14px}
+.legal .alice-call{display:block;margin:0 0 8px;font-size:15px;font-weight:700;line-height:1.45;text-decoration:underline;text-underline-offset:3px}</style></head><body><div class="wrap">
 <h1>Terms and Conditions</h1>
 <div class="sub">Lucid Marketing, by MacRandle Acres<br>MacRandle Acres, Salisbury, MD<br>Effective date: November 15, 2026</div>
 <p>These terms cover your use of macrandleacres.com and the services offered by MacRandle Acres, doing business as Lucid Marketing, by MacRandle Acres, in Salisbury, Maryland.</p>
@@ -1073,8 +1082,8 @@ Phone: <a href="tel:+14433890330">443-389-0330</a></p>
 <p>Contact us at <a href="mailto:macrandleacres@gmail.com">macrandleacres@gmail.com</a> or 443-389-0330.</p>
 </section>
 <a class="back" href="/">&larr; Back to site</a>
-<p class="legal"><a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></p>
-</div></body></html>"""
+<footer class="legal">__ALICE_CALL__<a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></footer>
+</div></body></html>""".replace("__ALICE_CALL__", ALICE_CALL_LINK)
 
 
 # ========== Native branded booking ==========
@@ -1831,16 +1840,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .sms-consent a{color:#a97f2a;font-weight:700}
 .sms-slot{padding:0 26px 22px}
 .sms-slot:empty{display:none}
+.head .alice{opacity:1;margin-top:12px;font-size:15px;font-weight:700;line-height:1.45}
+.head .alice a{color:#e0b862;text-decoration:underline;text-underline-offset:3px}
 .legal{text-align:center;margin:18px auto 0;font-size:13px;color:#5c635e}
 .legal a{color:#a97f2a;font-weight:700;text-decoration:none}
+.legal .alice-call{display:block;margin:0 auto 10px;font-size:15px;line-height:1.45;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:560px){.fg{grid-template-columns:1fr}}
 </style></head><body>
 <div class="card">
-  <div class="head"><div class="mark">M</div><div class="brand">MacRandle Acres</div><h1>Book your Growth Audit call</h1><p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p></div>
+  <div class="head"><div class="mark">M</div><div class="brand">MacRandle Acres</div><h1>Book your Growth Audit call</h1><p class="alice">__ALICE_CALL__</p><p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p></div>
   <div class="body" id="body"><div class="empty">Loading available times…</div></div>
   <div class="sms-slot" id="smsSlot">__SMS_CONSENT__</div>
 </div>
-<footer class="legal"><a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></footer>
+<footer class="legal">__ALICE_CALL__<a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></footer>
 <script>
 var PREFILL={"name":"","email":"","phone":"","service":"","type":""};
 var entered={name:PREFILL.name||'',email:PREFILL.email||'',phone:PREFILL.phone||''};
@@ -1935,7 +1947,9 @@ function wireForm(){
       }).catch(function(){b.disabled=false;b.textContent='Confirm booking';m.textContent='Network error, please try again.';});
   };
 }
-</script></body></html>""".replace("__SMS_CONSENT__", sms_consent_label_html("sms_consent"))
+</script></body></html>""".replace(
+    "__SMS_CONSENT__", sms_consent_label_html("sms_consent")).replace(
+    "__ALICE_CALL__", ALICE_CALL_LINK)
 
 
 BOOKINGS_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
@@ -3078,7 +3092,9 @@ def send_project_email(rec):
 @app.route("/design")
 def design_page():
     head = "" if session.get("admin") else tracking_head()
-    resp = Response(DESIGN_HTML.replace("__TRACK__", head), mimetype="text/html")
+    resp = Response(
+        DESIGN_HTML.replace("__TRACK__", head).replace("__ALICE_CALL__", ALICE_CALL_LINK),
+        mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"
     return resp
 
@@ -3417,6 +3433,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 @media(max-width:860px){.stage{padding:0 0 10px}.phone{position:relative;right:auto;bottom:auto;margin:44px auto 44px}.vp{height:420px}}
 @media(max-width:560px){.vp{height:360px}.sc-tab{padding:8px 12px;font-size:12.5px}.how:before{display:none}.inc span{font-size:13px;margin:0 14px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.js .rv,.head h1 .w,.head p,.head .hbtn,.win{opacity:1!important;transform:none!important}.vp{overflow-y:auto}.how:before{transform:none}}
+footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weight:700;font-size:15px;line-height:1.45;text-decoration:underline;text-underline-offset:3px}
 </style></head><body>
 <div id="prog"></div>
 <div class="head">
@@ -3615,6 +3632,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 <footer style="text-align:center;padding:40px 18px 8px;color:#5c635e;font-size:14px">
   <p style="font-style:italic;color:#a97f2a;margin-bottom:6px">Lucid Marketing, by MacRandle Acres.</p>
   <p>Remove Friction. Accelerate Growth.</p>
+  <p>__ALICE_CALL__</p>
   <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/starter-prompts" style="color:#a97f2a;font-weight:700;text-decoration:none">Free Grok Starter Prompts</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a> &middot; <a href="/terms" style="color:#a97f2a;font-weight:700;text-decoration:none">Terms</a></p>
 </footer>
 <script>
