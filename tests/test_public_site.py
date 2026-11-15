@@ -245,11 +245,12 @@ class PublicSiteTests(unittest.TestCase):
         html = self.client.get("/starter-prompts").get_data(as_text=True)
         self.assertEqual(self.client.get("/starter-prompts").status_code, 200)
         self.assertIn("<h1", html)
-        self.assertIn("Free Grok Starter Prompts", html)
+        self.assertIn("Free AI Starter Prompts", html)
+        self.assertNotIn("Grok", html)
         self.assertIn("From Lucid Marketing, by MacRandle Acres.", html)
         self.assertIn("Remove Friction. Accelerate Growth.", html)
         self.assertIn(
-            "These 10 prompts are ones we have actually used to grow a channel, "
+            "Ten prompts I've used to grow a channel, "
             "write posts, follow up with clients, and fix a website.",
             html,
         )
@@ -304,14 +305,14 @@ class PublicSiteTests(unittest.TestCase):
         home_footer = home.split("<footer>", 1)[1].split("</footer>", 1)[0]
         self.assertNotIn("/starter-prompts", home_nav)
         self.assertIn('href="/starter-prompts"', home_footer)
-        self.assertIn("Free Grok Starter Prompts", home_footer)
+        self.assertIn("Free AI Starter Prompts", home_footer)
 
         hub = self.client.get("/hub").get_data(as_text=True)
         hub_nav = hub.split("<nav", 1)[1].split("</nav>", 1)[0]
         hub_footer = hub.split("<footer>", 1)[1].split("</footer>", 1)[0]
         self.assertNotIn("/starter-prompts", hub_nav)
         self.assertIn('href="/starter-prompts"', hub)
-        self.assertIn("Free Grok Starter Prompts", hub)
+        self.assertIn("Free AI Starter Prompts", hub)
         self.assertIn('href="/starter-prompts"', hub_footer)
 
         design = self.client.get("/design").get_data(as_text=True)
@@ -327,7 +328,10 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn('data-edit="mz2_n">Post engagement', impact)
         self.assertIn('data-edit="mz2_s">Comments and shares, straight from Meta', impact)
         self.assertIn('data-edit="mz3_n">Impressions', impact)
-        self.assertIn('data-edit="mz3_s">Straight from Meta Ads Manager', impact)
+        self.assertIn(
+            'data-edit="mz3_s">Straight from Meta insights, plus Ads Manager when we run ads',
+            impact,
+        )
         self.assertIn('data-edit="mz4_n">New followers gained', impact)
         self.assertIn('data-edit="mz4_s">Straight from Meta', impact)
         self.assertIn('data-edit="mz1_n">Reach &amp; link clicks', impact)
@@ -498,9 +502,101 @@ class PublicSiteTests(unittest.TestCase):
             self.assertIn(anchor, struck.group(1))
             self.assertNotIn(sale, struck.group(1))
             self.assertIn(sale, block)
-            self.assertIn("This week", block)
+            self.assertIn("Sale price", block)
+            self.assertNotIn("This week", block)
             self.assertEqual(block.count("/mo"), 2)
             self.assertNotIn("\u2014", block)
+
+    def test_copy_refresh_key_strings(self):
+        home = self.client.get("/").get_data(as_text=True)
+        hub = self.client.get("/hub").get_data(as_text=True)
+        design = self.client.get("/design").get_data(as_text=True)
+        terms = self.client.get("/terms").get_data(as_text=True)
+        llms = self.client.get("/llms.txt").get_data(as_text=True)
+        for phrase in (
+            "I help you get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
+            "You tell me what's on your plate and I take it off.",
+            "Every month you get a short list of what I changed and what I'd do next.",
+            "Profiles that pop",
+            "Posts that get seen",
+            "More real conversations",
+            "Local groups",
+            "Ads that make sense",
+            "Go High Level set up right",
+            'data-edit="voice_h2hi">"marketing."',
+            "You want people to find you, trust you and call.",
+            "showing you what moved",
+            "Straight from Meta insights, plus Ads Manager when we run ads",
+            'data-edit="card1_h3">Instant replies',
+            'data-edit="card2_h3">Follow-up texts',
+            'data-edit="card3_h3">Ad check-ups',
+            'data-edit="card5_h3">Easy booking',
+            'data-edit="card6_h3">Monthly plan',
+            "If you use Go High Level, I can set up instant replies so new leads hear back fast.",
+            "I set up follow-up texts and emails in Go High Level so fewer leads slip through.",
+            "If you run ads, I review them every month and shift budget toward what gets clicks, messages and calls.",
+            "I help you set up booking links and reminders so people can book you easily.",
+            "A short monthly plan: what we did, what worked, what's next.",
+            "Your posts, pages and groups are the work.",
+            "Example month",
+            "Your real numbers, straight from Meta, yours to verify. The numbers shown here are an example.",
+            "Monthly plans. Pick how much you want me to take on.",
+            "Done for you, done with you, or I teach you how.",
+            "This week only, ends Sunday, November 22",
+            "Monthly review of your profiles, page and posts",
+            "A short to-do list, ranked",
+            "I handle the top items for you, or teach you how",
+            "Weekly hands-on help with your Facebook and Instagram.",
+            "Weekly work on your Facebook and Instagram: posts, graphics, groups and replies",
+            "Messages answered within one business day",
+            "Your Growth Partner, all-in on growing the business.",
+            "Everything in Growth Partner",
+            "Ads set up and managed",
+            "YouTube and video help",
+            "Go High Level and AI agents set up for you",
+            "Quarterly plan",
+            "Every month I take work off your plate and show you",
+            "look great, load fast, and come with booking and contact forms built in",
+            "On a free call, I'll look at your profiles, page and posts and tell you the first three things I'd fix.",
+            "Clear marketing. You always know what I did and why.",
+            "a growth partner based in Salisbury, MD",
+            "Jeff Randle, Growth Partner.",
+            '"telephone":"+1-443-323-1268"',
+            '"jobTitle":"Growth Partner"',
+        ):
+            self.assertIn(phrase, home, phrase)
+        for gone in (
+            "Fractional Growth Advisor",
+            "fractional growth advisor",
+            "Straight from Meta Ads Manager",
+            "Weekly nurturing sequences",
+            "Monthly CRM optimization",
+            "Facebook ad audit",
+            "Lead follow-up management",
+            'data-edit="card4_',
+            "Lightning fast",
+            "CRM optimization",
+            "+1-862-254-7839",
+            "\u2014",
+        ):
+            self.assertNotIn(gone, home, gone)
+        self.assertEqual(home.count(">Fast<"), 1)
+        self.assertIn("Growth Partner · Lucid Marketing, by MacRandle Acres", hub)
+        self.assertIn("Your Growth Partner.", hub)
+        self.assertIn('"jobTitle":"Growth Partner"', hub)
+        self.assertNotIn("Fractional Growth Advisor", hub)
+        self.assertGreaterEqual(design.count("Sample content"), 4)
+        self.assertIn("Sample testimonial", design)
+        self.assertNotIn("THE CARTERS", design)
+        self.assertNotIn("Lightning fast", design)
+        self.assertIn(">Fast<", design)
+        self.assertIn('href="tel:+14433231268">(443) 323-1268</a>', terms)
+        self.assertNotIn("443-389-0330", terms)
+        self.assertIn("growth partner in Salisbury, Maryland", llms)
+        self.assertIn("Phone: +1-443-323-1268", llms)
+        self.assertIn("Free AI starter prompts", llms)
+        self.assertNotIn("Grok", llms)
+        self.assertNotIn("+1-862-254-7839", llms)
 
 
 if __name__ == "__main__":

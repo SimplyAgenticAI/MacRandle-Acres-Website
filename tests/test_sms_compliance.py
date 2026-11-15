@@ -21,7 +21,7 @@ TERMS_PHRASES = (
     "Carriers are not liable for delayed or undelivered messages.",
     "not a condition of purchase",
     "macrandleacres@gmail.com",
-    "443-389-0330",
+    "(443) 323-1268",
 )
 
 PRIVACY_PHRASES = (

@@ -227,7 +227,8 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("For growing businesses", hero)
         self.assertIn("Remove Friction.", hero)
         self.assertIn("Accelerate Growth.", hero)
-        self.assertIn("make your business", hero)
+        self.assertIn("get seen", hero)
+        self.assertIn("Facebook, Instagram", hero)
         self.assertNotIn("real estate", hero.lower())
         self.assertNotIn("realtor", hero.lower())
         self.assertNotIn("\u2014", hero)
@@ -239,7 +240,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("more profitable", re_section)
         self.assertNotIn("\u2014", re_section)
         self.assertIn("That's Lucid Marketing, by MacRandle Acres.", home)
-        self.assertIn("Marketing that is conscious, clear, and intentional.", home)
+        self.assertIn("Clear marketing. You always know what I did and why.", home)
         section = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
         self.assertLess(home.index('id="ai-employee"'), home.index('id="websites"'))
         self.assertIn("Your first AI agent, set up with you on a call.", section)

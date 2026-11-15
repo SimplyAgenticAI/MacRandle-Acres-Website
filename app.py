@@ -1081,7 +1081,7 @@ h2{color:#234F3D;font-size:17px;margin:22px 0 6px}p{margin-bottom:10px;font-size
 <h2>Contact</h2>
 <p>MacRandle Acres<br>Salisbury, MD<br>
 Email: <a href="mailto:macrandleacres@gmail.com">macrandleacres@gmail.com</a><br>
-Phone: <a href="tel:+14433890330">443-389-0330</a></p>
+Phone: <a href="tel:+14433231268">(443) 323-1268</a></p>
 <section class="sms-box" id="sms">
 <h2>SMS program</h2>
 <p>Program name: Lucid Marketing by MacRandle Acres.</p>
@@ -1093,7 +1093,7 @@ Phone: <a href="tel:+14433890330">443-389-0330</a></p>
 <p>Carriers are not liable for delayed or undelivered messages.</p>
 <p>Consent to receive text messages is not a condition of purchase.</p>
 <p>See our <a href="/privacy">Privacy Policy</a> for how we handle your information, including mobile numbers and text message consent.</p>
-<p>Contact us at <a href="mailto:macrandleacres@gmail.com">macrandleacres@gmail.com</a> or 443-389-0330.</p>
+<p>Contact us at <a href="mailto:macrandleacres@gmail.com">macrandleacres@gmail.com</a> or <a href="tel:+14433231268">(443) 323-1268</a>.</p>
 </section>
 <a class="back" href="/">&larr; Back to site</a>
 <footer class="legal">__ALICE_CALL__<a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></footer>
@@ -3298,6 +3298,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .vp:hover .sc{animation-play-state:paused}
 @keyframes autoscroll{0%,12%{transform:translateY(0)}48%,62%{transform:translateY(calc(-1*var(--d,0px)))}96%,100%{transform:translateY(0)}}
 .sc-note{font-size:12.5px;color:#8a918b;margin-top:8px}
+.sample-tag{position:absolute;z-index:6;left:12px;bottom:12px;font-family:'Inter',system-ui,sans-serif;font-size:11px;font-weight:700;letter-spacing:.04em;background:#fff;color:#234F3D;border:1px solid rgba(35,79,61,.25);border-radius:100px;padding:4px 9px;box-shadow:0 4px 12px rgba(0,0,0,.15);pointer-events:none}
+.phone .sample-tag{position:static;display:inline-block;margin-top:8px;box-shadow:none}
 
 /* Oakline - real estate */
 .s-oak .sc{background:#0b1820;color:#f3ede2}
@@ -3464,8 +3466,8 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
   </div>
 </div>
 <div class="inc"><div>
-  <span>Custom design, never a template</span><span>Mobile-first</span><span>Animations that captivate</span><span>Lightning fast</span><span>Built-in booking &amp; forms</span><span>SEO-ready</span><span>Analytics set up</span><span>Hosting &amp; launch handled</span>
-  <span>Custom design, never a template</span><span>Mobile-first</span><span>Animations that captivate</span><span>Lightning fast</span><span>Built-in booking &amp; forms</span><span>SEO-ready</span><span>Analytics set up</span><span>Hosting &amp; launch handled</span>
+  <span>Custom design, never a template</span><span>Mobile-first</span><span>Animations that captivate</span><span>Fast</span><span>Built-in booking &amp; forms</span><span>SEO-ready</span><span>Analytics set up</span><span>Hosting &amp; launch handled</span>
+  <span>Custom design, never a template</span><span>Mobile-first</span><span>Animations that captivate</span><span>Fast</span><span>Built-in booking &amp; forms</span><span>SEO-ready</span><span>Analytics set up</span><span>Hosting &amp; launch handled</span>
 </div></div>
 <section class="showcase rv" id="work">
   <div class="sc-eyebrow">Concept work</div>
@@ -3481,7 +3483,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
       <div class="bbar"><i></i><i></i><i></i><span class="url" id="sc_url">maisontable.com</span></div>
       <div class="vp" id="sc_vp">
 
-        <div class="site s-oak" data-order="2" data-url="oaklinecoastal.com"><div class="sz"><div class="sc">
+        <div class="site s-oak" data-order="2" data-url="oaklinecoastal.com"><span class="sample-tag">Sample content</span><div class="sz"><div class="sc">
           <div class="o-hero">
             <svg class="o-scene" viewBox="0 0 760 410" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <defs>
@@ -3518,10 +3520,10 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
             </div>
           </div>
           <div class="o-stats"><div><b>$480M</b>in homes sold</div><div><b>1,200+</b>families moved</div><div><b>4.9&#9733;</b>from 300+ reviews</div></div>
-          <div class="o-quote">&ldquo;They sold our home in six days, over asking. It felt effortless.&rdquo;<span>THE CARTERS &middot; BERLIN, MD</span></div>
+          <div class="o-quote">&ldquo;They sold our home in six days, over asking. It felt effortless.&rdquo;<span>Sample testimonial</span></div>
         </div></div></div>
 
-        <div class="site s-mai on" data-order="0" data-url="maisontable.com"><div class="sz"><div class="sc">
+        <div class="site s-mai on" data-order="0" data-url="maisontable.com"><span class="sample-tag">Sample content</span><div class="sz"><div class="sc">
           <div class="m-nav"><span>Menu</span><span>Story</span><b>Maison</b><span>Events</span><span class="m-res">Reserve</span></div>
           <div class="m-hero">
             <div class="m-copy">
@@ -3560,7 +3562,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
           </div>
         </div></div></div>
 
-        <div class="site s-lum" data-order="1" data-url="lumenwellness.co"><div class="sz"><div class="sc">
+        <div class="site s-lum" data-order="1" data-url="lumenwellness.co"><span class="sample-tag">Sample content</span><div class="sz"><div class="sc">
           <div class="l-hero"><div class="l-blob b1"></div><div class="l-blob b2"></div><div class="l-blob b3"></div>
             <div class="l-nav"><b>lumen</b><span>Programs &middot; Journal &middot; About</span><span class="l-pill">Book a call</span></div>
             <div class="l-copy">
@@ -3598,7 +3600,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
       <div class="p-item ck"><b>&#10003;</b><span>Morning walk</span><small>20m</small></div>
       <div class="p-item ck ck2"><b>&#10003;</b><span>Drink water</span><small>6/8</small></div>
       <div class="p-item"><b></b><span>Read 10 pages</span><small>9pm</small></div>
-    </div><div class="p-label">App concept &middot; Pulse</div></div>
+    </div><div class="p-label">App concept &middot; Pulse<span class="sample-tag">Sample content</span></div></div>
   </div>
   <div class="sc-note">Hover a site to pause it &middot; Every build is mobile-first</div>
   <a class="scbtn" href="#pbody">Start your project &darr;</a>
@@ -3647,7 +3649,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
   <p style="font-style:italic;color:#a97f2a;margin-bottom:6px">Lucid Marketing, by MacRandle Acres.</p>
   <p>Remove Friction. Accelerate Growth.</p>
   <p>__ALICE_CALL__</p>
-  <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/starter-prompts" style="color:#a97f2a;font-weight:700;text-decoration:none">Free Grok Starter Prompts</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a> &middot; <a href="/terms" style="color:#a97f2a;font-weight:700;text-decoration:none">Terms</a></p>
+  <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/starter-prompts" style="color:#a97f2a;font-weight:700;text-decoration:none">Free AI Starter Prompts</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a> &middot; <a href="/terms" style="color:#a97f2a;font-weight:700;text-decoration:none">Terms</a></p>
 </footer>
 <script>
 var b=document.getElementById('pbody');
