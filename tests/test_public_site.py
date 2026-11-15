@@ -86,6 +86,30 @@ class PublicSiteTests(unittest.TestCase):
         self.assertNotRegex(home, r'data-edit="jeff_p"[^_]')
         self.assertNotRegex(home, r'data-edit="foot_copy"[^_]')
 
+    def test_retired_hub_ma_desc_is_left_out_of_page_and_api(self):
+        """A saved hub ma_desc never reaches /hub or GET /api/content; ma_desc_lm does."""
+        old = (
+            "Your Fractional Growth Advisor, every month I find hidden opportunities "
+            "to make your business more profitable, then build the systems to capture them."
+        )
+        live = "Saved ma_desc_lm still comes through from hub content."
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        with open(os.path.join(tmp.name, "hub_content.json"), "w", encoding="utf-8") as f:
+            json.dump({"ma_desc": old, "ma_desc_lm": live}, f)
+        with patch.object(site, "DATA", tmp.name):
+            hub = self.client.get("/hub").get_data(as_text=True)
+            api = self.client.get("/api/content?page=hub")
+        self.assertEqual(api.status_code, 200)
+        body = api.get_json()
+        self.assertNotIn(old, hub)
+        self.assertNotIn('"ma_desc"', hub)
+        self.assertIn(live, hub)
+        self.assertIn('data-edit="ma_desc_lm"', hub)
+        self.assertNotIn("ma_desc", body["content"])
+        self.assertNotIn(old, json.dumps(body))
+        self.assertEqual(body["content"]["ma_desc_lm"], live)
+
     def test_booking_buttons_point_at_book(self):
         for path in MARKETING_PAGES:
             html = self.client.get(path).get_data(as_text=True)
