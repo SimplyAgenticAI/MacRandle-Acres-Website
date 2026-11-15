@@ -549,8 +549,10 @@ class PublicSiteTests(unittest.TestCase):
             "Weekly hands-on help with your Facebook and Instagram.",
             "Weekly work on your Facebook and Instagram: posts, graphics, groups and replies",
             "Messages answered within one business day",
+            "Each month I look over your profiles, page and posts, and fix the things that matter most.",
             "Your Growth Partner, all-in on growing the business.",
-            "Everything in Growth Partner",
+            "Everything in Momentum Plus",
+            "I help real estate agents get seen, get conversations going, and turn them into clients on Facebook, Instagram and beyond.",
             "Ads set up and managed",
             "YouTube and video help",
             "Go High Level and AI agents set up for you",
@@ -565,6 +567,9 @@ class PublicSiteTests(unittest.TestCase):
             '"jobTitle":"Growth Partner"',
         ):
             self.assertIn(phrase, home, phrase)
+        t2_name = re.search(r'data-edit="t2_name">([^<]*)</div>', home)
+        self.assertIsNotNone(t2_name)
+        self.assertEqual(t2_name.group(1), "Momentum Plus")
         for gone in (
             "Fractional Growth Advisor",
             "fractional growth advisor",
@@ -582,7 +587,10 @@ class PublicSiteTests(unittest.TestCase):
             self.assertNotIn(gone, home, gone)
         self.assertEqual(home.count(">Fast<"), 1)
         self.assertIn("Growth Partner · Lucid Marketing, by MacRandle Acres", hub)
-        self.assertIn("Your Growth Partner.", hub)
+        self.assertIn(
+            "Your Growth Partner. I help you get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
+            hub,
+        )
         self.assertIn('"jobTitle":"Growth Partner"', hub)
         self.assertNotIn("Fractional Growth Advisor", hub)
         self.assertGreaterEqual(design.count("Sample content"), 4)
@@ -593,6 +601,12 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn('href="tel:+14433231268">(443) 323-1268</a>', terms)
         self.assertNotIn("443-389-0330", terms)
         self.assertIn("growth partner in Salisbury, Maryland", llms)
+        self.assertIn(
+            "He helps small businesses get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
+            llms,
+        )
+        self.assertIn("Momentum Plus is $1,997 to $2,500 per month", llms)
+        self.assertNotIn("Growth Partner is $1,997", llms)
         self.assertIn("Phone: +1-443-323-1268", llms)
         self.assertIn("Free AI starter prompts", llms)
         self.assertNotIn("Grok", llms)

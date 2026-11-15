@@ -237,7 +237,11 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("real estate", nav.lower())
         re_section = home.split('id="real-estate"', 1)[1].split("MEET JEFF", 1)[0]
         self.assertIn("Real estate", re_section)
-        self.assertIn("more profitable", re_section)
+        self.assertIn(
+            "I help real estate agents get seen, get conversations going, and turn them into clients on Facebook, Instagram and beyond.",
+            re_section,
+        )
+        self.assertNotIn("more profitable", re_section)
         self.assertNotIn("\u2014", re_section)
         self.assertIn("That's Lucid Marketing, by MacRandle Acres.", home)
         self.assertIn("Clear marketing. You always know what I did and why.", home)
