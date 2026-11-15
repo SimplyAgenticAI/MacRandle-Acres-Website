@@ -191,15 +191,34 @@ def terms():
 
 
 # ---------- content store ----------
+# Editable keys the templates no longer use. Saved JSON on the persistent disk
+# can still hold them (hub "ma_desc" moved to "ma_desc_lm"), and that JSON is
+# injected into the page source. Dropped on load, and again on save so the
+# file cleans itself the next time an edit is written.
+RETIRED_CONTENT_KEYS = {
+    "hub": {"ma_desc"},
+}
+
+
 def _content_path(page):
     return os.path.join(DATA, PAGES[page]["content"])
+
+
+def _drop_retired_content(page, data):
+    retired = RETIRED_CONTENT_KEYS.get(page)
+    if retired and isinstance(data, dict):
+        for key in retired:
+            data.pop(key, None)
+    return data
 
 
 def load_content(page="main"):
     try:
         with open(_content_path(page), encoding="utf-8") as f:
             data = json.load(f)
-            return data if isinstance(data, dict) else {}
+            if not isinstance(data, dict):
+                return {}
+            return _drop_retired_content(page, data)
     except Exception:
         return {}
 
@@ -314,6 +333,7 @@ def api_content():
     current = load_content(page)
     for key, val in incoming.items():
         current[str(key)] = sanitize(val)
+    _drop_retired_content(page, current)
     save_content(page, current)
     return jsonify(ok=True, saved=len(incoming), page=page)
 
