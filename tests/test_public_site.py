@@ -369,11 +369,13 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn('data-edit="hero_h1b">Accelerate Growth.', home)
         self.assertIn("I'm not another vendor", home)
         self.assertIn("Talk to Alice, Jeff's AI assistant: (443) 389-0330", home)
-        self.assertIn(".hero{position:relative;padding:96px 0 28px;text-align:center}", home)
-        self.assertIn(".hero{padding:64px 0 20px}", home)
+        self.assertIn(".hero{position:relative;padding:96px 0 14px;text-align:center}", home)
+        self.assertIn(".hero{padding:64px 0 10px}", home)
         self.assertIn("flex-wrap:wrap;margin-top:20px;", home)
         self.assertIn("border-bottom:1px solid var(--bd-soft);padding:12px 0}", home)
-        self.assertIn("#lucid{padding-top:16px;padding-bottom:12px}", home)
+        self.assertIn("section{position:relative;padding:40px 0}", home)
+        self.assertIn("section{padding:28px 0}", home)
+        self.assertIn("#ai-employee{padding-top:8px}", home)
         # Saved admin overrides live in content.json and replace matching data-edit
         # keys for every visitor. These keys are unset, so the new defaults show.
         content = site.load_content("main")
@@ -477,6 +479,28 @@ class PublicSiteTests(unittest.TestCase):
                 self.assertNotIn(gone, admin)
             self.assertIn("More metrics, like booked appointments, get added as tracking grows.", admin)
             self.assertNotIn("\u2014", admin.split('class="panel guide"', 1)[1].split("</div>", 1)[0])
+
+    def test_pricing_tiers_show_strikethrough_anchor_and_this_week_price(self):
+        home = self.client.get("/").get_data(as_text=True)
+        en = "\u2013"
+        expected = {
+            "t1_price": ("$997" + en + "1,250", "$698" + en + "875"),
+            "t2_price": ("$1,997" + en + "2,500", "$1,398" + en + "1,750"),
+            "t3_price": ("$3,500" + en + "5,000", "$2,450" + en + "3,500"),
+        }
+        for key, (anchor, sale) in expected.items():
+            match = re.search(r'data-edit="%s">(.*?)</div>' % key, home, re.S)
+            self.assertIsNotNone(match, key)
+            block = match.group(1)
+            struck = re.search(r"<s>(.*?)</s>", block, re.S)
+            self.assertIsNotNone(struck, key)
+            self.assertIn('class="was"', block)
+            self.assertIn(anchor, struck.group(1))
+            self.assertNotIn(sale, struck.group(1))
+            self.assertIn(sale, block)
+            self.assertIn("This week", block)
+            self.assertEqual(block.count("/mo"), 2)
+            self.assertNotIn("\u2014", block)
 
 
 if __name__ == "__main__":
