@@ -576,34 +576,26 @@ footer{position:relative}
 .wb-bar{display:flex;gap:6px;align-items:center;padding:10px 13px;background:#efeae0}
 .wb-bar i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.wb-bar i:nth-child(2){background:#febc2e}.wb-bar i:nth-child(3){background:#28c840}
 .wb-bar em{margin:0 auto;font-style:normal;font-size:11px;color:#8a8270;font-family:ui-monospace,monospace;background:#fff;padding:3px 14px;border-radius:6px}
-.wb-pg{position:relative;height:330px;padding:16px 20px;background:#faf8f3;overflow:hidden}
-.wb-pg *{--g:#e6e1d6}
-.wb-nav{display:flex;align-items:center;gap:10px;margin-bottom:26px}
-.wb-logo{width:26px;height:26px;border-radius:8px;background:var(--g);animation:paint 10s infinite;--c:#234F3D}
-.wb-nl{height:8px;width:40px;border-radius:4px;background:var(--g)}.wb-nl:first-of-type{margin-left:auto}
-.wb-hero{position:relative;border-radius:14px;padding:26px 22px;background:var(--g);animation:paint 10s infinite;--c:linear-gradient(135deg,#26543f,#1a3b2d)}
-.wb-t{height:20px;border-radius:5px;background:rgba(255,255,255,.75);width:0;animation:type 10s steps(14) infinite}
-.wb-t.t2{width:0;margin-top:8px;height:20px;animation-name:type2;background:#e0b862}
-.wb-s{height:8px;width:56%;border-radius:4px;background:rgba(255,255,255,.4);margin-top:14px;opacity:0;animation:fadein 10s infinite}
-.wb-cta{display:inline-block;margin-top:16px;height:28px;width:110px;border-radius:9px;background:var(--grad-gold);transform:scale(0);animation:popin 10s infinite;position:relative}
-.wb-cta:after{content:'';position:absolute;inset:0;border-radius:inherit;border:2px solid #e0b862;opacity:0;animation:ripple 10s infinite}
-.wb-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
-.wb-card{height:74px;border-radius:12px;background:#fff;box-shadow:0 8px 20px rgba(35,49,40,.08);opacity:0;transform:translateY(24px);animation:rise 10s infinite;padding:10px}
-.wb-card:nth-child(2){animation-name:rise2}.wb-card:nth-child(3){animation-name:rise3}
+.wb-pg{position:relative;height:auto;padding:16px 18px 18px;background:#faf8f3;overflow:hidden}
+.wb-nav{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.wb-logo{width:26px;height:26px;border-radius:8px;background:#234F3D;color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;flex:none}
+.wb-nl{font-size:11px;font-weight:700;color:#5c635e;letter-spacing:.01em}.wb-nl:first-of-type{margin-left:auto}
+.wb-hero{position:relative;border-radius:14px;padding:22px 18px 18px;background:linear-gradient(135deg,#26543f,#1a3b2d);animation:wbhero .65s ease both}
+.wb-t{color:#fff;font-weight:700;font-size:22px;line-height:1.2;letter-spacing:-.02em;animation:wbin .4s ease .45s both}
+.wb-t.t2{margin-top:2px;color:#e0b862;font-size:18px;animation-delay:.7s}
+.wb-s{color:rgba(255,255,255,.82);font-size:13px;line-height:1.4;margin-top:8px;animation:wbin .4s ease 1s both}
+.wb-cta{display:inline-flex;align-items:center;margin-top:14px;padding:8px 14px;border-radius:9px;background:var(--grad-gold);color:#3a2a05;font-size:12.5px;font-weight:800;animation:wbpop .4s cubic-bezier(.2,.8,.2,1) 1.25s both}
+.wb-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.wb-card{border-radius:12px;background:#fff;box-shadow:0 8px 20px rgba(35,49,40,.08);padding:10px;animation:wbin .4s ease 1.5s both}
+.wb-card:nth-child(2){animation-delay:1.62s}.wb-card:nth-child(3){animation-delay:1.74s}
 .wb-card b{display:block;width:22px;height:22px;border-radius:7px;background:rgba(199,154,59,.25)}
-.wb-card i{display:block;height:6px;border-radius:3px;background:var(--g);margin-top:10px;width:80%}.wb-card i+i{width:55%;margin-top:6px}
-.wb-cur{position:absolute;z-index:3;width:22px;height:22px;left:0;top:0;animation:cur 10s infinite;filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
+.wb-card span{display:block;margin-top:8px;font-size:12px;font-weight:700;color:#234F3D}
+.wb-cur{position:absolute;z-index:3;width:22px;height:22px;left:24%;top:58%;opacity:0;animation:wbcur 2.1s ease .15s both;filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
 .wb-cur svg{width:100%;height:100%}
-@keyframes paint{0%,18%{background:var(--g)}26%,90%{background:var(--c)}100%{background:var(--g)}}
-@keyframes type{0%,4%{width:0}20%,90%{width:62%}100%{width:0}}
-@keyframes type2{0%,20%{width:0}32%,90%{width:40%}100%{width:0}}
-@keyframes fadein{0%,32%{opacity:0}38%,90%{opacity:1}100%{opacity:0}}
-@keyframes popin{0%,38%{transform:scale(0)}44%{transform:scale(1.12)}48%,90%{transform:scale(1)}100%{transform:scale(0)}}
-@keyframes ripple{0%,60%{opacity:0;transform:scale(1)}62%{opacity:1}72%,100%{opacity:0;transform:scale(1.5)}}
-@keyframes rise{0%,46%{opacity:0;transform:translateY(24px)}54%,90%{opacity:1;transform:none}100%{opacity:0}}
-@keyframes rise2{0%,50%{opacity:0;transform:translateY(24px)}58%,90%{opacity:1;transform:none}100%{opacity:0}}
-@keyframes rise3{0%,54%{opacity:0;transform:translateY(24px)}62%,90%{opacity:1;transform:none}100%{opacity:0}}
-@keyframes cur{0%{transform:translate(380px,300px)}12%{transform:translate(120px,110px)}40%{transform:translate(160px,140px)}56%{transform:translate(70px,196px)}60%{transform:translate(70px,196px) scale(.82)}63%{transform:translate(70px,196px)}80%{transform:translate(300px,270px)}100%{transform:translate(380px,300px)}}
+@keyframes wbhero{from{background:#e6e1d6}to{background:linear-gradient(135deg,#26543f,#1a3b2d)}}
+@keyframes wbin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes wbpop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes wbcur{0%{left:64%;top:76%;opacity:0}16%{opacity:1}40%{left:14%;top:36%;opacity:1}72%{left:22%;top:58%;opacity:1}100%{left:22%;top:58%;opacity:0}}
 .wb-badge{position:absolute;z-index:4;background:#fff;border-radius:100px;padding:8px 14px;font-weight:700;font-size:13px;color:var(--green);box-shadow:0 14px 30px rgba(20,40,30,.18);display:flex;gap:7px;align-items:center;animation:bfloat 5s ease-in-out infinite}
 .wb-badge b{width:18px;height:18px;border-radius:50%;background:var(--grad-gold);display:grid;place-items:center;color:#3a2a05;font-size:11px}
 .wb-badge.b1{top:6px;right:0}.wb-badge.b2{bottom:0;left:-14px;animation-delay:-1.7s}.wb-badge.b3{top:46%;right:-8px;animation-delay:-3.3s}
@@ -623,7 +615,8 @@ footer{position:relative}
 .jf-copy p{font-size:16.5px;color:var(--ink2);line-height:1.7;max-width:640px}
 .jf-copy .hero-cta{justify-content:flex-start;margin-top:24px}
 /* final CTA sparks */
-.final-box{position:relative;overflow:hidden}
+/* Clears the footer wave (top:-56px). With 40px section padding the gap is 40px; at the 28px mobile padding it is 28px. */
+.final-box{position:relative;overflow:hidden;margin-bottom:56px}
 .final-box .spk{position:absolute;bottom:-10px;width:6px;height:6px;border-radius:50%;background:var(--gold-l);box-shadow:0 0 10px var(--gold-l);opacity:0;animation:spark 6s linear infinite;pointer-events:none}
 @keyframes spark{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-320px) translateX(30px)}}
 /* First section under the hero. Top padding is the halved values gap; the bottom uses the section rhythm. */
@@ -641,8 +634,8 @@ footer{position:relative}
 #real-estate .sec-head{margin-bottom:28px}
 #real-estate .sec-head p+p{margin-top:12px}
 @media(max-width:900px){.ws-grid{grid-template-columns:1fr;gap:34px}.ws-art{padding:10px 8px 26px}.jeff{grid-template-columns:1fr;text-align:center;padding:34px 24px;gap:26px}.jf-av{margin:0 auto;width:150px;height:150px}.jf-copy .hero-cta,.ws-copy .hero-cta{justify-content:center}.jf-copy p{margin:0 auto}.ws-copy{text-align:center}.ws-copy p{margin:0 auto}.ws-list{justify-content:center}#ai-employee .ai-fine{margin-left:auto;margin-right:auto}}
-@media(max-width:520px){.wb-pg{height:280px}.wb-badge{font-size:12px;padding:6px 11px}.wb-badge.b3{display:none}.ticker span{font-size:14px}}
-@media(prefers-reduced-motion:reduce){.wb-t{width:62%}.wb-t.t2{width:40%}.wb-s{opacity:1}.wb-cta{transform:none}.wb-card{opacity:1;transform:none}.wb-hero{background:var(--c)}.wb-cur{display:none}.hero h1 .hl{opacity:1;transform:none;filter:none}}
+@media(max-width:520px){.wb,.ws-art:hover .wb{transform:none}.wb-bar em{margin-left:10px;margin-right:auto}.wb-hero{padding:18px 16px}.wb-t{font-size:20px}.wb-badge{font-size:12px;padding:6px 11px}.wb-badge.b3{display:none}.ticker span{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.wb-cur{display:none}.hero h1 .hl{opacity:1;transform:none;filter:none}}
 </style>
 </head>
 <body>
@@ -1170,9 +1163,9 @@ footer{position:relative}
      <div class="wb-bar"><i></i><i></i><i></i><em>yourbusiness.com</em></div>
      <div class="wb-pg">
       <div class="wb-cur"><svg viewBox="0 0 24 24"><path d="M4 2l15 10-7 1.5L9 21z" fill="#1a2a24" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
-      <div class="wb-nav"><span class="wb-logo"></span><span class="wb-nl"></span><span class="wb-nl"></span><span class="wb-nl"></span></div>
-      <div class="wb-hero"><div class="wb-t"></div><div class="wb-t t2"></div><div class="wb-s"></div><span class="wb-cta"></span></div>
-      <div class="wb-cards"><div class="wb-card"><b></b><i></i><i></i></div><div class="wb-card"><b></b><i></i><i></i></div><div class="wb-card"><b></b><i></i><i></i></div></div>
+      <div class="wb-nav"><span class="wb-logo">Y</span><span class="wb-nl">Home</span><span class="wb-nl">Work</span><span class="wb-nl">Contact</span></div>
+      <div class="wb-hero"><div class="wb-t">Your business</div><div class="wb-t t2">starts here</div><div class="wb-s">A clear next step.</div><span class="wb-cta">Book a visit</span></div>
+      <div class="wb-cards"><div class="wb-card"><b></b><span>Design</span></div><div class="wb-card"><b></b><span>Forms</span></div><div class="wb-card"><b></b><span>Speed</span></div></div>
      </div>
     </div>
     <span class="wb-badge b1"><b>&#10003;</b>Mobile-first</span>

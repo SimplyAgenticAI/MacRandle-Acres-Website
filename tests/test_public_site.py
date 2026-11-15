@@ -725,5 +725,76 @@ class PublicSiteTests(unittest.TestCase):
             self.assertNotIn(banned, blob, banned)
 
 
+class HomeLayoutTests(unittest.TestCase):
+    """Final CTA clearance and the websites mock browser."""
+
+    def setUp(self):
+        self.client = site.app.test_client()
+
+    def _home(self):
+        return self.client.get("/").get_data(as_text=True)
+
+    def _css(self, home):
+        return home.split("<style>", 1)[1].split("</style>", 1)[0]
+
+    def test_final_cta_clears_the_footer_wave(self):
+        """The wave is pulled up over the footer. Card margin plus section padding must leave a gap."""
+        home = self._home()
+        css = self._css(home)
+        self.assertIn("Where are you", home)
+        self.assertIn('data-edit="final_h2hi">leaking growth?', home)
+        self.assertIn('data-edit="final_cta1">Book a Growth Audit', home)
+        self.assertIn('data-edit="final_cta2">Email Jeff', home)
+        wave = re.search(r"\.foot-wave\{[^}]*top:\s*-(\d+)px", css)
+        margin = re.search(r"\.final-box\{[^}]*margin-bottom:\s*(\d+)px", css)
+        desktop_pad = re.search(r"section\{position:relative;padding:(\d+)px 0\}", css)
+        mobile_at = css.find("@media(max-width:620px)")
+        mobile_rule = css.find("section{padding:", mobile_at)
+        mobile_pad = re.match(r"section\{padding:(\d+)px 0\}", css[mobile_rule:])
+        self.assertGreater(mobile_at, -1)
+        self.assertGreater(mobile_rule, mobile_at)
+        self.assertIsNotNone(wave)
+        self.assertIsNotNone(margin)
+        self.assertIsNotNone(desktop_pad)
+        self.assertIsNotNone(mobile_pad)
+        pull = int(wave.group(1))
+        gap_desktop = int(desktop_pad.group(1)) + int(margin.group(1)) - pull
+        gap_mobile = int(mobile_pad.group(1)) + int(margin.group(1)) - pull
+        self.assertGreaterEqual(gap_desktop, 32)
+        self.assertLessEqual(gap_desktop, 48)
+        self.assertGreaterEqual(gap_mobile, 24)
+        self.assertLessEqual(gap_mobile, 32)
+        # The section rhythm itself stays put. Only the card gains space under it.
+        self.assertNotRegex(css, r"\.final\{[^}]*padding")
+
+    def test_website_mock_is_a_readable_sample_site(self):
+        home = self._home()
+        css = self._css(home)
+        art = home.split('class="ws-art', 1)[1].split("</section>", 1)[0]
+        for label in ("Home", "Work", "Contact", "Your business", "starts here", "A clear next step.", "Book a visit", "Design", "Forms", "Speed"):
+            self.assertIn(label, art)
+        self.assertIn(">yourbusiness.com<", art)
+        self.assertNotIn("\u2014", art)
+        self.assertNotIn("\u2013", art)
+        # Marketing copy around the mock is unchanged.
+        self.assertIn('data-edit="ws_h2hi">stop the scroll', home)
+        self.assertIn("Your website is often the first handshake.", home)
+        # The old mock was empty bars: width 0, grown to 62%, then collapsed, with a cursor parked off-canvas.
+        self.assertNotRegex(css, r"\.wb-t\{[^}]*width:\s*0")
+        self.assertNotIn("width:62%", css)
+        self.assertNotIn("translate(380px", css)
+        self.assertNotRegex(css, r"\.wb-pg\{[^}]*height:\s*280px")
+        self.assertIn(".wb-pg{position:relative;height:auto;", css)
+        self.assertNotRegex(css, r"@keyframes wbin\{[^}]*width:\s*0")
+        self.assertNotRegex(css, r"\.wb-t\{[^}]*infinite")
+        self.assertIn("@keyframes wbcur{0%{left:64%;top:76%;opacity:0}", css)
+        self.assertIn("100%{left:22%;top:58%;opacity:0}", css)
+        # Narrow screens drop the 3D tilt that clipped the mock, and reduced motion still shows the sample.
+        self.assertIn(".wb,.ws-art:hover .wb{transform:none}", css)
+        self.assertIn(".wb-bar em{margin-left:10px;margin-right:auto}", css)
+        self.assertIn("@media(prefers-reduced-motion:reduce){.wb-cur{display:none}", css)
+        self.assertIn(".wb-hero{position:relative;border-radius:14px;padding:22px 18px 18px;background:linear-gradient(135deg,#26543f,#1a3b2d)", css)
+
+
 if __name__ == "__main__":
     unittest.main()
