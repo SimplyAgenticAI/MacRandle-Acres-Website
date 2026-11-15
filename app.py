@@ -982,9 +982,9 @@ def admin_leads_csv():
 
 
 # Tap-to-call. Straight apostrophe inside double quotes. No SMS wording and no em dash.
-ALICE_CALL_LABEL = "Talk to Alice, Jeff's AI assistant: (443) 389-0330"
+ALICE_CALL_LABEL = "Talk to Alice, Jeff's AI assistant: (443) 323-1268"
 ALICE_CALL_LINK = (
-    '<a class="alice-call" href="tel:+14433890330">%s</a>' % ALICE_CALL_LABEL
+    '<a class="alice-call" href="tel:+14433231268">%s</a>' % ALICE_CALL_LABEL
 )
 
 
