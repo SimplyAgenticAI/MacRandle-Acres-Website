@@ -10,9 +10,9 @@ os.environ["ADMIN_PASSWORD"] = "test-admin"
 import app as site
 
 
-LABEL = "Talk to Alice, Jeff's AI assistant: (443) 389-0330"
-HREF = 'href="tel:+14433890330"'
-ANCHOR = '<a class="alice-call" href="tel:+14433890330">%s</a>' % LABEL
+LABEL = "Talk to Alice, Jeff's AI assistant: (443) 323-1268"
+HREF = 'href="tel:+14433231268"'
+ANCHOR = '<a class="alice-call" href="tel:+14433231268">%s</a>' % LABEL
 REQUESTED = ("/", "/book", "/privacy", "/terms", "/hub", "/contact")
 FOOTER_PAGES = (
     "/", "/book", "/privacy", "/terms", "/hub",
@@ -82,6 +82,23 @@ class AliceCallLinkTests(unittest.TestCase):
         agent_head = agent.split("<h1>", 1)[1].split('id="body"', 1)[0]
         self.assertIn("<h1>Book a Lucid Marketing call</h1>", agent)
         self.assertIn(ANCHOR, agent_head)
+
+    def test_no_alice_call_anchor_contains_4433890330(self):
+        old = "4433890330"
+        anchor_re = re.compile(
+            r'<a\b[^>]*\bclass="alice-call"[^>]*>.*?</a>',
+            re.I | re.S,
+        )
+        found = 0
+        for path in FOOTER_PAGES:
+            static = _static(self.client.get(path).get_data(as_text=True))
+            anchors = anchor_re.findall(static)
+            self.assertTrue(anchors, path)
+            found += len(anchors)
+            for anchor in anchors:
+                digits = re.sub(r"\D", "", anchor)
+                self.assertNotIn(old, digits, path)
+        self.assertGreater(found, 0)
 
 
 if __name__ == "__main__":

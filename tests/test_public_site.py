@@ -368,7 +368,7 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn('data-edit="hero_h1a">Remove Friction.', home)
         self.assertIn('data-edit="hero_h1b">Accelerate Growth.', home)
         self.assertIn("I'm not another vendor", home)
-        self.assertIn("Talk to Alice, Jeff's AI assistant: (443) 389-0330", home)
+        self.assertIn("Talk to Alice, Jeff's AI assistant: (443) 323-1268", home)
         self.assertIn(".hero{position:relative;padding:96px 0 14px;text-align:center}", home)
         self.assertIn(".hero{padding:64px 0 10px}", home)
         self.assertIn("flex-wrap:wrap;margin-top:20px;", home)
