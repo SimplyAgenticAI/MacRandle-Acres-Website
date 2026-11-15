@@ -612,6 +612,94 @@ class PublicSiteTests(unittest.TestCase):
         self.assertNotIn("Grok", llms)
         self.assertNotIn("+1-862-254-7839", llms)
 
+    def test_sample_homepage_sections(self):
+        home = self.client.get("/").get_data(as_text=True)
+        self.assertLess(home.index('id="voice"'), home.index('id="help"'))
+        self.assertLess(home.index('id="help"'), home.index('id="facebook"'))
+        self.assertLess(home.index('id="facebook"'), home.index('id="how-i-work"'))
+        self.assertLess(home.index('id="how-i-work"'), home.index('id="promise"'))
+
+        help_html = home.split('id="help"', 1)[1].split('id="facebook"', 1)[0]
+        fb_html = home.split('id="facebook"', 1)[1].split('id="how-i-work"', 1)[0]
+        how_html = home.split('id="how-i-work"', 1)[1].split('id="promise"', 1)[0]
+
+        help_titles = re.findall(r"<h3[^>]*>(.*?)</h3>", help_html)
+        self.assertEqual(help_titles, [
+            "Meta profiles and business pages",
+            "Posts and graphics",
+            "Local Facebook groups",
+            "Ads",
+            "YouTube and video",
+            "Go High Level and AI",
+            "Whatever else is on your plate",
+        ])
+        self.assertEqual(help_titles[-1], "Whatever else is on your plate")
+        self.assertIn("I've spent almost a decade on social media.", help_html)
+        self.assertIn("I've run 200+ real estate ads.", help_html)
+        self.assertIn("I've used Go High Level for years.", help_html)
+        self.assertIn("AI agents and automation", help_html)
+        self.assertIn('class="reveal"', help_html)
+        for key in ("help_eye", "help_h2hi", "help_lead", "help1_h", "help7_p"):
+            self.assertIn('data-edit="%s"' % key, help_html)
+
+        fb_titles = re.findall(r"<h3[^>]*>(.*?)</h3>", fb_html)
+        self.assertEqual(fb_titles, [
+            "Pinned post",
+            "Featured comments and links",
+            "Stories",
+            "Weekly Meta achievements and challenges",
+            "Recommended feed",
+            "Profile optimization",
+            "Business page optimization",
+            "Organic reach in local groups",
+        ])
+        fb_lines = re.findall(r"<p[^>]*>(.*?)</p>", fb_html)
+        self.assertEqual(len(fb_lines), 9)
+        for line in fb_lines[1:]:
+            self.assertEqual(line.count("."), 1, line)
+        self.assertIn('data-edit="fb1_p"', fb_html)
+        self.assertIn('data-edit="fb8_h"', fb_html)
+
+        how_titles = re.findall(r"<h3[^>]*>(.*?)</h3>", how_html)
+        self.assertEqual(how_titles, [
+            "Look",
+            "Plan",
+            "Do it your way",
+            "Weekly check-in",
+            "Monthly recap",
+            "Done for you",
+            "Done with you",
+            "Learn with me",
+        ])
+        self.assertIn("I do it for you, we do it together, or I teach you how.", how_html)
+        self.assertIn("Each week we look at what got done and what's next.", how_html)
+        self.assertIn("Each month you get your Meta numbers and a short plan for the month ahead.", how_html)
+        self.assertIn("No two clients are the same.", how_html)
+        self.assertIn("Join the free community", how_html)
+        self.assertIn('data-edit="step1_h"', how_html)
+        self.assertIn('data-edit="way3_p"', how_html)
+        self.assertIn('class="work-steps"', how_html)
+
+        blob = help_html + fb_html + how_html
+        for banned in (
+            "\u2014",
+            "\u2013",
+            "[Jeff to confirm]",
+            "Most people",
+            "Some people",
+            "There are certain",
+            "A lot of people",
+            "Grok",
+            "ChatGPT",
+            "Claude",
+            "testimonial",
+            "<blockquote",
+            "qcard",
+            "&ldquo;",
+            "&rdquo;",
+        ):
+            self.assertNotIn(banned, blob, banned)
+
 
 if __name__ == "__main__":
     unittest.main()
