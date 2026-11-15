@@ -316,6 +316,167 @@ class PublicSiteTests(unittest.TestCase):
         design = self.client.get("/design").get_data(as_text=True)
         self.assertIn('href="/starter-prompts"', design)
 
+    def test_homepage_and_scorecards_only_claim_meta_metrics(self):
+        """Removed call, conversation, nurture, and appointment metrics stay out.
+        Retired keys in a saved scorecard are ignored instead of crashing.
+        """
+        home = self.client.get("/").get_data(as_text=True)
+        impact = home.split('id="impact"', 1)[1].split("</section>", 1)[0]
+        report = home.split('id="scorecard"', 1)[1].split("</section>", 1)[0]
+        self.assertIn('data-edit="mz2_n">Post engagement', impact)
+        self.assertIn('data-edit="mz2_s">Comments and shares, straight from Meta', impact)
+        self.assertIn('data-edit="mz3_n">Impressions', impact)
+        self.assertIn('data-edit="mz3_s">Straight from Meta Ads Manager', impact)
+        self.assertIn('data-edit="mz4_n">New followers gained', impact)
+        self.assertIn('data-edit="mz4_s">Straight from Meta', impact)
+        self.assertIn('data-edit="mz1_n">Reach &amp; link clicks', impact)
+        for gone in (
+            "Calls from your ads",
+            "Tracked call reporting",
+            "Conversations &amp; appointments",
+            "Logged in your CRM",
+            "Warm leads nurtured, then booked",
+            "Counted, never guessed",
+        ):
+            self.assertNotIn(gone, impact)
+        for label, number, width in (
+            ("People reached", "48200", "92%"),
+            ("Impressions", "91300", "96%"),
+            ("Link clicks", "1340", "70%"),
+            ("Post engagement (comments and shares)", "860", "48%"),
+            ("New followers gained", "112", "32%"),
+        ):
+            self.assertIn(label, report)
+            self.assertIn('data-to="%s"' % number, report)
+            self.assertIn("--w:%s" % width, report)
+        self.assertEqual(report.count('class="rp-bar"'), 5)
+        self.assertIn("More metrics, like booked appointments, get added as tracking grows.", report)
+        for gone in (
+            "Calls from ads",
+            "Conversations started",
+            "Warm leads nurtured",
+            "Appointments booked",
+            'data-edit="rl3"',
+            'data-edit="rl4"',
+            'data-edit="rl5"',
+            'data-edit="rl6"',
+        ):
+            self.assertNotIn(gone, report)
+        self.assertNotIn("\u2014", impact)
+        self.assertNotIn("\u2014", report)
+        self.assertIn('data-edit="hero_h1a">Remove Friction.', home)
+        self.assertIn('data-edit="hero_h1b">Accelerate Growth.', home)
+        self.assertIn("I'm not another vendor", home)
+        self.assertIn("Talk to Alice, Jeff's AI assistant: (443) 389-0330", home)
+        self.assertIn(".hero{position:relative;padding:96px 0 28px;text-align:center}", home)
+        self.assertIn(".hero{padding:64px 0 20px}", home)
+        self.assertIn("flex-wrap:wrap;margin-top:20px;", home)
+        self.assertIn("border-bottom:1px solid var(--bd-soft);padding:12px 0}", home)
+        self.assertIn("#lucid{padding-top:16px;padding-bottom:12px}", home)
+        # Saved admin overrides live in content.json and replace matching data-edit
+        # keys for every visitor. These keys are unset, so the new defaults show.
+        content = site.load_content("main")
+        for key in ("mz1_n", "mz1_s", "mz2_n", "mz2_s", "mz3_n", "mz3_s", "mz4_n", "mz4_s",
+                    "rl1", "rl2", "rl_impr", "rl_eng", "rl7", "score_more"):
+            self.assertNotIn(key, content)
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        score_path = os.path.join(tmp.name, "scorecards.json")
+        with patch.object(site, "SCORECARDS_PATH", score_path):
+            with open(score_path, "w", encoding="utf-8") as f:
+                json.dump({
+                    "old1": {
+                        "client": "Old Client",
+                        "month": "October 2026",
+                        "note": "Keep going",
+                        "metrics": {
+                            "reached": 100,
+                            "clicks": "20",
+                            "calls": 62,
+                            "conversations": {"nested": True},
+                            "seeds": None,
+                            "appointments": "nope",
+                            "followers": 11,
+                            "engagement": "n/a",
+                        },
+                        "created": "2026-10-01T00:00:00",
+                    },
+                    "badshape": {
+                        "client": "Bad Shape",
+                        "month": "September 2026",
+                        "note": "",
+                        "metrics": ["calls", 5],
+                        "created": "2026-09-01T00:00:00",
+                    },
+                }, f)
+            card = self.client.get("/s/old1")
+            self.assertEqual(card.status_code, 200)
+            html = card.get_data(as_text=True)
+            self.assertIn("Old Client", html)
+            for label in (
+                "People reached",
+                "Impressions",
+                "Link clicks",
+                "Post engagement (comments and shares)",
+                "New followers gained",
+            ):
+                self.assertIn(label, html)
+            for gone in ("Calls from ads", "Conversations started", "Seeds planted", "Appointments booked"):
+                self.assertNotIn(gone, html)
+            self.assertIn('data-to="100"', html)
+            self.assertIn('data-to="20"', html)
+            self.assertIn('data-to="11"', html)
+            self.assertNotIn('data-to="62"', html)
+            self.assertEqual(html.count('data-to="0"'), 2)
+            shaped = self.client.get("/s/badshape")
+            self.assertEqual(shaped.status_code, 200)
+            self.assertEqual(shaped.get_data(as_text=True).count('data-to="0"'), 5)
+
+            self.client.post("/admin/login", data={"password": "test-admin", "next": "/"})
+            created = self.client.post("/api/scorecard", json={
+                "client": "Ada Lovelace",
+                "month": "November 2026",
+                "note": "",
+                "metrics": {
+                    "reached": 10,
+                    "impressions": 30,
+                    "clicks": 4,
+                    "engagement": 7,
+                    "followers": 2,
+                    "calls": 99,
+                    "appointments": 88,
+                },
+            })
+            self.assertEqual(created.status_code, 200)
+            sid = created.get_json()["id"]
+            with open(score_path, encoding="utf-8") as f:
+                saved = json.load(f)
+            self.assertEqual(saved["old1"]["metrics"]["calls"], 62)
+            self.assertEqual(saved[sid]["metrics"], {
+                "reached": 10,
+                "impressions": 30,
+                "clicks": 4,
+                "engagement": 7,
+                "followers": 2,
+            })
+            page = self.client.get("/s/" + sid).get_data(as_text=True)
+            self.assertIn('data-to="30"', page)
+            self.assertNotIn("Calls from ads", page)
+            admin = self.client.get("/admin/scorecards").get_data(as_text=True)
+            for label in (
+                "People reached",
+                "Impressions",
+                "Link clicks",
+                "Post engagement (comments and shares)",
+                "New followers gained",
+            ):
+                self.assertIn(label, admin)
+            for gone in ("Calls from ads", "Conversations started", "Seeds planted", "Appointments booked", "Your CRM"):
+                self.assertNotIn(gone, admin)
+            self.assertIn("More metrics, like booked appointments, get added as tracking grows.", admin)
+            self.assertNotIn("\u2014", admin.split('class="panel guide"', 1)[1].split("</div>", 1)[0])
+
 
 if __name__ == "__main__":
     unittest.main()

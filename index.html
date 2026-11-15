@@ -118,7 +118,7 @@ a{color:inherit;text-decoration:none}
 .hamb{display:none;background:none;border:none;color:var(--green);font-size:22px;cursor:pointer}
 
 /* Hero */
-.hero{position:relative;padding:96px 0 60px;text-align:center}
+.hero{position:relative;padding:96px 0 28px;text-align:center}
 .hero .halo{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:min(560px,88vw);height:360px;z-index:-1;
  background:radial-gradient(circle at 50% 30%,rgba(199,154,59,.16),transparent 62%)}
 .hero-logo-wrap{position:relative;width:max-content;margin:0 auto 24px;display:block}
@@ -142,8 +142,8 @@ a{color:inherit;text-decoration:none}
 .guarantee-ribbon .g-ico{color:var(--green);font-weight:800}
 
 /* Values strip (mirrors logo) */
-.values{display:flex;justify-content:center;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:52px;
- border-top:1px solid var(--bd-soft);border-bottom:1px solid var(--bd-soft);padding:22px 0}
+.values{display:flex;justify-content:center;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:20px;
+ border-top:1px solid var(--bd-soft);border-bottom:1px solid var(--bd-soft);padding:12px 0}
 .val-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 34px;position:relative;min-width:120px}
 .val-item + .val-item::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:1px;background:var(--bd-soft)}
 .val-item .vi{font-size:20px}
@@ -261,7 +261,7 @@ footer .alice-call:hover{color:var(--cream)}
 .foot-social{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 18px;margin:0 0 16px}
 .foot-social a{color:var(--cream);font-weight:700;font-size:14px;border-bottom:1px solid rgba(224,184,98,.5);padding-bottom:1px}
 .foot-social a:hover{color:var(--gold-l)}
-#lucid{padding-top:28px;padding-bottom:12px}
+#lucid{padding-top:16px;padding-bottom:12px}
 #lucid .lm-points{max-width:560px;margin:0 auto 22px;display:grid;gap:8px;text-align:center}
 #lucid .lm-points p{color:var(--ink2);font-size:17px}
 #lucid .lm-sig{text-align:center;font-style:italic;color:var(--gold-d);font-weight:600;font-size:18px}
@@ -391,7 +391,7 @@ body.editing #rootSpineWrap{display:none}
 .rp-metrics{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:11px 16px;margin:16px 0 0}
 .rp-metrics li{min-width:0}
 .rp-m-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.rp-m-lbl{font-size:11.5px;color:var(--ink3);line-height:1.25;overflow:hidden}
+.rp-m-lbl{font-size:11.5px;color:var(--ink3);line-height:1.25;overflow:hidden;min-width:0}
 .rp-m-lbl .dot2{width:auto;height:auto;background:none;border:none;margin-right:4px;font-size:12px}
 .rp-m-val{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:16px;color:var(--green);flex:0 0 auto}
 .rp-m-val.g{color:#2f7a56}.rp-m-val.gold{color:var(--gold-d)}
@@ -405,6 +405,7 @@ body.editing #rootSpineWrap{display:none}
 .rp-foot-v{font-family:'Inter',system-ui,sans-serif;font-weight:700;color:var(--green)}
 .rp-next{margin-top:11px;font-size:12.5px;color:var(--ink3);display:flex;justify-content:space-between;align-items:center}
 .rp-next b{color:var(--gold-d);font-family:'Inter',system-ui,sans-serif}
+.rp-more{margin-top:12px;font-size:12px;line-height:1.45;color:var(--ink3)}
 
 /* #4 Spotlight + 3D-tilt cards */
 .card,.tier{transform-style:preserve-3d;will-change:transform}
@@ -474,7 +475,7 @@ body.editing #cursorGlow{display:none}
 @media(max-width:620px){
  .nav-links{display:none}.hamb{display:block}
  .g3{grid-template-columns:1fr}
- .hero{padding:64px 0 48px}section{padding:52px 0}
+ .hero{padding:64px 0 20px}section{padding:52px 0}
  .val-item{padding:0 20px;min-width:44%}
  .final-box{padding:44px 24px}
 }
@@ -775,9 +776,9 @@ footer{position:relative}
    <div class="impact-note">I only report what can actually be tracked, pulled straight from the source. No inflated claims, ever.</div>
    <div class="impact-grid">
     <div class="impact-stat"><div class="im-ic">👀</div><div class="im-name" data-edit="mz1_n">Reach &amp; link clicks</div><div class="im-src" data-edit="mz1_s">Straight from Meta Ads Manager</div></div>
-    <div class="impact-stat"><div class="im-ic">📞</div><div class="im-name" data-edit="mz2_n">Calls from your ads</div><div class="im-src" data-edit="mz2_s">Tracked call reporting</div></div>
-    <div class="impact-stat"><div class="im-ic">💬</div><div class="im-name" data-edit="mz3_n">Conversations &amp; appointments</div><div class="im-src" data-edit="mz3_s">Logged in your CRM</div></div>
-    <div class="impact-stat"><div class="im-ic">🌱</div><div class="im-name" data-edit="mz4_n">Warm leads nurtured, then booked</div><div class="im-src" data-edit="mz4_s">Counted, never guessed</div></div>
+    <div class="impact-stat"><div class="im-ic">💬</div><div class="im-name" data-edit="mz2_n">Post engagement</div><div class="im-src" data-edit="mz2_s">Comments and shares, straight from Meta</div></div>
+    <div class="impact-stat"><div class="im-ic">📈</div><div class="im-name" data-edit="mz3_n">Impressions</div><div class="im-src" data-edit="mz3_s">Straight from Meta Ads Manager</div></div>
+    <div class="impact-stat"><div class="im-ic">🌿</div><div class="im-name" data-edit="mz4_n">New followers gained</div><div class="im-src" data-edit="mz4_s">Straight from Meta</div></div>
    </div>
   </div>
  </div>
@@ -868,17 +869,13 @@ footer{position:relative}
 
      <ul class="rp-metrics">
       <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">👀</span><span data-edit="rl1">People reached</span></span><span class="rp-m-val gold count" data-to="48200">0</span></div><span class="rp-bar"><i style="--w:92%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📈</span><span data-edit="rl_impr">Impressions</span></span><span class="rp-m-val g count" data-to="91300">0</span></div><span class="rp-bar"><i style="--w:96%"></i></span></li>
       <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">👆</span><span data-edit="rl2">Link clicks</span></span><span class="rp-m-val g count" data-to="1340">0</span></div><span class="rp-bar"><i style="--w:70%"></i></span></li>
-      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📞</span><span data-edit="rl3">Calls from ads</span></span><span class="rp-m-val g count" data-to="62">0</span></div><span class="rp-bar"><i style="--w:45%"></i></span></li>
-      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">💬</span><span data-edit="rl4">Conversations started</span></span><span class="rp-m-val g count" data-to="210">0</span></div><span class="rp-bar"><i style="--w:62%"></i></span></li>
-      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🌱</span><span data-edit="rl5">Warm leads nurtured</span></span><span class="rp-m-val gold count" data-to="95">0</span></div><span class="rp-bar"><i style="--w:52%"></i></span></li>
-      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">📅</span><span data-edit="rl6">Appointments booked</span></span><span class="rp-m-val g count" data-to="19">0</span></div><span class="rp-bar"><i style="--w:40%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">💬</span><span data-edit="rl_eng">Post engagement (comments and shares)</span></span><span class="rp-m-val g count" data-to="860">0</span></div><span class="rp-bar"><i style="--w:48%"></i></span></li>
+      <li><div class="rp-m-top"><span class="rp-m-lbl"><span class="dot2">🌿</span><span data-edit="rl7">New followers gained</span></span><span class="rp-m-val gold count" data-to="112">0</span></div><span class="rp-bar"><i style="--w:32%"></i></span></li>
      </ul>
-     <div class="rp-foot">
-      <span class="rp-foot-l"><span class="dot2">🌿</span><span data-edit="rl7">New followers gained</span></span>
-      <span class="rp-foot-v count" data-to="112">0</span>
-     </div>
      <div class="rp-next"><span data-edit="rl8">Next month's focus</span> <b>Locked in</b></div>
+     <p class="rp-more" data-edit="score_more">More metrics, like booked appointments, get added as tracking grows.</p>
     </div>
    </div>
   </div>
