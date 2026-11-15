@@ -394,16 +394,29 @@ import datetime
 from html import escape as _esc
 
 SCORECARDS_PATH = os.path.join(DATA, "scorecards.json")
+# Metrics we can stand behind today, all from Meta. The admin form, the public
+# scorecard, and the "where to pull each number" guide are built from this list.
+# Add a row when tracking grows. Saved scorecards may still hold retired keys
+# (calls, conversations, seeds, appointments); those keys are never read.
 SCORE_METRICS = [
-    ("reached", "People reached", "\U0001F440", "Meta Ads Manager → Reach (+ Business Suite for organic)"),
+    ("reached", "People reached", "\U0001F440", "Meta Ads Manager → Reach"),
+    ("impressions", "Impressions", "\U0001F4C8", "Meta Ads Manager → Impressions"),
     ("clicks", "Link clicks", "\U0001F446", "Meta Ads Manager → Link clicks"),
-    ("calls", "Calls from ads", "\U0001F4DE", "Meta Ads Manager (call ads) or your tracked number"),
-    ("conversations", "Conversations started", "\U0001F4AC", "Meta Ads Manager → Messaging conversations started"),
-    ("seeds", "Seeds planted", "\U0001F331", "New leads you added to nurture this month (your CRM)"),
-    ("appointments", "Appointments booked", "\U0001F4C5", "Your CRM or calendar"),
-    ("followers", "New followers", "\U0001F33F", "Meta Business Suite → Insights → Follows"),
+    ("engagement", "Post engagement (comments and shares)", "\U0001F4AC",
+     "Meta Ads Manager → Post engagement (comments and shares)"),
+    ("followers", "New followers gained", "\U0001F33F", "Meta Business Suite → Insights → Follows"),
 ]
 CAL_URL = "/book"
+
+
+def score_metric_value(metrics, key):
+    """Read one current metric. Missing values become 0. Retired keys are never read."""
+    if not isinstance(metrics, dict):
+        return 0
+    try:
+        return max(0, int(float(metrics.get(key, 0) or 0)))
+    except (TypeError, ValueError):
+        return 0
 
 
 def load_scorecards():
@@ -433,11 +446,14 @@ def admin_scorecards():
     if not rows:
         rows = '<tr><td colspan="4" style="opacity:.55">No scorecards yet, create your first above.</td></tr>'
     fields = ""
+    guide = ""
     for key, label, icon, src in SCORE_METRICS:
         fields += ('<label class="fld"><span>%s %s</span>'
                    '<input type="number" min="0" name="%s" value="0">'
                    '<small class="src">%s</small></label>') % (icon, _esc(label), key, _esc(src))
+        guide += "<li><b>%s</b>: %s</li>" % (_esc(label), _esc(src))
     html = (BUILDER_HTML.replace("__ROWS__", rows).replace("__FIELDS__", fields)
+            .replace("__GUIDE__", guide)
             .replace("__METRIC_KEYS__", json.dumps([m[0] for m in SCORE_METRICS])))
     return Response(html, mimetype="text/html")
 
@@ -447,13 +463,10 @@ def api_scorecard():
     if not session.get("admin"):
         return jsonify(ok=False, error="unauthorized"), 401
     data = request.get_json(silent=True) or {}
-    metrics = {}
-    src = data.get("metrics") or {}
-    for key, *_ in SCORE_METRICS:
-        try:
-            metrics[key] = max(0, int(float(src.get(key, 0) or 0)))
-        except Exception:
-            metrics[key] = 0
+    src = data.get("metrics")
+    # Only current keys are stored. Extra keys in the request, including retired
+    # ones, are dropped so a new scorecard cannot bring them back.
+    metrics = {key: score_metric_value(src, key) for key, *_ in SCORE_METRICS}
     sc = {
         "client": str(data.get("client", "")).strip()[:120],
         "month": str(data.get("month", "")).strip()[:60],
@@ -485,12 +498,13 @@ def public_scorecard(sid):
     sc = load_scorecards().get(sid)
     if not sc:
         return ("Scorecard not found", 404)
-    m = sc.get("metrics") or {}
+    raw_metrics = sc.get("metrics")
+    m = raw_metrics if isinstance(raw_metrics, dict) else {}
     tiles = ""
     for key, label, icon, _src in SCORE_METRICS:
         tiles += ('<div class="sc-tile"><div class="sc-ic">%s</div>'
                   '<div class="sc-num" data-to="%d">0</div><div class="sc-lbl">%s</div></div>') % (
-                  icon, int(m.get(key, 0) or 0), _esc(label))
+                  icon, score_metric_value(m, key), _esc(label))
     note = _esc(sc.get("note") or "")
     note_html = ('<div class="sc-note"><b>Next month\'s focus:</b> %s</div>' % note) if note else ""
     html = (SCORECARD_HTML.replace("__CLIENT__", _esc(sc.get("client") or "your team"))
@@ -545,11 +559,11 @@ th{color:#5c635e;font-weight:600}
   <h1 style="font-size:17px;margin-bottom:6px">&#128203; Pull your numbers in ~10 minutes</h1>
   <div class="sub" style="margin-bottom:12px">Where to grab each number every month, no guessing.</div>
   <ol>
-    <li><b>Meta Ads Manager</b> (set the date range to last month): <span class="src2">Reach</span> &rarr; People reached &middot; <span class="src2">Link clicks</span> &rarr; Link clicks &middot; <span class="src2">Messaging conversations started</span> &rarr; Conversations &middot; <span class="src2">Calls</span> (if running call ads) &rarr; Calls from ads.</li>
-    <li><b>Meta Business Suite &rarr; Insights</b>: organic <span class="src2">Reach</span> &rarr; add to People reached &middot; <span class="src2">Follows</span> &rarr; New followers.</li>
-    <li><b>Your CRM / calendar</b>: new leads added to nurture &rarr; <span class="src2">Seeds planted</span> &middot; booked calls &rarr; <span class="src2">Appointments booked</span>.</li>
+    <li>In <b>Meta Ads Manager</b> and <b>Meta Business Suite</b>, set the date range to last month.</li>
+    __GUIDE__
     <li>Type them into the form above &rarr; <b>Create scorecard</b> &rarr; send the client the link. Done.</li>
   </ol>
+  <p style="margin-top:8px;font-size:13px;line-height:1.5;color:#5c635e">More metrics, like booked appointments, get added as tracking grows.</p>
 </div>
 <div class="panel">
   <h1 style="font-size:17px;margin-bottom:12px">Your scorecards</h1>
