@@ -54,7 +54,8 @@ class PublicSiteTests(unittest.TestCase):
         hero = home.split('id="top"', 1)[1].split('id="voice"', 1)[0]
         self.assertNotIn("real estate", nav.lower())
         self.assertNotIn("real estate", hero.lower())
-        self.assertIn("For growing businesses", hero)
+        self.assertIn("Growth Partner", hero)
+        self.assertNotIn("For growing businesses", hero)
         self.assertIn("Remove Friction. Accelerate Growth.", hero)
 
         bio = re.search(r'data-edit="jeff_p_sb">(.*?)</p>', home, re.S).group(1)
