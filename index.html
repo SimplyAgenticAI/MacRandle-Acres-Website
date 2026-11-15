@@ -186,6 +186,8 @@ section{position:relative;padding:40px 0}
 /* Cards / outcomes */
 .grid{display:grid;gap:22px}
 .g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+#help .card:last-child{grid-column:1 / -1;width:100%;max-width:372px;justify-self:center}
 .card{position:relative;background:var(--card);border:1px solid var(--bd-soft);border-radius:18px;padding:28px 26px;
  box-shadow:var(--shadow-sm);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
 .card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--bd)}
@@ -195,6 +197,13 @@ section{position:relative;padding:40px 0}
 .card p{color:var(--ink2);font-size:14.5px}
 .card .was{display:block;margin-top:14px;font-size:12px;color:var(--ink3);letter-spacing:.02em}
 .card .was s{opacity:.8}
+.work-steps{list-style:none;display:grid;gap:14px;max-width:760px;margin:0 auto}
+.work-steps li{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--bd-soft);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow-sm)}
+.work-steps .n{flex:0 0 36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#3a2a05;background:var(--grad-gold);margin-top:2px}
+.work-steps h3{font-size:18px;font-weight:600;margin-bottom:4px}
+.work-steps p{color:var(--ink2);font-size:15px}
+.ways-note{text-align:center;color:var(--ink2);font-size:17px;max-width:640px;margin:28px auto 0;line-height:1.6}
+.ways-note a{color:var(--gold-d);font-weight:700}
 
 /* Growth Scorecard */
 .score{padding:54px}
@@ -478,7 +487,7 @@ body.editing #cursorGlow{display:none}
 }
 @media(max-width:620px){
  .nav-links{display:none}.hamb{display:block}
- .g3{grid-template-columns:1fr}
+ .g3,.g2{grid-template-columns:1fr}
  .hero{padding:64px 0 10px}section{padding:28px 0}
  #voice .sec-head{margin-bottom:16px}
  .tier .price .amt{font-size:28px}
@@ -765,6 +774,176 @@ footer{position:relative}
    <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip4">I want someone who notices problems before I do.</span></div>
    <div class="chip reveal d3"><span class="q">&ldquo;</span><span data-edit="chip5">I don't want another employee.</span></div>
   </div>
+ </div>
+</section>
+
+<!-- SAMPLE: What I help with -->
+<section id="help" aria-labelledby="help-title">
+ <div class="wrap">
+  <div class="sec-head">
+   <span class="eyebrow reveal" data-edit="help_eye">Services</span>
+   <h2 class="reveal" id="help-title">What I <span class="accent-text" data-edit="help_h2hi">help with</span></h2>
+   <p class="reveal" data-edit="help_lead">I've spent almost a decade on social media. Here's the work I take off your plate.</p>
+  </div>
+  <div class="grid g3">
+   <div class="card reveal d1">
+    <div class="ico">👤</div>
+    <h3 data-edit="help1_h">Meta profiles and business pages</h3>
+    <p data-edit="help1_p">I set up your profile and business page so people know who you are and how to reach you.</p>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">✏️</div>
+    <h3 data-edit="help2_h">Posts and graphics</h3>
+    <p data-edit="help2_p">I make the graphics and tighten the posts so they are clear and easy to comment on.</p>
+   </div>
+   <div class="card reveal d3">
+    <div class="ico">👥</div>
+    <h3 data-edit="help3_h">Local Facebook groups</h3>
+    <p data-edit="help3_p">I help you show up in local Facebook groups the right way, without spam.</p>
+   </div>
+   <div class="card reveal d1">
+    <div class="ico">📣</div>
+    <h3 data-edit="help4_h">Ads</h3>
+    <p data-edit="help4_p">I've run 200+ real estate ads. I set them up, watch them and adjust them.</p>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">▶️</div>
+    <h3 data-edit="help5_h">YouTube and video</h3>
+    <p data-edit="help5_p">I help with your channel, your titles and simple video edits.</p>
+   </div>
+   <div class="card reveal d3">
+    <div class="ico">⚙️</div>
+    <h3 data-edit="help6_h">Go High Level and AI</h3>
+    <p data-edit="help6_p">I've used Go High Level for years. I set up follow-ups, booking, AI agents and automation.</p>
+   </div>
+   <div class="card reveal d1">
+    <div class="ico">🌿</div>
+    <h3 data-edit="help7_h">Whatever else is on your plate</h3>
+    <p data-edit="help7_p">If something online is slowing you down, ask. I can probably help.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- SAMPLE: Facebook tactics -->
+<section id="facebook" aria-labelledby="facebook-title">
+ <div class="wrap">
+  <div class="sec-head">
+   <span class="eyebrow reveal" data-edit="fb_eye">Facebook</span>
+   <h2 class="reveal" id="facebook-title">The small things that <span class="accent-text" data-edit="fb_h2hi">add up</span></h2>
+   <p class="reveal" data-edit="fb_lead">Meta is my specialty. Here's what I work on with you.</p>
+  </div>
+  <div class="grid g2">
+   <div class="card reveal d1">
+    <div class="ico">📌</div>
+    <h3 data-edit="fb1_h">Pinned post</h3>
+    <p data-edit="fb1_p">I write your pinned post so the first thing people see says who you are and what to do next.</p>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">💬</div>
+    <h3 data-edit="fb2_h">Featured comments and links</h3>
+    <p data-edit="fb2_p">I feature the comments and links that send people to the next step.</p>
+   </div>
+   <div class="card reveal d3">
+    <div class="ico">📱</div>
+    <h3 data-edit="fb3_h">Stories</h3>
+    <p data-edit="fb3_p">I keep a simple weekly set of stories so you stay visible between posts.</p>
+   </div>
+   <div class="card reveal d1">
+    <div class="ico">🏅</div>
+    <h3 data-edit="fb4_h">Weekly Meta achievements and challenges</h3>
+    <p data-edit="fb4_p">I watch the badges and challenges Meta gives you, and I help you finish the ones worth doing.</p>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">✨</div>
+    <h3 data-edit="fb5_h">Recommended feed</h3>
+    <p data-edit="fb5_p">I shape your posts so Meta can show them to people who don't follow you yet.</p>
+   </div>
+   <div class="card reveal d3">
+    <div class="ico">📷</div>
+    <h3 data-edit="fb6_h">Profile optimization</h3>
+    <p data-edit="fb6_p">I set your photo, bio and contact info so nothing important is missing.</p>
+   </div>
+   <div class="card reveal d1">
+    <div class="ico">🏪</div>
+    <h3 data-edit="fb7_h">Business page optimization</h3>
+    <p data-edit="fb7_p">I set your page buttons, photos and info so people can reach you.</p>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">🤝</div>
+    <h3 data-edit="fb8_h">Organic reach in local groups</h3>
+    <p data-edit="fb8_p">I help you post useful things in local groups, without a pitch.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- SAMPLE: How I work -->
+<section id="how-i-work" aria-labelledby="how-title">
+ <div class="wrap">
+  <div class="sec-head">
+   <span class="eyebrow reveal" data-edit="how_eye">The process</span>
+   <h2 class="reveal" id="how-title">How I <span class="accent-text" data-edit="how_h2hi">work</span></h2>
+   <p class="reveal" data-edit="how_lead">I look, we plan, and I do the work your way.</p>
+  </div>
+  <ol class="work-steps">
+   <li class="reveal d1">
+    <span class="n" aria-hidden="true">1</span>
+    <div>
+     <h3 data-edit="step1_h">Look</h3>
+     <p data-edit="step1_p">I go through your profiles, page and posts, and I tell you what I see.</p>
+    </div>
+   </li>
+   <li class="reveal d2">
+    <span class="n" aria-hidden="true">2</span>
+    <div>
+     <h3 data-edit="step2_h">Plan</h3>
+     <p data-edit="step2_p">We pick the few things that matter most right now. You get a short list.</p>
+    </div>
+   </li>
+   <li class="reveal d3">
+    <span class="n" aria-hidden="true">3</span>
+    <div>
+     <h3 data-edit="step3_h">Do it your way</h3>
+     <p data-edit="step3_p">I do it for you, we do it together, or I teach you how. You choose, and you can switch.</p>
+    </div>
+   </li>
+   <li class="reveal d1">
+    <span class="n" aria-hidden="true">4</span>
+    <div>
+     <h3 data-edit="step4_h">Weekly check-in</h3>
+     <p data-edit="step4_p">Each week we look at what got done and what's next.</p>
+    </div>
+   </li>
+   <li class="reveal d2">
+    <span class="n" aria-hidden="true">5</span>
+    <div>
+     <h3 data-edit="step5_h">Monthly recap</h3>
+     <p data-edit="step5_p">Each month you get your Meta numbers and a short plan for the month ahead.</p>
+    </div>
+   </li>
+  </ol>
+  <div class="sec-head" style="margin-top:56px">
+   <h2 class="reveal" id="ways-title">Three ways to <span class="accent-text" data-edit="ways_h2hi">work together</span></h2>
+  </div>
+  <div class="grid g3">
+   <div class="card reveal d1">
+    <div class="ico">🤲</div>
+    <h3 data-edit="way1_h">Done for you</h3>
+    <p data-edit="way1_p">You're busy, so hand the work to me. I work on your profiles, page and posts, and I keep you in the loop.</p>
+   </div>
+   <div class="card reveal d2">
+    <div class="ico">🤝</div>
+    <h3 data-edit="way2_h">Done with you</h3>
+    <p data-edit="way2_p">We work side by side. I take the hard parts, and you stay hands-on with the rest.</p>
+   </div>
+   <div class="card reveal d3">
+    <div class="ico">📚</div>
+    <h3 data-edit="way3_h">Learn with me</h3>
+    <p data-edit="way3_p">You want to run it yourself. I teach you the steps so you can do them on your own.</p>
+   </div>
+  </div>
+  <p class="ways-note reveal" data-edit="ways_note">No two clients are the same. Tell me what you need and we'll shape the work around you. Want to learn first? <a href="https://www.skool.com/lucid-mage-facebook-growth-lab-3725" target="_blank" rel="noopener">Join the free community</a>.</p>
  </div>
 </section>
 
