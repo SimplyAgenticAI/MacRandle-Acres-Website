@@ -221,7 +221,10 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("Lucid Marketing, by MacRandle Acres | Remove Friction. Accelerate Growth.", home)
         self.assertIn('content="summary_large_image"', home)
         hero = home.split('id="top"', 1)[1].split('id="voice"', 1)[0]
-        self.assertIn("Growth Partner · For growing businesses", hero)
+        eyebrow = re.search(r'data-edit="hero_eyebrow">([^<]*)</span>', hero)
+        self.assertIsNotNone(eyebrow)
+        self.assertEqual(eyebrow.group(1), "Growth Partner")
+        self.assertNotIn("For growing businesses", hero)
         self.assertIn("Remove Friction.", hero)
         self.assertIn("Accelerate Growth.", hero)
         self.assertIn("make your business", hero)
