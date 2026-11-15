@@ -1,4 +1,4 @@
-# MacRandle Acres — Fractional Growth Advisor for Real Estate Teams
+# MacRandle Acres: Growth Partner for Real Estate Teams
 
 A hand-built site positioning Jeff Randle / MacRandle Acres as a **Monthly
 Revenue Growth Advisor** for real estate teams. Botanical, premium brand system

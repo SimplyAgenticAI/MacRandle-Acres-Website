@@ -4,7 +4,7 @@
 
 ## Business
 
-Lucid Marketing, by MacRandle Acres is Jeff Randle's business. He is a fractional growth advisor in Salisbury, Maryland. Each month he looks for hidden opportunities that make a business more profitable, then implements the systems that capture them.
+Lucid Marketing, by MacRandle Acres is Jeff Randle's business. He is a growth partner in Salisbury, Maryland. Each month he looks for hidden opportunities that make a business more profitable, then implements the systems that capture them.
 
 Tagline: Remove Friction. Accelerate Growth.
 Values: Growth, Foundation, Freedom, Trust.
@@ -27,7 +27,7 @@ The work fits small businesses, service businesses, local businesses, and creato
 - Home: https://www.macrandleacres.com/
 - Jeff Randle hub (business and personal): https://www.macrandleacres.com/hub
 - Websites and apps: https://www.macrandleacres.com/design
-- Free Grok starter prompts: https://www.macrandleacres.com/starter-prompts
+- Free AI starter prompts: https://www.macrandleacres.com/starter-prompts
 - Privacy: https://www.macrandleacres.com/privacy
 - Terms: https://www.macrandleacres.com/terms
 
@@ -38,4 +38,4 @@ The hub also lists graphic design, the Tallgrass Facebook tool, and Lucid Mage (
 Jeff Randle
 Salisbury, MD, USA
 Email: Macrandleacres@gmail.com
-Phone: +1-862-254-7839
+Phone: +1-443-323-1268
