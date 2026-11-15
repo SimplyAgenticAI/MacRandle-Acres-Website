@@ -55,7 +55,11 @@ class SmsComplianceTests(unittest.TestCase):
         self.assertIn("<h1>Terms and Conditions</h1>", html)
         self.assertIn("Lucid Marketing, by MacRandle Acres", html)
         self.assertIn("MacRandle Acres, Salisbury, MD", html)
-        self.assertIn("Effective date: November 14, 2026", html)
+        self.assertIn("Effective date: November 15, 2026", html)
+        self.assertIn("You must be 18 years of age or older to use this SMS service.", html)
+        sms = html.split('id="sms"', 1)[1]
+        self.assertIn("You must be 18 years of age or older to use this SMS service.", sms)
+        self.assertEqual(sms.count("You must be 18 years of age or older to use this SMS service."), 1)
         self.assertIn("<h2>SMS program</h2>", html)
         self.assertIn('href="/privacy"', html)
         self.assertEqual(
@@ -82,7 +86,15 @@ class SmsComplianceTests(unittest.TestCase):
 
     def test_privacy_sms_section_and_updated_date(self):
         html = self.client.get("/privacy").get_data(as_text=True)
-        self.assertIn("Last updated: November 14, 2026", html)
+        self.assertIn("Last updated: November 15, 2026", html)
+        self.assertIn("<h2>Data security</h2>", html)
+        self.assertIn(
+            "We use reasonable administrative, technical, and physical safeguards to protect "
+            "personal information, including encrypted connections (HTTPS) and access controls "
+            "that limit who can view your information. No method of transmission or storage "
+            "is completely secure.",
+            html,
+        )
         self.assertIn('id="sms"', html)
         self.assertIn("<h2>Text messages (SMS)</h2>", html)
         self.assertIn('href="/terms"', html)
@@ -90,6 +102,7 @@ class SmsComplianceTests(unittest.TestCase):
         for phrase in PRIVACY_PHRASES:
             self.assertIn(phrase, html, phrase)
         self.assertNotIn("\u2014", html)
+        self.assertNotIn("\u2013", html)
         self.assertNotIn("Growth Audit form", html)
 
     def test_terms_link_is_in_every_footer_that_links_privacy(self):
@@ -100,24 +113,76 @@ class SmsComplianceTests(unittest.TestCase):
             self.assertIn('href="/terms"', html, path)
             self.assertRegex(html, r'href="/terms"[^>]*>Terms<', path)
 
-    def test_sms_checkbox_is_optional_and_unchecked_on_phone_forms(self):
-        pages = {"/book": "bsms", "/ai-employee/start": "sms_consent"}
-        for path, input_id in pages.items():
-            html = self.client.get(path).get_data(as_text=True)
-            label = site.sms_consent_label_html(input_id)
-            self.assertIn(label, html, path)
-            tag = re.search(
-                r'<input id="%s" name="sms_consent" type="checkbox" value="yes">' % input_id,
-                label,
+    def test_stored_consent_sentence(self):
+        self.assertEqual(
+            site.SMS_CONSENT_TEXT,
+            "I agree to receive text messages from Lucid Marketing by MacRandle Acres, "
+            "including appointment reminders, inquiry follow-ups, and promotional offers. "
+            "Message frequency varies. Msg & data rates may apply. Reply STOP to opt out, "
+            "HELP for help. Consent is not a condition of purchase.",
+        )
+        self.assertNotIn("\u2014", site.SMS_CONSENT_TEXT)
+        self.assertNotIn("\u2013", site.SMS_CONSENT_TEXT)
+
+    def _static_html(self, path):
+        html = self.client.get(path).get_data(as_text=True)
+        static = re.sub(r"<script\b[^>]*>.*?</script>", "", html, flags=re.I | re.S)
+        return html, static
+
+    def _assert_one_visible_consent(self, path, html, static):
+        block = site.sms_consent_label_html("sms_consent")
+        self.assertEqual(static.count(block), 1, path)
+        self.assertEqual(html.count(block), 1, path)
+        inputs = re.findall(r'<input\b[^>]*name="sms_consent"[^>]*>', html, re.I)
+        self.assertEqual(inputs, [
+            '<input id="sms_consent" name="sms_consent" type="checkbox" value="yes">'
+        ], path)
+        self.assertNotIn("checked", inputs[0])
+        self.assertNotIn("required", inputs[0])
+        self.assertIn('<label for="sms_consent">%s</label>' % site._esc(site.SMS_CONSENT_TEXT), static)
+        self.assertIn('href="/terms" target="_blank" rel="noopener">Terms</a>', block)
+        self.assertIn('href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>', block)
+        self.assertNotIn("\u2014", html, path)
+        self.assertNotIn("\u2013", html, path)
+        self.assertEqual(html.count('id="sms_consent"'), 1, path)
+
+    def test_sms_checkbox_is_in_raw_html_and_optional(self):
+        book_html, book_static = self._static_html("/book")
+        start_html, start_static = self._static_html("/ai-employee/start")
+        self._assert_one_visible_consent("/book", book_html, book_static)
+        self._assert_one_visible_consent("/ai-employee/start", start_html, start_static)
+
+        body_at = book_static.find('id="body"')
+        slot_at = book_static.find('id="smsSlot"')
+        consent_at = book_static.find('name="sms_consent"')
+        self.assertGreater(slot_at, body_at)
+        self.assertGreater(consent_at, slot_at)
+        self.assertNotIn('name="sms_consent"', book_static[body_at:slot_at])
+        slot_tag = re.search(r'<div class="sms-slot" id="smsSlot"([^>]*)>', book_static)
+        self.assertIsNotNone(slot_tag)
+        self.assertNotIn("hidden", slot_tag.group(1))
+        self.assertNotIn("smsMarkup", book_html)
+        self.assertIn("smsChecked()", book_html)
+        self.assertIn("sms_consent:sms", book_html)
+
+        step = re.search(
+            r'<section class="pane" data-step="0"([^>]*)>(.*?)</section>',
+            start_static,
+            re.S,
+        )
+        self.assertIsNotNone(step)
+        self.assertNotIn("hidden", step.group(1))
+        self.assertIn('name="sms_consent"', step.group(2))
+        for later in ("1", "2", "3"):
+            pane = re.search(
+                r'<section class="pane" data-step="%s"([^>]*)>(.*?)</section>' % later,
+                start_static,
+                re.S,
             )
-            self.assertIsNotNone(tag, label)
-            self.assertNotIn("checked", tag.group(0))
-            self.assertNotIn("required", tag.group(0))
-            self.assertIn('href="/terms" target="_blank" rel="noopener">Terms</a>', label)
-            self.assertIn('href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>', label)
-            self.assertIn("I agree to receive text messages from Lucid Marketing by MacRandle Acres", label)
-        book = self.client.get("/book").get_data(as_text=True)
-        self.assertIn("sms:false", book)
+            self.assertIsNotNone(pane, later)
+            self.assertIn("hidden", pane.group(1), later)
+            self.assertNotIn('name="sms_consent"', pane.group(2), later)
+
         home = self.client.get("/").get_data(as_text=True)
         self.assertNotIn('name="sms_consent"', home)
         for path in ("/", "/design", "/hub", "/privacy", "/starter-prompts"):
