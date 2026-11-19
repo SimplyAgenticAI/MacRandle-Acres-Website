@@ -274,7 +274,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("one-hour", hub)
         self.assertNotIn("One hour", hub)
         self.assertNotIn("$200", hub)
-        self.assertIn('href="/book?utm_source=hub&utm_medium=link&utm_campaign=booking"', hub)
+        self.assertIn('href="/book?type=audit&utm_source=hub&utm_medium=link&utm_campaign=booking"', hub)
         self.assertIn("https://www.patreon.com/LucidMage", hub)
         self.assertIn("https://www.youtube.com/@JeffRandle89", hub)
         self.assertIn("https://www.tiktok.com/@lucidmage89", hub)
@@ -305,7 +305,9 @@ class AiEmployeeTests(unittest.TestCase):
             self.assertEqual(self.client.get(path).status_code, 200, path)
 
         plain = self.client.get("/book").get_data(as_text=True)
-        self.assertIn("Book your Growth Audit call", plain)
+        self.assertIn("<h1>Your first AI agent setup</h1>", plain)
+        self.assertIn("Pay $149 and get started", plain)
+        self.assertNotIn("Book your Growth Audit call", plain)
         pre = self.client.get("/book?service=ai-employee&name=%3CAda%3E+Lovelace&email=ada@example.com&phone=4105550199")
         page = pre.get_data(as_text=True)
         self.assertIn("Book your setup consultation", page)
@@ -391,8 +393,12 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn('<p id="sub">Pick a time that works.</p>', agent)
         self.assertNotIn("30 minutes with Jeff Randle. Pick a time that works.", agent)
         plain = self.client.get("/book").get_data(as_text=True)
-        self.assertIn("<h1>Book your Growth Audit call</h1>", plain)
-        self.assertIn("30 minutes with Jeff Randle. Pick a time that works.", plain)
+        self.assertIn("<h1>Your first AI agent setup</h1>", plain)
+        self.assertIn("Pay $149 and get started", plain)
+        self.assertNotIn("30 minutes with Jeff Randle. Pick a time that works.", plain)
+        audit = self.client.get("/book?type=audit").get_data(as_text=True)
+        self.assertIn("<h1>Book a free Growth Audit</h1>", audit)
+        self.assertIn("30 minutes with Jeff Randle. Pick a time that works.", audit)
 
         path = os.path.join(self.tmp.name, "subscribers.json")
         orig = site.SUBSCRIBERS_PATH
@@ -414,12 +420,15 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn('alt="Jeff Randle, founder of MacRandle Acres"', home)
         self.assertIn('src="/jeff-randle.jpg"', home)
         self.assertIn('id="quotes" hidden', home)
-        self.assertIn("Helping small businesses remove friction from growth.", home)
+        self.assertIn("Helping businesses remove friction from growth.", home)
+        self.assertNotIn("small business", home.lower())
         self.assertNotIn("real estate teams", home.lower())
         self.assertIn("Not ready for a call? Join the free MacRandle Acres community on Skool.", home)
         self.assertIn("Most popular", home)
         nav = home.split("<nav", 1)[1].split("</nav>", 1)[0]
-        self.assertIn("Book a Growth Audit", nav)
+        self.assertIn("Pay $149 and get started", nav)
+        self.assertIn('href="/book?type=audit"', nav)
+        self.assertNotIn("Book a Growth Audit", nav)
         self.assertNotIn("Lucid Marketing call", nav)
         offer = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
         self.assertLess(home.index('id="top"'), home.index('id="ai-employee"'))
@@ -432,8 +441,41 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertNotIn("Growth Audit form", privacy)
         self.assertIn("join the email list", privacy)
         hub = self.client.get("/hub").get_data(as_text=True)
-        self.assertIn('data-edit="nav_cta_ga">Book a Growth Audit', hub)
+        self.assertIn('data-edit="nav_pay_hub_v6">Pay $149 and get started', hub)
+        self.assertIn('href="/book?type=audit&utm_source=hub&utm_medium=link&utm_campaign=booking"', hub)
         self.assertIn('href="/book?type=agent&utm_source=hub&utm_medium=link&utm_campaign=booking"', hub)
+
+    def test_pay_149_button_and_subscription_note(self):
+        note = (
+            "Your agent runs on your own AI assistant subscription (usually about $30 a month), "
+            "separate from this one-time setup fee. Not sure what you need? We'll sort it out on the call."
+        )
+        stripe = 'href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801"'
+        home = self.client.get("/").get_data(as_text=True)
+        offer = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
+        self.assertIn(stripe, offer)
+        self.assertIn("Pay $149 and get started", offer)
+        self.assertLess(offer.index("Pay $149 and get started"), offer.index(note))
+        self.assertLess(offer.index(note), offer.index("After you pay, book your setup call"))
+        self.assertIn("pay_149_click", home)
+        self.assertNotIn("\u2014", offer)
+        hub = self.client.get("/hub").get_data(as_text=True)
+        card = hub.split("aiemp_h3_149", 1)[1].split("saai_eyebrow_lm", 1)[0]
+        self.assertLess(card.index(stripe), card.index(note))
+        self.assertLess(card.index(note), card.index("Book a Lucid Marketing call"))
+        self.assertIn("pay_149_click", hub)
+        for path in ("/book", "/book?type=agent"):
+            page = self.client.get(path).get_data(as_text=True)
+            block = page.split('class="pay-offer"', 1)[1].split("</div>", 1)[0]
+            self.assertLess(block.index(stripe), block.index(note), path)
+            self.assertLess(block.index(note), block.index("After you pay, book your setup call"), path)
+            self.assertIn("pay_149_click", page)
+        thanks = self.client.get("/thank-you")
+        self.assertEqual(thanks.status_code, 200)
+        body = thanks.get_data(as_text=True)
+        self.assertIn("Payment received", body)
+        self.assertIn('href="/book?type=agent"', body)
+        self.assertNotIn("\u2014", body)
 
 
 if __name__ == "__main__":

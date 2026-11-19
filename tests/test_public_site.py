@@ -58,11 +58,12 @@ class PublicSiteTests(unittest.TestCase):
         self.assertNotIn("For growing businesses", hero)
         self.assertIn("Remove Friction. Accelerate Growth.", hero)
 
-        bio = re.search(r'data-edit="jeff_p_sb">(.*?)</p>', home, re.S).group(1)
-        footer = re.search(r'data-edit="foot_copy_sb">(.*?)</span>', home, re.S).group(1)
-        self.assertIn("small businesses", bio)
+        bio = re.search(r'data-edit="jeff_p_v7">(.*?)</p>', home, re.S).group(1)
+        footer = re.search(r'data-edit="foot_copy_v7">(.*?)</span>', home, re.S).group(1)
+        self.assertIn("work with businesses", bio)
+        self.assertNotIn("small business", bio.lower())
         self.assertNotIn("real estate", bio.lower())
-        self.assertIn("Helping small businesses remove friction from growth.", footer)
+        self.assertIn("Helping businesses remove friction from growth.", footer)
         self.assertNotIn("real estate", footer.lower())
         self.assertNotIn('data-edit="jeff_p"', home)
         self.assertNotIn('data-edit="foot_copy"', home)
@@ -81,8 +82,8 @@ class PublicSiteTests(unittest.TestCase):
         }
         with patch.object(site, "load_content", return_value=disk):
             home = self.client.get("/").get_data(as_text=True)
-        self.assertIn('data-edit="jeff_p_sb">I\'m the founder of MacRandle Acres', home)
-        self.assertIn("Helping small businesses remove friction from growth.", home)
+        self.assertIn('data-edit="jeff_p_v7">I\'m the founder of MacRandle Acres', home)
+        self.assertIn("Helping businesses remove friction from growth.", home)
         self.assertNotRegex(home, r'data-edit="jeff_p"[^_]')
         self.assertNotRegex(home, r'data-edit="foot_copy"[^_]')
 
@@ -212,6 +213,7 @@ class PublicSiteTests(unittest.TestCase):
             ORIGIN + "/starter-prompts",
             ORIGIN + "/book",
             ORIGIN + "/ai-employee/start",
+            ORIGIN + "/thank-you",
             ORIGIN + "/privacy",
             ORIGIN + "/terms",
         ])
@@ -253,7 +255,8 @@ class PublicSiteTests(unittest.TestCase):
         service = next(b for b in blocks if b.get("@type") == "ProfessionalService")
         faq = next(b for b in blocks if b.get("@type") == "FAQPage")
         self.assertEqual(service["url"], ORIGIN)
-        self.assertIn("small businesses", service["description"])
+        self.assertIn("helps businesses remove friction", service["description"])
+        self.assertNotIn("small business", service["description"].lower())
         self.assertIn("Real estate is one specialty", service["description"])
         visible = re.findall(r"<summary[^>]*>(.*?)</summary>", home, re.S)
         visible = [re.sub(r"<[^>]+>", "", q).strip() for q in visible]
@@ -316,10 +319,12 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn(">Copy</button>", html)
         cta = html.split('id="sp-cta"', 1)[1].split("</section>", 1)[0]
         self.assertIn("Want help setting up your first AI agent?", cta)
+        self.assertIn("Pay $149 and get started", cta)
         self.assertIn("Book a Lucid Marketing call", cta)
         self.assertIn('href="/book?type=agent"', cta)
+        self.assertIn('href="/book?type=audit"', cta)
         self.assertNotIn("Grok", cta)
-        self.assertNotIn("$", cta)
+        self.assertNotIn("$497", cta)
         self.assertNotIn("\u2014", html)
         self.assertNotIn("\u2013", html)
         self.assertIn('window.__PAGE__="prompts"', html)
@@ -530,6 +535,22 @@ class PublicSiteTests(unittest.TestCase):
             self.assertNotIn("This week", block)
             self.assertEqual(block.count("/mo"), 2)
             self.assertNotIn("\u2014", block)
+        self.assertNotIn("This week only, ends Sunday, November 22", home)
+        self.assertNotIn("small business", home.lower())
+
+    def test_plain_http_hosts_redirect_to_https_www(self):
+        for base in (
+            "http://macrandleacres.com",
+            "http://www.macrandleacres.com",
+            "https://macrandleacres.com",
+        ):
+            res = self.client.get("/book?type=audit", base_url=base)
+            self.assertEqual(res.status_code, 301, base)
+            self.assertEqual(res.headers["Location"], ORIGIN + "/book?type=audit", base)
+        ok = self.client.get("/", base_url="https://www.macrandleacres.com")
+        self.assertEqual(ok.status_code, 200)
+        self.assertEqual(self.client.get("/healthz", base_url="http://macrandleacres.com").status_code, 200)
+        self.assertEqual(self.client.get("/").status_code, 200)
 
     def test_copy_refresh_key_strings(self):
         home = self.client.get("/").get_data(as_text=True)
@@ -566,7 +587,7 @@ class PublicSiteTests(unittest.TestCase):
             "Your real numbers, straight from Meta, yours to verify. The numbers shown here are an example.",
             "Monthly plans. Pick how much you want me to take on.",
             "Done for you, done with you, or I teach you how.",
-            "This week only, ends Sunday, November 22",
+            "Sale price",
             "Monthly review of your profiles, page and posts",
             "A short to-do list, ranked",
             "I handle the top items for you, or teach you how",
@@ -626,7 +647,7 @@ class PublicSiteTests(unittest.TestCase):
         self.assertNotIn("443-389-0330", terms)
         self.assertIn("growth partner in Salisbury, Maryland", llms)
         self.assertIn(
-            "He helps small businesses get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
+            "He helps businesses get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
             llms,
         )
         self.assertIn("Momentum Plus is $1,997 to $2,500 per month", llms)
@@ -743,7 +764,8 @@ class HomeLayoutTests(unittest.TestCase):
         css = self._css(home)
         self.assertIn("Where are you", home)
         self.assertIn('data-edit="final_h2hi">leaking growth?', home)
-        self.assertIn('data-edit="final_cta1">Book a Growth Audit', home)
+        self.assertIn('data-edit="final_pay_v6">Pay $149 and get started', home)
+        self.assertIn('data-edit="final_audit_v6">Book a free Growth Audit', home)
         self.assertIn('data-edit="final_cta2">Email Jeff', home)
         wave = re.search(r"\.foot-wave\{[^}]*top:\s*-(\d+)px", css)
         margin = re.search(r"\.final-box\{[^}]*margin-bottom:\s*(\d+)px", css)

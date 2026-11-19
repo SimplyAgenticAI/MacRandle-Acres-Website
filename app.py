@@ -144,6 +144,35 @@ def legacy_logo():
     return redirect("/logo-v5.jpg", code=301)
 
 
+THANK_YOU_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Payment received | Lucid Marketing, by MacRandle Acres</title>
+<meta name="description" content="Your first AI agent setup is paid. Book your setup call next. Lucid Marketing, by MacRandle Acres.">
+<link rel="canonical" href="https://www.macrandleacres.com/thank-you">
+<meta property="og:title" content="Payment received | Lucid Marketing, by MacRandle Acres">
+<meta property="og:description" content="Your first AI agent setup is paid. Book your setup call next.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.macrandleacres.com/thank-you">
+<meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
+<link rel="icon" href="/favicon.ico">
+<style>body{font-family:Inter,system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;padding:28px}
+.card{max-width:560px;background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:22px;padding:36px 28px;box-shadow:0 22px 55px rgba(35,49,40,.12)}
+h1{color:#234F3D;font-size:32px;margin:0 0 12px}p{color:#5c635e;font-size:17px;line-height:1.6}
+a.btn{display:inline-block;margin-top:18px;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:800;text-decoration:none;border-radius:12px;padding:14px 22px}
+.tag{margin-top:18px;font-style:italic;color:#a97f2a}</style></head><body>
+<div class="card"><h1>Payment received</h1>
+<p>Thank you. Your first AI agent setup is paid. Next, book your setup call and we'll build it together.</p>
+<a class="btn" href="/book?type=agent">Book a Lucid Marketing call</a>
+<p class="tag">Remove Friction. Accelerate Growth.</p></div></body></html>"""
+
+
+@app.route("/thank-you")
+def thank_you():
+    return Response(THANK_YOU_HTML, mimetype="text/html")
+
+
 NOT_FOUND_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>Page not found | Lucid Marketing, by MacRandle Acres</title>
@@ -174,7 +203,7 @@ def page_not_found(_e):
 @app.route("/sitemap.xml")
 def sitemap_xml():
     urls = "".join("<url><loc>%s%s</loc></url>" % (CANONICAL_ORIGIN, u) for u in
-                   ("/", "/design", "/hub", "/starter-prompts", "/book", "/ai-employee/start", "/privacy", "/terms"))
+                   ("/", "/design", "/hub", "/starter-prompts", "/book", "/ai-employee/start", "/thank-you", "/privacy", "/terms"))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
     return Response(xml, mimetype="application/xml")
@@ -701,6 +730,23 @@ def _record_visit(path, referrer, ua):
                 json.dump(v, f, ensure_ascii=False)
         except Exception:
             pass
+
+
+@app.before_request
+def _redirect_plain_http_to_www():
+    """Send the public hosts to https://www, including plain http, and keep the path."""
+    if request.path == "/healthz":
+        return None
+    host = (request.host or "").split(":")[0].lower()
+    if host not in ("macrandleacres.com", "www.macrandleacres.com"):
+        return None
+    proto = (request.headers.get("X-Forwarded-Proto") or request.scheme or "http").split(",")[0].strip().lower()
+    if host == "www.macrandleacres.com" and proto == "https":
+        return None
+    path = request.full_path
+    if path.endswith("?") and not request.query_string:
+        path = path[:-1]
+    return redirect(CANONICAL_ORIGIN + path, code=301)
 
 
 @app.before_request
@@ -1587,7 +1633,7 @@ def book_page():
         "email": _clean_line(request.args.get("email", ""))[:160],
         "phone": _clean_line(request.args.get("phone", ""))[:40],
         "service": service,
-        "type": "agent" if request.args.get("type") == "agent" else "",
+        "type": request.args.get("type") if request.args.get("type") in ("agent", "audit") else "",
     }
     pre_json = json.dumps(pre, ensure_ascii=True).replace("<", "\\u003c")
     html = BOOK_HTML.replace("</head>", head + "\n</head>", 1)
@@ -1597,29 +1643,45 @@ def book_page():
         1)
     if request.args.get("type") == "agent":
         html = html.replace(
-            "Book a Growth Audit call - MacRandle Acres",
-            "Book a Lucid Marketing call - MacRandle Acres")
+            "Your first AI agent setup, $149 | Lucid Marketing, by MacRandle Acres",
+            "Book a Lucid Marketing call | Lucid Marketing, by MacRandle Acres")
         html = html.replace(
-            "Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.",
+            "Pay $149 one-time, then book your setup call. Lucid Marketing, by MacRandle Acres.",
             "Book a call to set up your first AI agent. $149 one-time. Lucid Marketing, by MacRandle Acres.")
         html = html.replace(
             "https://www.macrandleacres.com/book",
             "https://www.macrandleacres.com/book?type=agent")
         html = html.replace(
-            "<h1>Book your Growth Audit call</h1>",
+            "<h1>Your first AI agent setup</h1>",
             "<h1>Book a Lucid Marketing call</h1>", 1)
+    elif request.args.get("type") == "audit":
         html = html.replace(
-            '<p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p>',
-            '<p id="sub">Pick a time that works.</p>', 1)
+            "Your first AI agent setup, $149 | Lucid Marketing, by MacRandle Acres",
+            "Book a free Growth Audit | Lucid Marketing, by MacRandle Acres")
+        html = html.replace(
+            "Pay $149 one-time, then book your setup call. Lucid Marketing, by MacRandle Acres.",
+            "Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.")
+        html = html.replace(
+            "https://www.macrandleacres.com/book",
+            "https://www.macrandleacres.com/book?type=audit")
+        html = html.replace(
+            "<h1>Your first AI agent setup</h1>",
+            "<h1>Book a free Growth Audit</h1>", 1)
+        html = html.replace(
+            '<p id="sub">Pick a time that works.</p>',
+            '<p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p>', 1)
+        html = html.replace(
+            '<p class="audit-link"><a class="audit" href="/book?type=audit">Or book a free Growth Audit</a></p>',
+            "")
     elif service == "ai-employee":
         html = html.replace(
-            "<title>Book a Growth Audit call - MacRandle Acres</title>",
-            "<title>Book your setup consultation - MacRandle Acres</title>", 1)
+            "<title>Your first AI agent setup, $149 | Lucid Marketing, by MacRandle Acres</title>",
+            "<title>Book your setup consultation | Lucid Marketing, by MacRandle Acres</title>", 1)
         html = html.replace(
-            "<h1>Book your Growth Audit call</h1>",
+            "<h1>Your first AI agent setup</h1>",
             "<h1>Book your setup consultation</h1>", 1)
         html = html.replace(
-            '<p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p>',
+            '<p id="sub">Pick a time that works.</p>',
             '<p id="sub">30 minutes with Jeff Randle to plan your AI virtual employee. Pick a time that works.</p>',
             1)
     resp = Response(html, mimetype="text/html")
@@ -1817,17 +1879,17 @@ def admin_bookings_delete():
 
 
 BOOK_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1"><title>Book a Growth Audit call - MacRandle Acres</title>
-<meta name="description" content="Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.">
+<meta name=viewport content="width=device-width,initial-scale=1"><title>Your first AI agent setup, $149 | Lucid Marketing, by MacRandle Acres</title>
+<meta name="description" content="Pay $149 one-time, then book your setup call. Lucid Marketing, by MacRandle Acres.">
 <link rel="canonical" href="https://www.macrandleacres.com/book">
-<meta property="og:title" content="Book a Growth Audit call - MacRandle Acres">
-<meta property="og:description" content="Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.">
+<meta property="og:title" content="Your first AI agent setup, $149 | Lucid Marketing, by MacRandle Acres">
+<meta property="og:description" content="Pay $149 one-time, then book your setup call. Lucid Marketing, by MacRandle Acres.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.macrandleacres.com/book">
 <meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Book a Growth Audit call - MacRandle Acres">
-<meta name="twitter:description" content="Book a free Growth Audit call with Jeff Randle. Lucid Marketing, by MacRandle Acres.">
+<meta name="twitter:title" content="Your first AI agent setup, $149 | Lucid Marketing, by MacRandle Acres">
+<meta name="twitter:description" content="Pay $149 one-time, then book your setup call. Lucid Marketing, by MacRandle Acres.">
 <meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -1879,25 +1941,38 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .legal{text-align:center;margin:18px auto 0;font-size:13px;color:#5c635e}
 .legal a{color:#a97f2a;font-weight:700;text-decoration:none}
 .legal .alice-call{display:block;margin:0 auto 10px;font-size:15px;line-height:1.45;text-decoration:underline;text-underline-offset:3px}
+.pay-offer{max-width:640px;margin:0 auto 16px;background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:18px;padding:18px 20px;text-align:center;box-shadow:0 8px 24px rgba(35,49,40,.08)}
+.pay-offer a.pay{display:inline-block;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:800;text-decoration:none;border-radius:12px;padding:14px 22px}
+.pay-offer p{margin:10px 0 0;color:#5c635e;font-size:15px}
+.pay-offer .pay-sub{font-size:13px;line-height:1.5}
+.pay-offer a.audit{color:#a97f2a;font-weight:700}
 @media(max-width:560px){.fg{grid-template-columns:1fr}}
 </style></head><body>
+<div class="pay-offer">
+  <a class="pay pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener">Pay $149 and get started</a>
+  <p class="pay-sub">Your agent runs on your own AI assistant subscription (usually about $30 a month), separate from this one-time setup fee. Not sure what you need? We'll sort it out on the call.</p>
+  <p>After you pay, book your setup call and we'll build your first agent together.</p>
+  <p class="audit-link"><a class="audit" href="/book?type=audit">Or book a free Growth Audit</a></p>
+</div>
 <div class="card">
-  <div class="head"><div class="mark">M</div><div class="brand">MacRandle Acres</div><h1>Book your Growth Audit call</h1><p class="alice">__ALICE_CALL__</p><p id="sub">30 minutes with Jeff Randle. Pick a time that works.</p></div>
+  <div class="head"><div class="mark">M</div><div class="brand">MacRandle Acres</div><h1>Your first AI agent setup</h1><p class="alice">__ALICE_CALL__</p><p id="sub">Pick a time that works.</p></div>
   <div class="body" id="body"><div class="empty">Loading available times…</div></div>
   <div class="sms-slot" id="smsSlot">__SMS_CONSENT__</div>
 </div>
 <footer class="legal">__ALICE_CALL__<a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></footer>
 <script>
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;
+  if((a.getAttribute('href')||'').indexOf('buy.stripe.com')>-1&&window.gtag)gtag('event','pay_149_click');});
 var PREFILL={"name":"","email":"","phone":"","service":"","type":""};
 var entered={name:PREFILL.name||'',email:PREFILL.email||'',phone:PREFILL.phone||''};
 var TZ='', DAYS=[], di=0, slot=null, body=document.getElementById('body');
 fetch('/api/slots').then(function(r){return r.json();}).then(function(j){
   TZ=j.tz||''; DAYS=j.days||[];
-  var intro = PREFILL.type==='agent'
-    ? 'Pick a time that works. All times '
+  var intro = PREFILL.type==='audit'
+    ? '30 minutes with Jeff Randle. All times '
     : (PREFILL.service==='ai-employee'
     ? '30 minutes with Jeff Randle to plan your AI virtual employee. All times '
-    : '30 minutes with Jeff Randle. All times ');
+    : 'Pick a time that works. All times ');
   document.getElementById('sub').textContent=intro+TZ+'.';
   render();
 }).catch(function(){body.innerHTML='<div class="empty">Could not load times. Please email Macrandleacres@gmail.com.</div>';});
@@ -3050,8 +3125,8 @@ ul.str .none{opacity:.6;font-weight:500}
     __FIXES__</div>
   <div class="cta"><h3>Want to walk through this together?</h3>
     <p>Happy to hop on a quick call, go through these with you, and answer anything that comes up. No pressure &mdash; just a friendly working session.</p>
-    <a href="/book">Grab a time to chat &rarr;</a></div>
-  <div class="foot">MacRandle Acres &middot; Growth advisory for small businesses</div>
+    <a href="/book?type=audit">Grab a time to chat &rarr;</a></div>
+  <div class="foot">MacRandle Acres &middot; Growth advisory for businesses</div>
 </div>
 </body></html>"""
 
@@ -3187,16 +3262,16 @@ def admin_projects():
 DESIGN_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>Website and App Design | Lucid Marketing, by MacRandle Acres</title>
-<meta name="description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
+<meta name="description" content="Custom websites and apps for businesses. Lucid Marketing, by MacRandle Acres.">
 <link rel="canonical" href="https://www.macrandleacres.com/design">
 <meta property="og:title" content="Website and App Design | Lucid Marketing, by MacRandle Acres">
-<meta property="og:description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
+<meta property="og:description" content="Custom websites and apps for businesses. Lucid Marketing, by MacRandle Acres.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.macrandleacres.com/design">
 <meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Website and App Design | Lucid Marketing, by MacRandle Acres">
-<meta name="twitter:description" content="Custom websites and apps for small businesses. Lucid Marketing, by MacRandle Acres.">
+<meta name="twitter:description" content="Custom websites and apps for businesses. Lucid Marketing, by MacRandle Acres.">
 <meta name="twitter:image" content="https://www.macrandleacres.com/og-v5.jpg">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -3656,7 +3731,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
   <button class="send" id="pd_submit">Bring my vision to life &rarr;</button>
   <div class="reply-note">I personally reply within 1 business day.</div>
   <div class="msg" id="pd_msg"></div>
-  <div class="foot">Prefer to talk first? <a href="/book">Book a free Growth Audit call</a></div>
+  <div class="foot"><a class="pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener">Pay $149 and get started</a><br>Prefer to talk first? <a href="/book?type=audit">Book a free Growth Audit call</a></div>
 </div>
 <div class="faq rv">
   <h3>Common questions</h3>
@@ -3672,6 +3747,8 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
   <p style="margin-top:14px"><a href="/" style="color:#a97f2a;font-weight:700;text-decoration:none">Home</a> &middot; <a href="/starter-prompts" style="color:#a97f2a;font-weight:700;text-decoration:none">Free AI Starter Prompts</a> &middot; <a href="/privacy" style="color:#a97f2a;font-weight:700;text-decoration:none">Privacy</a> &middot; <a href="/terms" style="color:#a97f2a;font-weight:700;text-decoration:none">Terms</a></p>
 </footer>
 <script>
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;
+  if((a.getAttribute('href')||'').indexOf('buy.stripe.com')>-1&&window.gtag)gtag('event','pay_149_click');});
 var b=document.getElementById('pbody');
 document.getElementById('pd_submit').onclick=function(){
   var g=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};

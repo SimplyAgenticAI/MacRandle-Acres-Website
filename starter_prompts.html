@@ -161,7 +161,8 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
    <a class="brand-main" href="/"><span class="mark" aria-hidden="true"><span>M</span></span> MacRandle Acres</a>
    <a class="brand-hub" href="/hub">· Jeff Randle ↗</a>
   </div>
-  <a class="btn btn-gold nav-cta" href="/book?type=agent"><span data-edit="sp_nav_cta">Book a Lucid Marketing call</span></a>
+  <a class="nav-audit" href="/book?type=audit" style="margin-right:12px;font-weight:700">Free Growth Audit</a>
+  <a class="btn btn-gold nav-cta pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="sp_nav_pay_v6">Pay $149 and get started</span></a>
  </div>
 </nav>
 
@@ -328,7 +329,8 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
  <div class="wrap">
   <div class="final-box">
    <h2 data-edit="sp_cta_h">Want help setting up your first AI agent?</h2>
-   <a class="btn btn-gold" href="/book?type=agent"><span data-edit="sp_cta_btn">Book a Lucid Marketing call</span></a>
+   <a class="btn btn-gold pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="sp_pay_v6">Pay $149 and get started</span></a>
+   <p style="margin-top:14px"><a href="/book?type=agent"><span data-edit="sp_cta_btn">Book a Lucid Marketing call</span></a> · <a href="/book?type=audit">Or book a free Growth Audit</a></p>
   </div>
  </div>
 </section>
@@ -340,7 +342,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
   <p data-edit="sp_foot_line" style="margin:0 0 12px;font-weight:700;color:var(--cream)">Remove Friction. Accelerate Growth.</p>
   <div class="loc" data-edit="sp_foot_loc">Salisbury, MD</div>
   <p><a class="alice-call" href="tel:+14433231268">Talk to Alice, Jeff's AI assistant: (443) 323-1268</a></p>
-  <small>© <span id="yr"></span> <span data-edit="sp_foot_copy">MacRandle Acres. Helping small businesses remove friction from growth.</span></small>
+  <small>© <span id="yr"></span> <span data-edit="sp_foot_v7">MacRandle Acres. Helping businesses remove friction from growth.</span></small>
   <div class="foot-home"><a href="/">← Back to MacRandle Acres</a></div>
   <div class="foot-legal"><a href="/starter-prompts">Free AI Starter Prompts</a><span class="dot" aria-hidden="true">·</span><a href="/privacy">Privacy</a><span class="dot" aria-hidden="true">·</span><a href="/terms">Terms</a></div>
  </div>
@@ -365,6 +367,8 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
 <div id="adminToast"></div>
 
 <script>
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;
+  if((a.getAttribute('href')||'').indexOf('buy.stripe.com')>-1&&window.gtag)gtag('event','pay_149_click');});
 document.getElementById('yr').textContent = new Date().getFullYear();
 (function(){
  var C = window.__CONTENT__ || {};

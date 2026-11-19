@@ -118,6 +118,7 @@ section{padding:44px 0}
 .venture.v-green .v-eyebrow{color:var(--gold-l)}
 .venture h3{font-family:'Inter',system-ui,sans-serif;font-size:26px;font-weight:700;margin-bottom:10px}
 .venture .v-desc{font-size:15px;margin-bottom:18px}
+.venture .pay-sub{font-size:13px;line-height:1.5;margin:0}
 .venture.v-light .v-desc{color:var(--ink2)}
 .venture ul{list-style:none;display:grid;gap:9px;margin-bottom:22px}
 .venture li{display:flex;gap:10px;align-items:flex-start;font-size:14px}
@@ -221,7 +222,8 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
   <a class="brand" href="#top"><span class="mark"><img src="/jeff-randle.jpg" alt="Jeff Randle"></span> Jeff Randle <span class="sub">· Lucid Mage</span></a>
   <div class="nav-right">
    <a class="nav-offer" href="/" title="MacRandle Acres, my growth-advisory offer">MacRandle Acres <span class="no-arr">↗</span></a>
-   <a class="btn btn-primary nav-cta" href="/book?utm_source=hub&utm_medium=link&utm_campaign=booking"><span data-edit="nav_cta_ga">Book a Growth Audit</span></a>
+   <a class="nav-audit" href="/book?type=audit&utm_source=hub&utm_medium=link&utm_campaign=booking"><span data-edit="nav_audit_hub_v6">Free Growth Audit</span></a>
+   <a class="btn btn-primary nav-cta pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="nav_pay_hub_v6">Pay $149 and get started</span></a>
   </div>
  </div>
 </nav>
@@ -237,9 +239,11 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
   <div class="sub-name" data-edit="hero_subname_lm">Lucid Mage in the dream world.<br>Lucid Marketing at MacRandle Acres.</div>
   <p class="lead" data-edit="hero_lead_lm">Business is growth and your first AI agent, set up with you at MacRandle Acres. Personal is lucid dreaming, music, and art as Lucid Mage.</p>
   <div class="hero-cta">
-   <a class="btn btn-primary" href="/book?utm_source=hub&utm_medium=link&utm_campaign=booking"><span data-edit="hero_cta1_ga">Book a Growth Audit</span></a>
+   <a class="btn btn-primary pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="hero_pay_hub_v6">Pay $149 and get started</span></a>
+   <a class="btn btn-ghost" href="/book?type=audit&utm_source=hub&utm_medium=link&utm_campaign=booking"><span data-edit="hero_audit_hub_v6">Book a free Growth Audit</span></a>
    <a class="btn btn-ghost" href="#business"><span data-edit="hero_cta2">Explore my work</span></a>
   </div>
+  <p class="pay-sub" data-edit="hero_pay_note_hub_v7" style="max-width:560px;margin:14px auto 0;text-align:center;font-size:14px;line-height:1.55">Your agent runs on your own AI assistant subscription (usually about $30 a month), separate from this one-time setup fee. Not sure what you need? We'll sort it out on the call.</p>
  </div>
 </header>
 
@@ -270,7 +274,12 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
     <h3 data-edit="aiemp_h3_149">Your first AI agent, set up with you on a call.</h3>
     <p class="v-desc" data-edit="aiemp_price_149">$149 one-time.</p>
     <p class="v-desc" data-edit="aiemp_p_lm">We build it around whatever takes up the most space on your digital plate (emails, posting, follow-ups, scheduling), together on one call, and it is working for you by the end.</p>
-    <div class="v-cta"><a class="btn btn-gold" href="/book?type=agent&utm_source=hub&utm_medium=link&utm_campaign=booking"><span data-edit="aiemp_cta_lm">Book a Lucid Marketing call</span></a></div>
+    <div class="v-cta" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px">
+     <a class="btn btn-gold pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="pay_cta_hub_v6">Pay $149 and get started</span></a>
+     <p class="v-desc pay-sub" data-edit="pay_sub_hub_v6">Your agent runs on your own AI assistant subscription (usually about $30 a month), separate from this one-time setup fee. Not sure what you need? We'll sort it out on the call.</p>
+     <a class="btn btn-ghost" href="/book?type=agent&utm_source=hub&utm_medium=link&utm_campaign=booking"><span data-edit="aiemp_cta_lm">Book a Lucid Marketing call</span></a>
+     <p class="v-desc" data-edit="pay_next_hub_v6" style="margin:0">After you pay, book your setup call and we'll build your first agent together.</p>
+    </div>
    </div>
    <div class="venture v-light reveal d2">
     <span class="v-eyebrow" data-edit="saai_eyebrow_lm">AI teammates</span>
@@ -352,9 +361,11 @@ body.editing [data-edit]:focus{outline:2px solid var(--gold);background:rgba(199
    <h2 data-edit="final_h2_lm">Let's connect</h2>
    <p data-edit="final_p_lm">Growth and your first AI agent are a Lucid Marketing call. Dreams, music, and art live with Lucid Mage.</p>
    <div class="hero-cta" style="justify-content:center">
-    <a class="btn btn-gold" href="/book?utm_source=hub&utm_medium=link&utm_campaign=booking"><span data-edit="final_cta1_ga">Book a Growth Audit</span></a>
+    <a class="btn btn-gold pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="final_pay_hub_v6">Pay $149 and get started</span></a>
+    <a class="btn btn-ghost" href="/book?type=audit&utm_source=hub&utm_medium=link&utm_campaign=booking" style="border-color:rgba(246,244,236,.4);color:var(--cream)"><span data-edit="final_audit_hub_v6">Book a free Growth Audit</span></a>
     <a class="btn btn-ghost" href="mailto:Macrandleacres@gmail.com" style="border-color:rgba(246,244,236,.4);color:var(--cream)"><span data-edit="final_cta2">Email Jeff</span></a>
    </div>
+   <p class="pay-sub" data-edit="final_pay_note_hub_v7" style="max-width:560px;margin:14px auto 0;text-align:center;font-size:14px;line-height:1.55;color:rgba(246,244,236,.82)">Your agent runs on your own AI assistant subscription (usually about $30 a month), separate from this one-time setup fee. Not sure what you need? We'll sort it out on the call.</p>
   </div>
  </div>
 </section>
@@ -401,6 +412,8 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 /* Ad conversion tracking: fire a Lead event when a booking button is clicked */
 document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;
   var href=a.getAttribute('href')||'';
+  if(href.indexOf('buy.stripe.com')>-1){
+    if(window.gtag)gtag('event','pay_149_click'); return;}
   if(href.indexOf('/book')>-1||href.indexOf('calendar.')>-1){
     if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','book_call_click');}
 });
