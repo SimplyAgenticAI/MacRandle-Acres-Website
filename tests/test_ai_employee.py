@@ -472,13 +472,15 @@ class AiEmployeeTests(unittest.TestCase):
             self.assertLess(block.index(note), block.index("After you pay, book your setup call"), path)
             self.assertNotIn("AI assistant subscription", page, path)
             self.assertIn("pay_149_click", page)
-        thanks = self.client.get("/thank-you")
-        self.assertEqual(thanks.status_code, 200)
-        body = thanks.get_data(as_text=True)
-        self.assertIn("Payment received", body)
-        self.assertIn("Have a Grok Bot account ready before the call", body)
-        self.assertIn('href="/book?type=agent"', body)
-        self.assertNotIn("\u2014", body)
+        for path in ("/thank-you", "/thank-you/"):
+            thanks = self.client.get(path)
+            self.assertEqual(thanks.status_code, 200, path)
+            body = thanks.get_data(as_text=True)
+            self.assertIn("Payment received", body)
+            self.assertIn("Have a Grok Bot account ready before your setup call.", body)
+            self.assertIn("Grok", body)
+            self.assertIn('href="/book?type=agent"', body)
+            self.assertNotIn("\u2014", body)
         self.assertNotIn("AI assistant subscription", home + hub + body)
 
 

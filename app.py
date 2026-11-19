@@ -163,12 +163,14 @@ h1{color:#234F3D;font-size:32px;margin:0 0 12px}p{color:#5c635e;font-size:17px;l
 a.btn{display:inline-block;margin-top:18px;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:800;text-decoration:none;border-radius:12px;padding:14px 22px}
 .tag{margin-top:18px;font-style:italic;color:#a97f2a}</style></head><body>
 <div class="card"><h1>Payment received</h1>
-<p>Thank you. Your first AI agent setup is paid. Have a Grok Bot account ready before the call, or set one up if you don't have one yet. Next, book your setup call and we'll build it together.</p>
+<p>Thank you. Your first AI agent setup is paid. Next, book your setup call and we'll build it together.</p>
+<p>Have a Grok Bot account ready before your setup call. If you don't have one yet, set one up first.</p>
 <a class="btn" href="/book?type=agent">Book a Lucid Marketing call</a>
 <p class="tag">Remove Friction. Accelerate Growth.</p></div></body></html>"""
 
 
 @app.route("/thank-you")
+@app.route("/thank-you/")
 def thank_you():
     return Response(THANK_YOU_HTML, mimetype="text/html")
 
