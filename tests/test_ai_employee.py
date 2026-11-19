@@ -447,8 +447,9 @@ class AiEmployeeTests(unittest.TestCase):
 
     def test_pay_149_button_and_subscription_note(self):
         note = (
-            "Your agent runs on your own AI assistant subscription (usually about $30 a month), "
-            "separate from this one-time setup fee. Not sure what you need? We'll sort it out on the call."
+            "Your agent runs on your own Grok Bot subscription (usually about $30 a month), "
+            "separate from this one-time setup fee. Already have one? Great. Not sure what you need? "
+            "We'll sort it out on the call."
         )
         stripe = 'href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801"'
         home = self.client.get("/").get_data(as_text=True)
@@ -469,13 +470,16 @@ class AiEmployeeTests(unittest.TestCase):
             block = page.split('class="pay-offer"', 1)[1].split("</div>", 1)[0]
             self.assertLess(block.index(stripe), block.index(note), path)
             self.assertLess(block.index(note), block.index("After you pay, book your setup call"), path)
+            self.assertNotIn("AI assistant subscription", page, path)
             self.assertIn("pay_149_click", page)
         thanks = self.client.get("/thank-you")
         self.assertEqual(thanks.status_code, 200)
         body = thanks.get_data(as_text=True)
         self.assertIn("Payment received", body)
+        self.assertIn("Have a Grok Bot account ready before the call", body)
         self.assertIn('href="/book?type=agent"', body)
         self.assertNotIn("\u2014", body)
+        self.assertNotIn("AI assistant subscription", home + hub + body)
 
 
 if __name__ == "__main__":

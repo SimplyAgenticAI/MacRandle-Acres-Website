@@ -147,10 +147,10 @@ def legacy_logo():
 THANK_YOU_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>Payment received | Lucid Marketing, by MacRandle Acres</title>
-<meta name="description" content="Your first AI agent setup is paid. Book your setup call next. Lucid Marketing, by MacRandle Acres.">
+<meta name="description" content="Your first AI agent setup is paid. Have a Grok Bot account ready before the call. Lucid Marketing, by MacRandle Acres.">
 <link rel="canonical" href="https://www.macrandleacres.com/thank-you">
 <meta property="og:title" content="Payment received | Lucid Marketing, by MacRandle Acres">
-<meta property="og:description" content="Your first AI agent setup is paid. Book your setup call next.">
+<meta property="og:description" content="Your first AI agent setup is paid. Have a Grok Bot account ready before the call.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.macrandleacres.com/thank-you">
 <meta property="og:image" content="https://www.macrandleacres.com/og-v5.jpg">
@@ -163,7 +163,7 @@ h1{color:#234F3D;font-size:32px;margin:0 0 12px}p{color:#5c635e;font-size:17px;l
 a.btn{display:inline-block;margin-top:18px;background:linear-gradient(135deg,#2a5c47,#1a3b2d);color:#f6f4ec;font-weight:800;text-decoration:none;border-radius:12px;padding:14px 22px}
 .tag{margin-top:18px;font-style:italic;color:#a97f2a}</style></head><body>
 <div class="card"><h1>Payment received</h1>
-<p>Thank you. Your first AI agent setup is paid. Next, book your setup call and we'll build it together.</p>
+<p>Thank you. Your first AI agent setup is paid. Have a Grok Bot account ready before the call, or set one up if you don't have one yet. Next, book your setup call and we'll build it together.</p>
 <a class="btn" href="/book?type=agent">Book a Lucid Marketing call</a>
 <p class="tag">Remove Friction. Accelerate Growth.</p></div></body></html>"""
 
@@ -1950,7 +1950,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 </style></head><body>
 <div class="pay-offer">
   <a class="pay pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener">Pay $149 and get started</a>
-  <p class="pay-sub">Your agent runs on your own AI assistant subscription (usually about $30 a month), separate from this one-time setup fee. Not sure what you need? We'll sort it out on the call.</p>
+  <p class="pay-sub">Your agent runs on your own Grok Bot subscription (usually about $30 a month), separate from this one-time setup fee. Already have one? Great. Not sure what you need? We'll sort it out on the call.</p>
   <p>After you pay, book your setup call and we'll build your first agent together.</p>
   <p class="audit-link"><a class="audit" href="/book?type=audit">Or book a free Growth Audit</a></p>
 </div>
