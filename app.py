@@ -3289,7 +3289,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#e0b862;font-weight:700}
 .head h1{font-size:clamp(26px,5vw,38px);font-weight:800;margin:8px 0 8px;color:#fff;line-height:1.12}
 .head p{opacity:.9;font-size:16px;max-width:540px;margin:0 auto}
-.wins{max-width:720px;margin:22px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 18px}
+.wins{max-width:760px;margin:22px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 18px}
 .win{background:rgba(255,255,255,.06);border:1px solid rgba(224,184,98,.22);border-radius:14px;padding:14px 12px}
 .win .wi{font-size:22px}.win .wt{font-size:13px;font-weight:700;margin-top:5px;color:#fff}
 .card{max-width:640px;margin:26px auto 0;background:#fff;border:1px solid rgba(35,79,61,.12);border-radius:22px;padding:30px 28px;box-shadow:0 22px 55px rgba(35,49,40,.12)}
@@ -3560,6 +3560,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
     <div class="win"><div class="wi">&#127912;</div><div class="wt">Custom design</div></div>
     <div class="win"><div class="wi">&#9889;</div><div class="wt">Built to convert</div></div>
     <div class="win"><div class="wi">&#129309;</div><div class="wt">Done for you</div></div>
+    <div class="win"><div class="wi">&#128735;</div><div class="wt">Ongoing support</div></div>
   </div>
 </div>
 <div class="inc"><div>

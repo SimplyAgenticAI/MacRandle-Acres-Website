@@ -874,3 +874,16 @@ class HomeLayoutTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DesignWinsTests(unittest.TestCase):
+    def setUp(self):
+        import app
+        self.client = app.app.test_client()
+
+    def test_design_has_four_balanced_wins(self):
+        design = self.client.get("/design").get_data(as_text=True)
+        self.assertEqual(design.count('<div class="win">'), 4)
+        self.assertIn('<div class="wt">Ongoing support</div>', design)
+        self.assertIn('grid-template-columns:repeat(4,1fr)', design)
+
