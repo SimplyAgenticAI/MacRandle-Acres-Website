@@ -887,3 +887,13 @@ class DesignWinsTests(unittest.TestCase):
         self.assertIn('<div class="wt">Ongoing support</div>', design)
         self.assertIn('grid-template-columns:repeat(4,1fr)', design)
 
+
+
+class RealResultsTests(unittest.TestCase):
+    def test_real_results_section_uses_verified_numbers_only(self):
+        html = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "index.html"), encoding="utf-8").read()
+        sec = html.split('id="real-results"')[1].split("</section>")[0]
+        self.assertIn("Real results", sec)
+        self.assertEqual(sec.count('class="impact-stat rr-stat"'), 6)
+        for banned in ("97.27", "Cresskill", "New Jersey", "NJ", "\u2014"):
+            self.assertNotIn(banned, sec)
