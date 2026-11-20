@@ -832,6 +832,7 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertIn('<a href="#pbody">Get your free quote</a>', design)
         self.assertNotIn("Pay $149", design)
         self.assertNotIn('href="https://buy.stripe.com', design)
+        self.assertNotIn("Prefer to talk first", design)
 
     def test_index_has_no_website_mockup(self):
         path = os.path.join(os.path.dirname(__file__), "..", "index.html")
