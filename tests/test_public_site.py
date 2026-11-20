@@ -402,8 +402,8 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn('data-edit="hero_h1b">Accelerate Growth.', home)
         self.assertIn("I'm not another vendor", home)
         self.assertIn("Talk to Alice, Jeff's AI assistant: (443) 323-1268", home)
-        self.assertIn(".hero{position:relative;padding:96px 0 14px;text-align:center}", home)
-        self.assertIn(".hero{padding:64px 0 10px}", home)
+        self.assertIn(".hero{position:relative;padding:40px 0 14px;text-align:center}", home)
+        self.assertIn(".hero{padding:22px 0 10px}", home)
         self.assertIn("flex-wrap:wrap;margin-top:20px;", home)
         self.assertIn("border-bottom:1px solid var(--bd-soft);padding:12px 0}", home)
         self.assertIn("section{position:relative;padding:40px 0}", home)
@@ -788,6 +788,34 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertLessEqual(gap_mobile, 32)
         # The section rhythm itself stays put. Only the card gains space under it.
         self.assertNotRegex(css, r"\.final\{[^}]*padding")
+
+    def test_hero_primary_cta_is_the_growth_audit(self):
+        """The hero's big button books the free Growth Audit, and the pay note is gone from the hero."""
+        home = self._home()
+        hero = home.split('<header class="hero"', 1)[1].split("</header>", 1)[0]
+        cta = hero.split("hero-cta", 1)[1].split("</div>", 1)[0]
+        primary = cta.split("<a", 2)[1]
+        self.assertIn('class="btn btn-primary"', primary)
+        self.assertIn('href="/book?type=audit&utm_source=site&utm_medium=cta"', primary)
+        self.assertIn('data-edit="hero_audit_v9">Book your free Growth Audit', primary)
+        self.assertNotIn("hero_pay_note", hero)
+        self.assertNotIn("buy.stripe.com", cta)
+        self.assertIn('href="#ai-employee"', cta)
+        self.assertIn("Get your first AI agent, $149", cta)
+        self.assertIn("Talk to a real person, not a ticket queue.", hero)
+        offer = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
+        self.assertIn('data-edit="pay_sub_v8"', offer)
+        long_note = (
+            "Your agent runs on your own Grok Bot subscription (usually about $30 a month), "
+            "separate from this one-time setup fee. Already have one? Great. Not sure what you need? "
+            "We'll sort it out on the call."
+        )
+        short = "Plus your own Grok Bot subscription, usually about $30 a month."
+        self.assertEqual(offer.count(long_note), 1)
+        self.assertEqual(home.count(long_note), 1)
+        self.assertEqual(home.count(short), 3)
+        for key in ("re_pay_note_v9", "jeff_pay_note_v9", "final_pay_note_v9"):
+            self.assertIn('data-edit="%s"' % key, home)
 
     def test_index_has_no_website_mockup(self):
         path = os.path.join(os.path.dirname(__file__), "..", "index.html")
