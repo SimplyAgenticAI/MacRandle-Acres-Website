@@ -3553,7 +3553,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
   <span class="aur a1"></span><span class="aur a2"></span><span class="aur a3"></span>
   <div class="mark"><img src="/logo-v5.jpg" alt="MacRandle Acres logo, Remove Friction. Accelerate Growth." onerror="this.parentNode.textContent='M'"></div>
   <div class="eyebrow">Design &amp; Build</div>
-  <h1><span class="w" style="animation-delay:0.10s">I</span> <span class="w" style="animation-delay:0.18s">build</span> <span class="w" style="animation-delay:0.26s">websites</span> <span class="w" style="animation-delay:0.34s">and</span> <span class="w" style="animation-delay:0.42s">apps</span> <span class="w" style="animation-delay:0.50s">that</span> <em><span class="w" style="animation-delay:0.58s">stop</span> <span class="w" style="animation-delay:0.66s">the</span> <span class="w" style="animation-delay:0.74s">scroll.</span></em></h1>
+  <h1><span class="w" style="animation-delay:0.10s">Explore</span> <em><span class="w" style="animation-delay:0.18s">what&#39;s</span> <span class="w" style="animation-delay:0.26s">possible.</span></em></h1>
   <p>Custom-designed, beautifully animated, and built to turn visitors into clients. Tell me what you're dreaming up and I'll handle everything from first sketch to launch day.</p>
   <a class="hbtn" href="#pbody">Start my project &darr;</a>
   <div class="wins">

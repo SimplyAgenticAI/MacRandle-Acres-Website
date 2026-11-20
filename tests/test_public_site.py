@@ -836,7 +836,8 @@ class HomeLayoutTests(unittest.TestCase):
 
     def test_design_heading_is_a_full_sentence(self):
         design = self.client.get("/design").get_data(as_text=True)
-        self.assertIn('>I</span> <span class="w" style="animation-delay:0.18s">build</span>', design)
+        self.assertIn('>Explore</span> <em><span class="w" style="animation-delay:0.18s">what&#39;s</span>', design)
+        self.assertNotIn("stop the scroll", design.split("<h1>")[1].split("</h1>")[0])
         self.assertNotIn('>Websites</span> <span class="w" style="animation-delay:0.18s">&amp;</span>', design)
         # The gold ending must paint on the animated words themselves, or it renders invisible.
         self.assertIn('.head h1 em .w{background:linear-gradient', design)
