@@ -826,6 +826,13 @@ class HomeLayoutTests(unittest.TestCase):
             self.assertNotIn("buy.stripe.com", block)
             self.assertIn("Book a free Growth Audit", block)
 
+    def test_design_page_has_free_quote_not_149(self):
+        """The web design form offers a free quote; the $149 agent setup lives elsewhere."""
+        design = self.client.get("/design").get_data(as_text=True)
+        self.assertIn('<a href="#pbody">Get your free quote</a>', design)
+        self.assertNotIn("Pay $149", design)
+        self.assertNotIn('href="https://buy.stripe.com', design)
+
     def test_index_has_no_website_mockup(self):
         path = os.path.join(os.path.dirname(__file__), "..", "index.html")
         with open(path, encoding="utf-8") as f:

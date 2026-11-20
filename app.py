@@ -3733,7 +3733,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
   <button class="send" id="pd_submit">Bring my vision to life &rarr;</button>
   <div class="reply-note">I personally reply within 1 business day.</div>
   <div class="msg" id="pd_msg"></div>
-  <div class="foot"><a class="pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener">Pay $149 and get started</a><br>Prefer to talk first? <a href="/book?type=audit">Book a free Growth Audit call</a></div>
+  <div class="foot"><a href="#pbody">Get your free quote</a><br>Prefer to talk first? <a href="/book?type=audit">Book a free Growth Audit call</a></div>
 </div>
 <div class="faq rv">
   <h3>Common questions</h3>
