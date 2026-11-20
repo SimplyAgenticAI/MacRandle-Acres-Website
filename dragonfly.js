@@ -1,6 +1,6 @@
 /* MacRandle Acres dragonfly, shared by the homepage and /design.
    Include with <script src="/dragonfly.js" data-target="CSS selector of the words to land on" defer></script> */
-var CSS=".mra-df-hit{position:absolute;left:0;top:0;width:76px;height:56px;margin:0;padding:0;border:0;background:transparent;border-radius:28px;cursor:pointer;z-index:41;-webkit-tap-highlight-color:transparent}\n.mra-df-hit:focus-visible{outline:2px solid var(--gold,#c79a3b);outline-offset:2px}\n.mra-df-tip{position:absolute;z-index:42;width:300px;max-width:calc(100vw - 24px);background:#fff;border:1px solid rgba(35,79,61,.18);border-radius:16px;box-shadow:0 18px 44px rgba(26,59,45,.18);padding:16px 18px 14px;text-align:left;font-family:inherit;opacity:0;transform:translateY(6px);transition:opacity .25s ease,transform .25s ease;pointer-events:none}\n.mra-df-tip.on{opacity:1;transform:none;pointer-events:auto}\n.mra-df-tip .k{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-d,#a97f2a);margin:0 0 6px}\n.mra-df-tip p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink,#2D2D2D)}\n.mra-df-tip .n{margin-top:10px;font-size:12px;color:var(--ink3,#8a8f88)}\n.mra-df-tip .x{position:absolute;top:8px;right:10px;border:0;background:none;font-size:18px;line-height:1;color:var(--ink3,#8a8f88);cursor:pointer;padding:4px}\n@media(prefers-reduced-motion:reduce){.mra-df-tip{transition:none}}";
+var CSS=".mra-df-hit{position:absolute;left:0;top:0;width:76px;height:56px;margin:0;padding:0;border:0;background:transparent;border-radius:28px;cursor:pointer;z-index:41;-webkit-tap-highlight-color:transparent}\n.mra-df-hit:focus-visible{outline:2px solid var(--gold,#c79a3b);outline-offset:2px}\n.mra-df-tip{position:absolute;z-index:42;width:264px;max-width:calc(100vw - 24px);background:#fff;border:1px solid rgba(35,79,61,.14);border-radius:18px;box-shadow:0 14px 34px rgba(26,59,45,.2);padding:11px 32px 11px 14px;text-align:left;font-family:inherit;opacity:0;transform:translateY(-4px) scale(.94);transform-origin:var(--tail,80%) 0;transition:opacity .18s ease,transform .22s cubic-bezier(.2,.9,.3,1.3);pointer-events:none}\n.mra-df-tip:before{content:\"\";position:absolute;top:-7px;left:var(--tail,80%);width:12px;height:12px;margin-left:-6px;background:#fff;border-top:1px solid rgba(35,79,61,.14);border-left:1px solid rgba(35,79,61,.14);transform:rotate(45deg);border-radius:3px 0 0 0}\n.mra-df-tip.on{opacity:1;transform:none;pointer-events:auto}\n.mra-df-tip .k{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d,#a97f2a);background:rgba(199,154,59,.12);border-radius:999px;padding:2px 8px;margin:0 0 6px}\n.mra-df-tip p{margin:0;font-size:14px;line-height:1.45;color:var(--ink,#2D2D2D)}\n.mra-df-tip .n{margin-top:6px;font-size:11px;color:var(--ink3,#8a8f88)}\n.mra-df-tip .x{position:absolute;top:6px;right:8px;border:0;background:none;font-size:17px;line-height:1;color:var(--ink3,#8a8f88);cursor:pointer;padding:4px}\n@media(prefers-reduced-motion:reduce){.mra-df-tip{transition:none}}";
 /* The MacRandle Acres dragonfly. Same family as the Tallgrass meadow dragonfly
    (Tallgrass static/js/field.js): four wings, segmented green tail, gold eyes.
    It glides in, hovers, darts onto "Remove Friction." and perches there.
@@ -34,7 +34,7 @@ var CSS=".mra-df-hit{position:absolute;left:0;top:0;width:76px;height:56px;margi
  var hit=document.createElement('button'); hit.type='button'; hit.className='mra-df-hit';
  hit.setAttribute('aria-label','Dragonfly: show a quick marketing, branding or networking tip'); hit.title='Click me for a tip'; hit.style.display='none';
  var tip=document.createElement('div'); tip.className='mra-df-tip'; tip.setAttribute('role','status'); tip.setAttribute('aria-live','polite');
- tip.innerHTML='<button type="button" class="x" aria-label="Close tip">&times;</button><div class="k"></div><p></p><div class="n">Click or tap the dragonfly for another tip.</div>';
+ tip.innerHTML='<button type="button" class="x" aria-label="Close tip">&times;</button><div class="k"></div><p></p><div class="n">Tap me again for another.</div>';
  document.body.appendChild(cv); document.body.appendChild(hit); document.body.appendChild(tip);
  var ctx=cv.getContext('2d');
 
@@ -76,8 +76,10 @@ var CSS=".mra-df-hit{position:absolute;left:0;top:0;width:76px;height:56px;margi
  var n=Math.floor(Math.random()*TIPS.length), clicked=false, hopAt=-1e9;
  function showTip(){
   n=(n+1)%TIPS.length; tip.querySelector('.k').textContent=TIPS[n][0]+' tip'; tip.querySelector('p').textContent=TIPS[n][1];
-  var t=target(), W=Math.min(300,window.innerWidth-24), left=Math.max(12,Math.min(t.x-W+40,document.documentElement.clientWidth-W-12));
-  tip.style.left=left+'px'; tip.style.top=(t.y+30*SIZE)+'px'; tip.classList.add('on'); clicked=true;
+  var t=target(), W=Math.min(264,window.innerWidth-24), left=Math.max(12,Math.min(t.x-W+48,document.documentElement.clientWidth-W-12));
+  var tail=Math.max(20,Math.min(W-20,t.x-left));
+  tip.style.setProperty('--tail',tail+'px'); tip.style.left=left+'px'; tip.style.top=(t.y+24*SIZE)+'px';
+  tip.classList.remove('on'); void tip.offsetWidth; tip.classList.add('on'); clicked=true;
  }
  function hideTip(){tip.classList.remove('on');}
  hit.addEventListener('click',function(e){e.stopPropagation();hopAt=performance.now();showTip();if(REDUCE)render(performance.now());});
