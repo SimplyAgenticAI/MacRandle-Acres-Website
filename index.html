@@ -1668,66 +1668,8 @@ var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').
  });
 })();
 </script>
-<script>
-/* The Tallgrass dragonfly (same drawing as Tallgrass static/js/field.js), flying in
-   once and landing on the hero headline. Decorative only: aria-hidden, no clicks. */
-(function(){
- var h=document.querySelector('.hero h1 .hl .accent-text')||document.querySelector('.hero h1');
- if(!h||!window.requestAnimationFrame) return;
- var REDUCE=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
- var SIZE=window.innerWidth<620?1.05:1.6, BOX=Math.round(96*SIZE);
- var cv=document.createElement('canvas'); cv.className='mra-dragonfly'; cv.setAttribute('aria-hidden','true');
- var dpr=Math.min(window.devicePixelRatio||1,2); cv.width=BOX*dpr; cv.height=BOX*dpr;
- cv.style.cssText='position:absolute;left:0;top:0;width:'+BOX+'px;height:'+BOX+'px;pointer-events:none;z-index:40;will-change:transform';
- document.body.appendChild(cv);
- var ctx=cv.getContext('2d');
- function target(){var r=h.getBoundingClientRect();return {x:r.right+window.scrollX-20*SIZE, y:r.top+window.scrollY+r.height*0.08-6*SIZE};}
- function draw(perched,wingT){
-  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,BOX,BOX);
-  ctx.save(); ctx.translate(BOX/2,BOX/2); ctx.scale(SIZE,SIZE);
-  var beat=perched?0.04:Math.sin(wingT*1.9)*0.42;
-  var wings=[{at:3.5,span:21,width:3.4,side:-1},{at:3.5,span:21,width:3.4,side:1},{at:-1.5,span:18,width:3.9,side:-1},{at:-1.5,span:18,width:3.9,side:1}];
-  for(var w=0;w<4;w++){var g=wings[w];ctx.save();ctx.translate(g.at,0);ctx.rotate(g.side*(1.36+beat));
-   ctx.beginPath();ctx.ellipse(0,g.span*0.5,g.width,g.span*0.5,0,0,Math.PI*2);
-   ctx.fillStyle='rgba(120,215,180,'+(perched?0.55:0.42)+')';ctx.fill();
-   ctx.lineWidth=0.7;ctx.strokeStyle='rgba(16,100,70,'+(perched?0.7:0.5)+')';ctx.stroke();
-   if(g.span>20){ctx.beginPath();ctx.ellipse(-g.width*0.25,g.span*0.82,0.9,1.9,0,0,Math.PI*2);ctx.fillStyle='rgba(16,60,42,0.5)';ctx.fill();}
-   ctx.restore();}
-  var tail=ctx.createLinearGradient(-30,0,0,0);tail.addColorStop(0,'rgba(16,185,129,0.85)');tail.addColorStop(1,'rgba(110,231,183,0.95)');
-  ctx.beginPath();ctx.moveTo(-1,-2.1);ctx.quadraticCurveTo(-16,-1.5,-29,-0.5);ctx.quadraticCurveTo(-31,0,-29,0.5);ctx.quadraticCurveTo(-16,1.5,-1,2.1);ctx.closePath();ctx.fillStyle=tail;ctx.fill();
-  ctx.strokeStyle='rgba(6,40,27,0.35)';ctx.lineWidth=0.5;
-  for(var s=1;s<=5;s++){var sx=-3-s*4.6,hf=1.9*(1-s/7);ctx.beginPath();ctx.moveTo(sx,-hf);ctx.lineTo(sx,hf);ctx.stroke();}
-  ctx.beginPath();ctx.ellipse(1.5,0,5.4,3.2,0,0,Math.PI*2);ctx.fillStyle='rgba(52,211,153,0.95)';ctx.fill();
-  ctx.beginPath();ctx.ellipse(7.6,0,2.6,2.9,0,0,Math.PI*2);ctx.fillStyle='rgba(110,231,183,0.95)';ctx.fill();
-  ctx.fillStyle='rgba(217,180,95,0.92)';ctx.beginPath();ctx.ellipse(8.6,-1.9,2.1,2.3,0.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(8.6,1.9,2.1,2.3,-0.3,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(255,252,240,0.85)';ctx.beginPath();ctx.arc(9.5,-2.4,0.6,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(9.5,2.4,0.6,0,Math.PI*2);ctx.fill();
-  ctx.restore();
- }
- var REST=-0.12; /* perched heading: head up and to the right, like it just settled */
- function place(x,y,a){cv.style.transform='translate('+(x-BOX/2)+'px,'+(y-BOX/2)+'px) rotate('+a+'rad)';}
- if(REDUCE){var t0=target();place(t0.x,t0.y,REST);draw(true,0);
-  window.addEventListener('resize',function(){var t=target();place(t.x,t.y,REST);});return;}
- var start=null,DUR=2600,DELAY=1500,landed=false,wingT=0;
- function bez(p0,p1,p2,p3,t){var u=1-t;return u*u*u*p0+3*u*u*t*p1+3*u*t*t*p2+t*t*t*p3;}
- function frame(now){
-  if(start===null) start=now+DELAY;
-  var t=target(), k=(now-start)/DUR;
-  wingT+=0.9;
-  if(k<0){cv.style.opacity='0';requestAnimationFrame(frame);return;}
-  cv.style.opacity='1';
-  if(k<1){
-   var e=1-Math.pow(1-k,2.2);
-   var sx=-BOX, sy=t.y-160, x=bez(sx,t.x*0.35,t.x*0.8+120,t.x,e), y=bez(sy,sy-60,t.y+110,t.y,e);
-   var e2=Math.min(1,e+0.01), x2=bez(sx,t.x*0.35,t.x*0.8+120,t.x,e2), y2=bez(sy,sy-60,t.y+110,t.y,e2);
-   var a=Math.atan2(y2-y,x2-x); if(k>0.85) a=a+(REST-a)*((k-0.85)/0.15);
-   place(x,y,a); draw(false,wingT); requestAnimationFrame(frame); return;
-  }
-  if(!landed){landed=true;draw(true,0);}
-  var bob=Math.sin(now/900)*1.2; place(t.x,t.y+bob,REST+Math.sin(now/1300)*0.03);
-  requestAnimationFrame(frame);
- }
- requestAnimationFrame(frame);
-})();
-</script>
+<script src="/dragonfly.js?v=3" data-target=".hero h1 .hl .accent-text" defer></script>
+
+
 </body>
 </html>

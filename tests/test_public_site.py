@@ -841,6 +841,18 @@ class HomeLayoutTests(unittest.TestCase):
         # The gold ending must paint on the animated words themselves, or it renders invisible.
         self.assertIn('.head h1 em .w{background:linear-gradient', design)
 
+    def test_dragonfly_on_home_and_design(self):
+        design = self.client.get("/design").get_data(as_text=True)
+        self.assertIn('src="/dragonfly.js', design)
+        with open(os.path.join(os.path.dirname(__file__), "..", "index.html"), encoding="utf-8") as f:
+            self.assertIn('src="/dragonfly.js', f.read())
+        js = self.client.get("/dragonfly.js")
+        self.assertEqual(js.status_code, 200)
+        body = js.get_data(as_text=True)
+        js.close()
+        self.assertIn("'Networking'", body)
+        self.assertNotIn("\u2014", body)
+
     def test_index_has_no_website_mockup(self):
         path = os.path.join(os.path.dirname(__file__), "..", "index.html")
         with open(path, encoding="utf-8") as f:
