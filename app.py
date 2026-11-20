@@ -3336,7 +3336,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F8F7F3;color:#2D2D2D;l
 .head h1{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:clamp(32px,6vw,54px);letter-spacing:-.01em;line-height:1.04;max-width:760px;margin:10px auto 14px}
 .head h1 .w{display:inline-block;opacity:0;transform:translateY(26px) rotate(2deg);animation:wup .8s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes wup{to{opacity:1;transform:none}}
-.head h1 em{font-style:italic;font-weight:400;background:linear-gradient(90deg,#e0b862,#fff3cf,#e0b862);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shim 4s linear infinite}
+.head h1 em{font-style:italic;font-weight:400;color:#e0b862}.head h1 em .w{background:linear-gradient(90deg,#e0b862,#fff3cf,#e0b862);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;padding-right:.06em;animation:wup .8s cubic-bezier(.2,.8,.2,1) forwards,shim 4s linear infinite}
 @keyframes shim{to{background-position:-200% 0}}
 .head p{font-size:17px;max-width:560px;opacity:0;animation:wup .8s .75s cubic-bezier(.2,.8,.2,1) forwards}
 .head .hbtn{opacity:0;animation:wup .8s .95s cubic-bezier(.2,.8,.2,1) forwards}
@@ -3553,7 +3553,7 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
   <span class="aur a1"></span><span class="aur a2"></span><span class="aur a3"></span>
   <div class="mark"><img src="/logo-v5.jpg" alt="MacRandle Acres logo, Remove Friction. Accelerate Growth." onerror="this.parentNode.textContent='M'"></div>
   <div class="eyebrow">Design &amp; Build</div>
-  <h1><span class="w" style="animation-delay:0.10s">Websites</span> <span class="w" style="animation-delay:0.18s">&amp;</span> <span class="w" style="animation-delay:0.26s">apps</span> <span class="w" style="animation-delay:0.34s">that</span> <em><span class="w" style="animation-delay:0.42s">stop</span> <span class="w" style="animation-delay:0.50s">the</span> <span class="w" style="animation-delay:0.58s">scroll.</span></em></h1>
+  <h1><span class="w" style="animation-delay:0.10s">I</span> <span class="w" style="animation-delay:0.18s">build</span> <span class="w" style="animation-delay:0.26s">websites</span> <span class="w" style="animation-delay:0.34s">and</span> <span class="w" style="animation-delay:0.42s">apps</span> <span class="w" style="animation-delay:0.50s">that</span> <em><span class="w" style="animation-delay:0.58s">stop</span> <span class="w" style="animation-delay:0.66s">the</span> <span class="w" style="animation-delay:0.74s">scroll.</span></em></h1>
   <p>Custom-designed, beautifully animated, and built to turn visitors into clients. Tell me what you're dreaming up and I'll handle everything from first sketch to launch day.</p>
   <a class="hbtn" href="#pbody">Start my project &darr;</a>
   <div class="wins">

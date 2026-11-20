@@ -834,6 +834,13 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertNotIn('href="https://buy.stripe.com', design)
         self.assertNotIn("Prefer to talk first", design)
 
+    def test_design_heading_is_a_full_sentence(self):
+        design = self.client.get("/design").get_data(as_text=True)
+        self.assertIn('>I</span> <span class="w" style="animation-delay:0.18s">build</span>', design)
+        self.assertNotIn('>Websites</span> <span class="w" style="animation-delay:0.18s">&amp;</span>', design)
+        # The gold ending must paint on the animated words themselves, or it renders invisible.
+        self.assertIn('.head h1 em .w{background:linear-gradient', design)
+
     def test_index_has_no_website_mockup(self):
         path = os.path.join(os.path.dirname(__file__), "..", "index.html")
         with open(path, encoding="utf-8") as f:
