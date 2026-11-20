@@ -118,6 +118,10 @@ a{color:inherit;text-decoration:none}
 .nav-cta{padding:9px 18px;margin-left:24px;flex-shrink:0}
 .brand{flex-shrink:0;margin-right:22px}.brand-main{white-space:nowrap}
 .nav .wrap.nav-in{max-width:1320px}.nav-links{gap:12px}.nav-links a{font-size:13px}
+/* Fold the menu whenever it does not fit (any zoom level or font); set by fitNav() below */
+.nav.compact .nav-links{display:none}.nav.compact .hamb{display:block;order:2}.nav.compact .brand-hub{display:none}
+.nav.compact .nav-in{height:auto;min-height:64px;padding:10px 24px;flex-wrap:wrap}
+.nav.compact .nav-cta{order:3;flex:1 1 100%;text-align:center;margin-left:0}
 .final .final-audit{padding:16px 36px;font-size:15.5px}
 .hamb{display:none;background:none;border:none;color:var(--green);font-size:22px;cursor:pointer}
 
@@ -561,6 +565,7 @@ footer{position:relative}
  .brand-main{white-space:nowrap}
  .nav-cta{order:3;flex:1 1 100%;text-align:center;margin-left:0}
  .hamb{order:2}}
+@media(min-width:621px) and (max-width:1279px){.nav-in{padding:10px 24px}}
 .hero h1 .hl{display:inline-block;animation:h1rise 1.1s cubic-bezier(.2,.8,.2,1) both}
 .hero h1 .hl.h2{animation-delay:.28s}
 @keyframes h1rise{from{opacity:0;transform:translateY(34px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
@@ -1328,6 +1333,23 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     if(window.fbq)fbq('track','Lead'); if(window.gtag)gtag('event','book_call_click');}
 });
 
+
+/* fitNav: if the full menu would clip at this width, zoom or font, fold it into the menu icon */
+(function(){
+ var nav=document.querySelector('.nav'); if(!nav) return;
+ var inner=nav.querySelector('.nav-in'), links=nav.querySelector('.nav-links'), cta=nav.querySelector('.nav-cta');
+ function fitNav(){
+  nav.classList.remove('compact');
+  if(getComputedStyle(links).display==='none') return;
+  var r=inner.getBoundingClientRect(), right=r.right-parseFloat(getComputedStyle(inner).paddingRight||0);
+  var clipped=(cta && cta.getBoundingClientRect().right>right+0.5) || links.scrollWidth>links.clientWidth+0.5;
+  if(clipped) nav.classList.add('compact');
+ }
+ fitNav();
+ window.addEventListener('resize',fitNav);
+ window.addEventListener('load',fitNav);
+ if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitNav);
+})();
 
 document.getElementById('hamb').addEventListener('click',function(){
  var nl=document.querySelector('.nav-links');
