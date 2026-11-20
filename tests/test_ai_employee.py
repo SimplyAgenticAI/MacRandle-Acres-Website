@@ -426,7 +426,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("Not ready for a call? Join the free MacRandle Acres community on Skool.", home)
         self.assertIn("Most popular", home)
         nav = home.split("<nav", 1)[1].split("</nav>", 1)[0]
-        self.assertIn("Pay $149 and get started", nav)
+        self.assertIn("Set up your AI agent, $149", nav)
         self.assertIn('href="/book?type=audit"', nav)
         self.assertNotIn("Book a Growth Audit", nav)
         self.assertNotIn("Lucid Marketing call", nav)
@@ -455,8 +455,8 @@ class AiEmployeeTests(unittest.TestCase):
         home = self.client.get("/").get_data(as_text=True)
         offer = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
         self.assertIn(stripe, offer)
-        self.assertIn("Pay $149 and get started", offer)
-        self.assertLess(offer.index("Pay $149 and get started"), offer.index(note))
+        self.assertIn("Pay $149, set up your AI agent", offer)
+        self.assertLess(offer.index("Pay $149, set up your AI agent"), offer.index(note))
         self.assertLess(offer.index(note), offer.index("After you pay, book your setup call"))
         self.assertIn("pay_149_click", home)
         self.assertNotIn("\u2014", offer)
