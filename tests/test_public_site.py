@@ -403,7 +403,7 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn("I'm not another vendor", home)
         self.assertIn("Talk to Alice, Jeff's AI assistant: (443) 323-1268", home)
         self.assertIn(".hero{position:relative;padding:40px 0 14px;text-align:center}", home)
-        self.assertIn(".hero{padding:22px 0 10px}", home)
+        self.assertIn(".hero{padding:32px 0 10px}", home)
         self.assertIn("flex-wrap:wrap;margin-top:20px;", home)
         self.assertIn("border-bottom:1px solid var(--bd-soft);padding:12px 0}", home)
         self.assertIn("section{position:relative;padding:40px 0}", home)
@@ -764,8 +764,11 @@ class HomeLayoutTests(unittest.TestCase):
         css = self._css(home)
         self.assertIn("Where are you", home)
         self.assertIn('data-edit="final_h2hi">leaking growth?', home)
-        self.assertIn('data-edit="final_pay_v6">Pay $149 and get started', home)
-        self.assertIn('data-edit="final_audit_v6">Book a free Growth Audit', home)
+        final = home.split('<section class="final">', 1)[1].split("</section>", 1)[0]
+        self.assertNotIn("buy.stripe.com", final)
+        self.assertNotIn("$149", final)
+        self.assertNotIn("Grok Bot subscription", final)
+        self.assertIn('class="btn btn-gold final-audit" href="/book?type=audit"><span data-edit="final_audit_v10">Book a free Growth Audit', final)
         self.assertIn('data-edit="final_cta2">Email Jeff', home)
         wave = re.search(r"\.foot-wave\{[^}]*top:\s*-(\d+)px", css)
         margin = re.search(r"\.final-box\{[^}]*margin-bottom:\s*(\d+)px", css)
@@ -813,9 +816,15 @@ class HomeLayoutTests(unittest.TestCase):
         short = "Plus your own Grok Bot subscription, usually about $30 a month."
         self.assertEqual(offer.count(long_note), 1)
         self.assertEqual(home.count(long_note), 1)
-        self.assertEqual(home.count(short), 3)
+        self.assertEqual(home.count(short), 0)
         for key in ("re_pay_note_v9", "jeff_pay_note_v9", "final_pay_note_v9"):
-            self.assertIn('data-edit="%s"' % key, home)
+            self.assertNotIn('data-edit="%s"' % key, home)
+        # The $149 offer lives only in the nav, the hero jump link and its own section.
+        self.assertEqual(home.count('href="https://buy.stripe.com'), 2)
+        for sec in ('id="real-estate"', 'id="jeff"'):
+            block = home.split(sec, 1)[1].split("</section>", 1)[0]
+            self.assertNotIn("buy.stripe.com", block)
+            self.assertIn("Book a free Growth Audit", block)
 
     def test_index_has_no_website_mockup(self):
         path = os.path.join(os.path.dirname(__file__), "..", "index.html")

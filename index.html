@@ -115,7 +115,9 @@ a{color:inherit;text-decoration:none}
 .btn-cream:hover{background:#fff}
 .btn-ghost-l{background:rgba(255,255,255,.08);border-color:rgba(246,244,236,.4);color:var(--cream)}
 .btn-ghost-l:hover{background:rgba(255,255,255,.16)}
-.nav-cta{padding:9px 18px}
+.nav-cta{padding:9px 18px;margin-left:24px;flex-shrink:0}
+.brand{flex-shrink:0;margin-right:22px}.brand-main{white-space:nowrap}
+.final .final-audit{padding:16px 36px;font-size:15.5px}
 .hamb{display:none;background:none;border:none;color:var(--green);font-size:22px;cursor:pointer}
 
 /* Hero */
@@ -141,7 +143,7 @@ a{color:inherit;text-decoration:none}
 .hero .hero-cta{align-items:center}
 .hero .btn{padding:16px 34px;font-size:15px}
 .hero .btn-ghost{padding:10px 16px;font-size:13.5px}
-.hero-trust{margin:10px auto 0;font-size:14.5px;line-height:1.4;color:var(--ink2)}
+.hero-trust{margin:18px auto 0;font-size:14.5px;line-height:1.4;color:var(--ink2)}
 .guarantee-ribbon{display:inline-flex;align-items:center;gap:10px;margin-top:30px;font-size:14px;color:var(--ink2);
  background:rgba(35,79,61,.06);border:1px solid var(--bd);border-radius:100px;padding:9px 20px}
 .guarantee-ribbon .g-ico{color:var(--green);font-weight:800}
@@ -500,7 +502,9 @@ body.editing #cursorGlow{display:none}
  .nav-cta{order:3;flex:1 1 100%;text-align:center;padding:10px 12px;font-size:14px}
  .hamb{order:2}
  .g3,.g2{grid-template-columns:1fr}
- .hero{padding:22px 0 10px}section{padding:28px 0}
+ .hero{padding:32px 0 10px}section{padding:28px 0}
+ .hero .hero-cta{flex-direction:column;align-items:stretch;gap:16px;max-width:300px;margin:0 auto}
+ .hero .hero-cta .btn{width:100%;text-align:center}
  #voice .sec-head{margin-bottom:16px}
  .tier .price .amt{font-size:28px}
  .tier .price .was,.tier .price .was .amt,.tier .price .was .per{font-size:14px}
@@ -551,10 +555,10 @@ footer{position:relative}
 
 @media(max-width:700px){.impact-grid{grid-template-columns:1fr 1fr;gap:26px 18px}}
 /* ===== V2 motion + new sections ===== */
-@media(max-width:1020px){.nav-links{display:none}.hamb{display:block}.brand-hub{display:none}
+@media(max-width:1180px){.nav-links{display:none}.hamb{display:block}.brand-hub{display:none}
  .nav-in{height:auto;min-height:64px;padding:10px 0;flex-wrap:wrap}
  .brand-main{white-space:nowrap}
- .nav-cta{order:3;flex:1 1 100%;text-align:center}
+ .nav-cta{order:3;flex:1 1 100%;text-align:center;margin-left:0}
  .hamb{order:2}}
 .hero h1 .hl{display:inline-block;animation:h1rise 1.1s cubic-bezier(.2,.8,.2,1) both}
 .hero h1 .hl.h2{animation-delay:.28s}
@@ -668,7 +672,7 @@ footer{position:relative}
    <a href="#jeff">About</a>
    <a class="nav-audit" href="/book?type=audit">Free Growth Audit</a>
   </div>
-  <a class="btn btn-primary nav-cta pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="nav_pay_v6">Pay $149 and get started</span></a>
+  <a class="btn btn-primary nav-cta pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="nav_pay_v10">Set up your AI agent, $149</span></a>
   <button class="hamb" id="hamb" aria-label="Menu">☰</button>
  </div>
 </nav>
@@ -713,7 +717,7 @@ footer{position:relative}
    <p class="ai-price reveal d1" data-edit="ai_offer_price_149">$149 <span>one-time.</span></p>
    <p class="ai-body reveal d2" data-edit="ai_offer_body_lm">We build it around whatever takes up the most space on your digital plate (emails, posting, follow-ups, scheduling), together on one call, and it is working for you by the end.</p>
    <div class="hero-cta reveal d3" style="justify-content:center">
-    <a class="btn btn-primary pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="pay_cta_v6">Pay $149 and get started</span></a>
+    <a class="btn btn-primary pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="pay_cta_v10">Pay $149, set up your AI agent</span></a>
     <a class="btn btn-ghost" href="/book?type=agent&utm_source=site&utm_medium=cta"><span data-edit="ai_cta_lm">Book a Lucid Marketing call</span></a>
    </div>
    <p class="pay-sub reveal d3" data-edit="pay_sub_v8">Your agent runs on your own Grok Bot subscription (usually about $30 a month), separate from this one-time setup fee. Already have one? Great. Not sure what you need? We'll sort it out on the call.</p>
@@ -1205,10 +1209,8 @@ footer{position:relative}
    <p class="reveal" data-edit="re_also_v7">The same growth work fits any business.</p>
   </div>
   <div class="hero-cta reveal" style="justify-content:center">
-   <a class="btn btn-primary pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="re_pay_v6">Pay $149 and get started</span></a>
-   <a class="btn btn-ghost" href="/book?type=audit"><span data-edit="re_audit_v6">Book a free Growth Audit</span></a>
+   <a class="btn btn-primary" href="/book?type=audit"><span data-edit="re_audit_v10">Book a free Growth Audit</span></a>
   </div>
-  <p class="pay-sub reveal" data-edit="re_pay_note_v9" style="margin:14px auto 0;text-align:center">Plus your own Grok Bot subscription, usually about $30 a month.</p>
  </div>
 </section>
 
@@ -1222,10 +1224,8 @@ footer{position:relative}
     <h2 data-edit="jeff_h2">Hi, I'm Jeff Randle.</h2>
     <p data-edit="jeff_p_v7">I'm the founder of MacRandle Acres and a growth partner based in Salisbury, MD. I work with businesses to find what's quietly costing them growth, fix it, and show the results in plain numbers every month. You get a real person who knows your business, not a ticket queue.</p>
     <div class="hero-cta">
-     <a class="btn btn-gold pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="jeff_pay_v6">Pay $149 and get started</span></a>
-     <a class="btn btn-ghost" href="/book?type=audit"><span data-edit="jeff_audit_v6">Book a free Growth Audit</span></a>
+     <a class="btn btn-gold" href="/book?type=audit"><span data-edit="jeff_audit_v10">Book a free Growth Audit</span></a>
     </div>
-    <p class="pay-sub" data-edit="jeff_pay_note_v9" style="margin:12px 0 0">Plus your own Grok Bot subscription, usually about $30 a month.</p>
     <p style="margin-top:12px"><a href="/hub"><span data-edit="jeff_cta2">More about me &rarr;</span></a></p>
    </div>
   </div>
@@ -1240,10 +1240,8 @@ footer{position:relative}
    <h2>Where are you <span style="color:var(--gold-l)" data-edit="final_h2hi">leaking growth?</span></h2>
    <p data-edit="final_p">On a free call, I'll look at your profiles, page and posts and tell you the first three things I'd fix.</p>
    <div class="hero-cta" style="justify-content:center">
-    <a class="btn btn-gold pay-149" href="https://buy.stripe.com/cNicN6c9d7mWfuY8256g801" target="_blank" rel="noopener"><span data-edit="final_pay_v6">Pay $149 and get started</span></a>
-    <a class="btn btn-ghost-l" href="/book?type=audit"><span data-edit="final_audit_v6">Book a free Growth Audit</span></a>
+    <a class="btn btn-gold final-audit" href="/book?type=audit"><span data-edit="final_audit_v10">Book a free Growth Audit</span></a>
    </div>
-   <p class="pay-sub" data-edit="final_pay_note_v9" style="margin:14px auto 0;text-align:center;color:rgba(246,244,236,.82)">Plus your own Grok Bot subscription, usually about $30 a month.</p>
    <p style="margin-top:14px"><a href="mailto:Macrandleacres@gmail.com"><span data-edit="final_cta2">Email Jeff</span></a></p>
   </div>
  </div>
