@@ -897,3 +897,10 @@ class RealResultsTests(unittest.TestCase):
         self.assertEqual(sec.count('class="impact-stat rr-stat"'), 6)
         for banned in ("97.27", "Cresskill", "New Jersey", "NJ", "\u2014"):
             self.assertNotIn(banned, sec)
+
+
+class MobileNavPaddingTests(unittest.TestCase):
+    def test_mobile_nav_has_side_padding(self):
+        html = open(os.path.join(os.path.dirname(__file__), '..', 'index.html'), encoding='utf-8').read()
+        self.assertNotIn('padding:10px 0;flex-wrap:wrap', html)
+        self.assertGreaterEqual(html.count('padding:10px 16px;flex-wrap:wrap'), 2)
