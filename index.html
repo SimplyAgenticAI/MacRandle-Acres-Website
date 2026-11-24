@@ -106,8 +106,8 @@ a{color:inherit;text-decoration:none}
 .btn{display:inline-block;font-weight:700;font-size:14px;border-radius:11px;padding:12px 24px;cursor:pointer;
  transition:transform .16s ease,box-shadow .16s ease,background .2s;border:1px solid transparent;white-space:nowrap}
 .btn:hover{transform:translateY(-2px)}
-.btn-primary{background:var(--grad-green);color:var(--cream);box-shadow:0 10px 26px rgba(35,79,61,.28)}
-.btn-primary:hover{box-shadow:0 14px 32px rgba(35,79,61,.36)}
+.btn-primary{background:var(--grad-green);color:var(--cream);box-shadow:var(--btn-glow,0 10px 26px rgba(35,79,61,.28))}
+.btn-primary:hover{box-shadow:var(--btn-glow-hover,0 14px 32px rgba(35,79,61,.36))}
 .btn-ghost{background:transparent;border-color:var(--bd);color:var(--green)}
 .btn-ghost:hover{background:rgba(35,79,61,.06);border-color:var(--green)}
 .btn-gold{background:var(--grad-gold);color:#3a2a05;box-shadow:0 10px 26px rgba(199,154,59,.32)}
@@ -131,7 +131,7 @@ a{color:inherit;text-decoration:none}
  background:radial-gradient(circle at 50% 30%,rgba(199,154,59,.16),transparent 62%)}
 .hero-logo-wrap{position:relative;width:max-content;margin:0 auto 12px;display:block}
 .logo-glow{position:absolute;inset:-16%;border-radius:50%;z-index:0;pointer-events:none;filter:blur(16px);
- background:radial-gradient(circle,rgba(199,154,59,.4),rgba(199,154,59,.1) 45%,transparent 66%);
+ background:radial-gradient(circle,var(--logo-halo,rgba(199,154,59,.4)),var(--logo-halo-mid,rgba(199,154,59,.1)) 45%,transparent 66%);
  animation:glowPulse 4.2s ease-in-out infinite}
 .hero-logo{position:relative;z-index:1;width:clamp(108px,14vw,148px);height:auto;display:block;border-radius:24px;
  box-shadow:0 20px 48px rgba(35,49,40,.32),0 0 0 1px rgba(255,255,255,.06) inset;
