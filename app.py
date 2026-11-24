@@ -24,6 +24,8 @@ import secrets
 from flask import (Flask, abort, request, session, redirect, jsonify,
                    send_from_directory, Response)
 
+import seasonal
+
 BASE = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -308,7 +310,9 @@ def render_page(page):
     inject = ("<script>window.__ADMIN__=%s;window.__CONTENT__=%s;window.__PAGE__=%s;</script>"
               % ("true" if is_admin else "false", payload, json.dumps(page)))
     # Don't track the signed-in owner (keeps your own visits out of the stats)
-    head = ("" if is_admin else tracking_head()) + inject
+    theme = seasonal.current_theme(preview=request.args.get("theme"))
+    html = seasonal.stamp_html(html, theme)
+    head = ("" if is_admin else tracking_head()) + seasonal.STYLESHEET_TAG + inject
     html = html.replace("</head>", head + "\n</head>", 1)
     resp = Response(html, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-store"

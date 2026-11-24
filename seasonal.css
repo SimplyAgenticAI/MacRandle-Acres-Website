@@ -1,0 +1,35 @@
+/* Seasonal accents. Unset tokens keep today's colors. */
+
+.nav .mark{position:relative}
+.nav .season-symbol[data-season="halloween"]{display:var(--symbol-halloween,none)}
+.nav .season-symbol[data-season="thanksgiving"]{display:var(--symbol-thanksgiving,none)}
+.nav .season-symbol[data-season="winter"]{display:var(--symbol-winter,none)}
+
+:root[data-theme="halloween"]{
+ --gold-d:#b8612a;
+ --logo-halo:rgba(232,150,74,.35);
+ --logo-halo-mid:rgba(232,150,74,.12);
+ --btn-glow:0 10px 26px rgba(35,79,61,.28), 0 0 0 1px rgba(232,150,74,.42);
+ --btn-glow-hover:0 14px 32px rgba(35,79,61,.36), 0 0 0 1px rgba(232,150,74,.55);
+ --symbol-halloween:block;
+}
+:root[data-theme="thanksgiving"]{
+ --gold:#b8792f;
+ --gold-d:#b8792f;
+ --logo-halo:rgba(184,121,47,.40);
+ --logo-halo-mid:rgba(184,121,47,.12);
+ --btn-glow:0 10px 26px rgba(35,79,61,.28), 0 0 0 1px rgba(184,121,47,.45);
+ --btn-glow-hover:0 14px 32px rgba(35,79,61,.36), 0 0 0 1px rgba(184,121,47,.58);
+ --symbol-thanksgiving:block;
+}
+:root[data-theme="winter"]{
+ --green:#1f4a3a;
+ --gold:#d8c08a;
+ --gold-l:#d8c08a;
+ --gold-d:#9c7a35;
+ --logo-halo:rgba(206,220,228,.58);
+ --logo-halo-mid:rgba(216,192,138,.34);
+ --btn-glow:0 10px 26px rgba(35,79,61,.28), 0 0 0 1px rgba(216,192,138,.62);
+ --btn-glow-hover:0 14px 32px rgba(35,79,61,.36), 0 0 0 1px rgba(216,192,138,.75);
+ --symbol-winter:block;
+}
