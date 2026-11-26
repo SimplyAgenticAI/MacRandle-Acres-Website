@@ -422,7 +422,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("Helping businesses remove friction from growth.", home)
         self.assertNotIn("small business", home.lower())
         self.assertNotIn("real estate teams", home.lower())
-        self.assertIn("Not ready for a call? Join the free MacRandle Acres community on Skool.", home)
+        self.assertIn("Not ready for a call? Join my free community on Skool.", home)
         self.assertIn("Most popular", home)
         nav = home.split("<nav", 1)[1].split("</nav>", 1)[0]
         self.assertIn("Set up your AI agent, $149", nav)
@@ -478,6 +478,7 @@ class AiEmployeeTests(unittest.TestCase):
             self.assertIn("Payment received", body)
             self.assertIn("Have a Grok Bot account ready before your setup call.", body)
             self.assertIn("Grok", body)
+            self.assertIn('<meta name="robots" content="noindex">', body, path)
             self.assertIn('href="/book?type=agent"', body)
             self.assertNotIn("\u2014", body)
         self.assertNotIn("AI assistant subscription", home + hub + body)
