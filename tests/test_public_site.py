@@ -906,10 +906,14 @@ class RealResultsTests(unittest.TestCase):
             "A short to-do list, ranked",
             "Each month I find and fix",
             "show the results in plain numbers every month",
+            "advisor-near",
+            'data-edit="advisor_eye_sb"',
             "not a ticket queue",
         ):
             self.assertNotIn(gone, html, gone)
         self.assertIn("fix it, and show the results in plain numbers.</p>", html)
+        self.assertEqual(html.count(">Meet your advisor<"), 1)
+        self.assertIn("Hi, I", html.split('id="jeff"', 1)[1].split("</section>", 1)[0])
         self.assertEqual(len(re.findall(r'<span class="n" aria-hidden="true">\d</span>', html)), 4)
         ids = set(re.findall(r'id="([^"]+)"', html))
         for anchor in set(re.findall(r'href="#([^"]+)"', html)):
