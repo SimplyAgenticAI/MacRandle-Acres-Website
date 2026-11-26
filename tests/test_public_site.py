@@ -546,7 +546,7 @@ class PublicSiteTests(unittest.TestCase):
             "Ads that make sense",
             "Go High Level set up right",
             'data-edit="voice_h2hi">"marketing."',
-            "You want people to find you, trust you and call.",
+            "You want reliability without the overhead.",
             "showing you what moved",
             "Straight from Meta insights, plus Ads Manager when we run ads",
             'data-edit="card1_h3">Instant replies',
@@ -587,6 +587,20 @@ class PublicSiteTests(unittest.TestCase):
             '"jobTitle":"Growth Partner"',
         ):
             self.assertIn(phrase, home, phrase)
+        voice = home.split('id="voice"', 1)[1].split("</section>", 1)[0]
+        self.assertIn("Why it matters", voice)
+        self.assertIn('Nobody wakes up wanting <span class="accent-text" data-edit="voice_h2hi">"marketing."</span>', voice)
+        self.assertEqual(home.count("You want reliability without the overhead."), 1)
+        for quote in (
+            "You want people to find you, trust you and call.",
+            "I don't want opportunities slipping.",
+            "I don't want to babysit technology.",
+            "I want to beat the competitor down the street.",
+            "I want someone who notices problems before I do.",
+            "I don't want another employee.",
+        ):
+            self.assertNotIn(quote, home, quote)
+        self.assertNotIn('class="chip', home)
         t2_name = re.search(r'data-edit="t2_name">([^<]*)</div>', home)
         self.assertIsNotNone(t2_name)
         self.assertEqual(t2_name.group(1), "Momentum Plus")

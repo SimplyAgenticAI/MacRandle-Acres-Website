@@ -168,16 +168,10 @@ section{position:relative;padding:40px 0}
 .sec-head h2{font-size:clamp(30px,4.6vw,50px);font-weight:600;margin-bottom:15px}
 .sec-head p{color:var(--ink2);font-size:17px}
 
-/* Client-voice chips */
+/* Client-voice line */
 .voice-lead{text-align:center;max-width:720px;margin:0 auto 38px;color:var(--ink2);font-size:18px}
 .voice-lead b{color:var(--ink)}
 #voice .sec-head{margin-bottom:24px}
-.chips{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:900px;margin:0 auto}
-.chip{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:15px 22px;font-size:16px;
- font-weight:500;color:var(--ink);display:flex;align-items:center;gap:11px;box-shadow:var(--shadow-sm);
- transition:transform .2s,box-shadow .2s}
-.chip:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
-.chip .q{color:var(--gold);font-family:'Inter',system-ui,sans-serif;font-size:26px;line-height:0;margin-top:10px}
 
 /* Green band (inverted, echoes logo) */
 .band-green{position:relative;border-radius:24px;overflow:hidden;
@@ -582,9 +576,6 @@ footer{position:relative}
 .ticker span:after{content:'\2726';color:var(--gold-l);font-size:13px}
 .ticker:hover div{animation-play-state:paused}
 @keyframes tick{to{transform:translateX(-50%)}}
-.chip .q{display:inline-block;animation:qbob 3.2s ease-in-out infinite}
-.chip:nth-child(2) .q{animation-delay:-.6s}.chip:nth-child(3) .q{animation-delay:-1.2s}.chip:nth-child(4) .q{animation-delay:-1.8s}.chip:nth-child(5) .q{animation-delay:-2.4s}
-@keyframes qbob{50%{transform:translateY(-4px) rotate(-8deg)}}
 .card:hover .ico{animation:wig .7s ease}
 @keyframes wig{20%{transform:rotate(-12deg) scale(1.15)}50%{transform:rotate(9deg) scale(1.15)}80%{transform:rotate(-4deg)}}
 /* featured plan: orbiting gold border */
@@ -764,14 +755,7 @@ footer{position:relative}
    <span class="eyebrow reveal" data-edit="voice_eyebrow">Why it matters</span>
    <h2 class="reveal">Nobody wakes up wanting <span class="accent-text" data-edit="voice_h2hi">"marketing."</span></h2>
   </div>
-  <p class="voice-lead reveal" data-edit="voice_lead">You want people to find you, trust you and call.</p>
-  <div class="chips">
-   <div class="chip reveal d1"><span class="q">&ldquo;</span><span data-edit="chip1">I don't want opportunities slipping.</span></div>
-   <div class="chip reveal d1"><span class="q">&ldquo;</span><span data-edit="chip2">I don't want to babysit technology.</span></div>
-   <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip3_v5">I want to beat the competitor down the street.</span></div>
-   <div class="chip reveal d2"><span class="q">&ldquo;</span><span data-edit="chip4">I want someone who notices problems before I do.</span></div>
-   <div class="chip reveal d3"><span class="q">&ldquo;</span><span data-edit="chip5">I don't want another employee.</span></div>
-  </div>
+  <p class="voice-lead reveal" data-edit="voice_lead">You want reliability without the overhead.</p>
  </div>
 </section>
 
