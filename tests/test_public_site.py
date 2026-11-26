@@ -553,23 +553,20 @@ class PublicSiteTests(unittest.TestCase):
             'data-edit="card2_h3">Follow-up texts',
             'data-edit="card3_h3">Ad check-ups',
             'data-edit="card5_h3">Easy booking',
-            'data-edit="card6_h3">Monthly plan',
             "If you use Go High Level, I can set up instant replies so new leads hear back fast.",
             "I set up follow-up texts and emails in Go High Level so fewer leads slip through.",
             "If you run ads, I review them every month and shift budget toward what gets clicks, messages and calls.",
             "I help you set up booking links and reminders so people can book you easily.",
-            "A short monthly plan: what we did, what worked, what's next.",
-            "Your real numbers, straight from Meta, yours to verify. The numbers shown here are an example.",
+            "Your real numbers, straight from Meta, yours to verify.</div>",
             "Monthly plans. Pick how much you want me to take on.",
             "Done for you, done with you, or I teach you how.",
             "Sale price",
             "Monthly review of your profiles, page and posts",
-            "A short to-do list, ranked",
             "I handle the top items for you, or teach you how",
             "Facebook and Instagram that stay active every week. I handle the posts, graphics and replies with you, so nothing goes quiet.",
             "Weekly work on your Facebook and Instagram: posts, graphics, groups and replies",
             "Messages answered within one business day",
-            "More customers from a cleaner online presence. Each month I find and fix what's holding your profiles, page and posts back.",
+            "More customers from a cleaner online presence. I find and fix what's holding your profiles, page and posts back.",
             "A business that keeps growing, with a Growth Partner all-in on getting you there. Ads, video and automation, run together under one plan.",
             "Everything in Momentum Plus",
             "I help real estate agents get seen, get conversations going, and turn them into clients on Facebook, Instagram and beyond.",
@@ -577,7 +574,6 @@ class PublicSiteTests(unittest.TestCase):
             "YouTube and video help",
             "Go High Level and AI agents set up for you",
             "Quarterly plan",
-            "Every month I take work off your plate and show you",
             "look great, load fast, and come with booking and contact forms built in",
             "On a free call, I'll look at your profiles, page and posts and tell you the first three things I'd fix.",
             "Clear marketing. You always know what I did and why.",
@@ -700,14 +696,14 @@ class PublicSiteTests(unittest.TestCase):
             "Plan",
             "Do it your way",
             "Weekly check-in",
-            "Monthly recap",
             "Done for you",
             "Done with you",
             "Learn with me",
         ])
-        self.assertIn("I do it for you, we do it together, or I teach you how.", how_html)
+        self.assertIn('data-edit="step3_p">I do it for you. We do it together.</p>', how_html)
         self.assertIn("Each week we look at what got done and what's next.", how_html)
-        self.assertIn("Each month you get your Meta numbers and a short plan for the month ahead.", how_html)
+        self.assertNotIn("Monthly recap", how_html)
+        self.assertNotIn("or I teach you how. You choose", how_html)
         self.assertIn("No two clients are the same.", how_html)
         self.assertIn("Join the free community", how_html)
         self.assertIn('data-edit="step1_h"', how_html)
@@ -794,7 +790,7 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertNotIn("buy.stripe.com", cta)
         self.assertIn('href="#ai-employee"', cta)
         self.assertIn("Get your first AI agent, $149", cta)
-        self.assertIn("Talk to a real person, not a ticket queue.", hero)
+        self.assertNotIn("ticket queue", home)
         offer = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
         self.assertIn('data-edit="pay_sub_v8"', offer)
         long_note = (
@@ -851,8 +847,8 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertNotIn("wb-", html)
         section = html.split('id="websites"', 1)[1].split("</section>", 1)[0]
         self.assertIn('data-edit="ws_eyebrow">Also built here', section)
-        self.assertIn('data-edit="ws_h2a">Websites &amp; apps that', section)
-        self.assertIn('data-edit="ws_h2hi">stop the scroll', section)
+        self.assertIn('data-edit="ws_h2a">Websites &amp; apps</span> <span class="accent-text" data-edit="ws_h2hi">people keep exploring</span>', section)
+        self.assertNotIn("stop the scroll", html)
         self.assertIn("Your website is often the first handshake.", section)
         self.assertIn('data-edit="ws_li1">Custom design, never a template', section)
         self.assertIn('data-edit="ws_li2">Booking, forms &amp; lead capture built in', section)
@@ -890,10 +886,34 @@ class RealResultsTests(unittest.TestCase):
         self.assertIn('<div class="lbl">YouTube videos rebranded</div>', sec)
         self.assertIn("platforms, TikTok, Facebook, Instagram and YouTube, carrying one short video", sec)
         self.assertIn("These are samples. Your professional dashboard has the full picture.", sec)
+        self.assertIn("Real numbers from my own accounts, each one read straight from the platform where it happened.", sec)
+        self.assertNotIn("client work", sec)
+        self.assertEqual(html.count("39 of 39"), 1)
+        self.assertEqual(html.count(">Top 3<"), 1)
         for gone in ("113", "real estate listing video", "loaded into a CRM", "4 of 4"):
             self.assertNotIn(gone, sec)
         for banned in ("97.27", "Cresskill", "New Jersey", "NJ", "\u2014"):
             self.assertNotIn(banned, sec)
+
+    def test_home_followups_removed_blocks(self):
+        html = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "index.html"), encoding="utf-8").read()
+        for gone in (
+            "The numbers shown here are an example.",
+            "The promise",
+            'class="promise2"',
+            "Every month I take work off your plate",
+            'data-edit="card6_h3"',
+            "A short to-do list, ranked",
+            "Each month I find and fix",
+            "show the results in plain numbers every month",
+            "not a ticket queue",
+        ):
+            self.assertNotIn(gone, html, gone)
+        self.assertIn("fix it, and show the results in plain numbers.</p>", html)
+        self.assertEqual(len(re.findall(r'<span class="n" aria-hidden="true">\d</span>', html)), 4)
+        ids = set(re.findall(r'id="([^"]+)"', html))
+        for anchor in set(re.findall(r'href="#([^"]+)"', html)):
+            self.assertIn(anchor, ids, anchor)
 
 
 class MobileNavPaddingTests(unittest.TestCase):

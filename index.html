@@ -149,7 +149,6 @@ a{color:inherit;text-decoration:none}
 .hero .btn{padding:16px 34px;font-size:15px}
 .hero .btn-ghost{padding:10px 16px;font-size:13.5px}
 .hero-plate{margin:14px auto 0;max-width:520px;text-align:center;font-size:15px;font-weight:600;line-height:1.45;color:var(--green)}
-.hero-trust{margin:18px auto 0;font-size:14.5px;line-height:1.4;color:var(--ink2)}
 .guarantee-ribbon{display:inline-flex;align-items:center;gap:10px;margin-top:30px;font-size:14px;color:var(--ink2);
  background:rgba(35,79,61,.06);border:1px solid var(--bd);border-radius:100px;padding:9px 20px}
 .guarantee-ribbon .g-ico{color:var(--green);font-weight:800}
@@ -255,16 +254,6 @@ section{position:relative;padding:40px 0}
 .tier li .ck{flex:0 0 20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:800;
  background:var(--grad-green);color:var(--cream)}
 .tier .btn{margin-top:auto;text-align:center;width:100%}
-
-/* Guarantee */
-.promise2{text-align:center}
-.promise2 .pbox{position:relative;border-radius:24px;overflow:hidden;padding:52px 40px;background:var(--card);
- border:1px solid var(--bd);box-shadow:var(--shadow)}
-.promise2 .pbox::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--grad-gold)}
-.promise2 .pbadge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
- color:var(--gold-d);margin-bottom:16px}
-.promise2 h2{font-size:clamp(26px,4vw,42px);font-weight:600;max-width:840px;margin:0 auto 16px}
-.promise2 p{color:var(--ink2);font-size:18px;max-width:620px;margin:0 auto}
 
 /* Final CTA */
 .final-box{position:relative;border-radius:26px;padding:62px 40px;text-align:center}
@@ -695,7 +684,6 @@ footer{position:relative}
    <a class="btn btn-ghost" href="#ai-employee"><span data-edit="hero_agent_v9">Get your first AI agent, $149</span></a>
   </div>
   <p class="hero-plate reveal in" data-edit="hero_plate">You tell me what's on your plate and I take it off.</p>
-  <p class="hero-trust reveal in" data-edit="hero_trust_v9">Talk to a real person, not a ticket queue.</p>
   <p class="reveal in" style="text-align:center;margin:12px 0 0"><a href="#how-i-work"><span data-edit="hero_cta2">See how it works</span></a></p>
   <p class="reveal in" data-edit="hero_also_v7" style="max-width:640px;margin:18px auto 0;font-size:15px;color:var(--ink2,#5c635e);line-height:1.6">Service businesses, local businesses, and creators all fit here. The plan follows your business, not a single industry.</p>
   <div class="values reveal">
@@ -887,7 +875,7 @@ footer{position:relative}
     <span class="n" aria-hidden="true">3</span>
     <div>
      <h3 data-edit="step3_h">Do it your way</h3>
-     <p data-edit="step3_p">I do it for you, we do it together, or I teach you how. You choose, and you can switch.</p>
+     <p data-edit="step3_p">I do it for you. We do it together.</p>
     </div>
    </li>
    <li class="reveal d1">
@@ -895,13 +883,6 @@ footer{position:relative}
     <div>
      <h3 data-edit="step4_h">Weekly check-in</h3>
      <p data-edit="step4_p">Each week we look at what got done and what's next.</p>
-    </div>
-   </li>
-   <li class="reveal d2">
-    <span class="n" aria-hidden="true">5</span>
-    <div>
-     <h3 data-edit="step5_h">Monthly recap</h3>
-     <p data-edit="step5_p">Each month you get your Meta numbers and a short plan for the month ahead.</p>
     </div>
    </li>
   </ol>
@@ -952,7 +933,7 @@ footer{position:relative}
  <div class="wrap">
   <div class="impact-box reveal">
    <span class="impact-eyebrow" data-edit="mz_eyebrow">No vanity metrics, no fluff</span>
-   <div class="impact-h" data-edit="mz_h">Your real numbers, straight from Meta, yours to verify. The numbers shown here are an example.</div>
+   <div class="impact-h" data-edit="mz_h">Your real numbers, straight from Meta, yours to verify.</div>
    <div class="impact-note">I only report what can actually be tracked, pulled straight from the source. No inflated claims, ever.</div>
    <div class="impact-grid">
     <div class="impact-stat"><div class="im-ic">👀</div><div class="im-name" data-edit="mz1_n">Reach &amp; link clicks</div><div class="im-src" data-edit="mz1_s">Straight from Meta insights, plus Ads Manager when we run ads</div></div>
@@ -970,7 +951,7 @@ footer{position:relative}
   <div class="impact-box rr-box reveal">
    <span class="impact-eyebrow">Verified, never estimated</span>
    <h2 class="impact-h" id="real-results-title">Real results</h2>
-   <div class="impact-note">Real numbers from client work and my own accounts, each one read straight from the platform where it happened.</div>
+   <div class="impact-note">Real numbers from my own accounts, each one read straight from the platform where it happened.</div>
    <div class="rr-grid">
     <div class="impact-stat rr-stat"><div class="num">Top 3</div><div class="lbl">on two Skool community leaderboards in under a month</div><div class="rr-src">Seen in Skool leaderboards</div></div>
     <div class="impact-stat rr-stat"><div class="num">39 of 39</div><div class="lbl">YouTube videos rebranded</div><div class="rr-src">Seen in YouTube Studio</div></div>
@@ -1009,11 +990,6 @@ footer{position:relative}
     <h3 data-edit="card5_h3">Easy booking</h3>
     <p data-edit="card5_p">I help you set up booking links and reminders so people can book you easily.</p>
    </div>
-   <div class="card reveal d3">
-    <div class="ico">🧭</div>
-    <h3 data-edit="card6_h3">Monthly plan</h3>
-    <p data-edit="card6_p">A short monthly plan: what we did, what worked, what's next.</p>
-   </div>
   </div>
  </div>
 </section>
@@ -1044,11 +1020,10 @@ footer{position:relative}
   <div class="price-grid">
    <div class="tier reveal d1">
     <div class="tname" data-edit="t1_name">Momentum</div>
-    <div class="tdesc" data-edit="t1_desc">More customers from a cleaner online presence. Each month I find and fix what's holding your profiles, page and posts back.</div>
+    <div class="tdesc" data-edit="t1_desc">More customers from a cleaner online presence. I find and fix what's holding your profiles, page and posts back.</div>
     <div class="price" data-edit="t1_price"><span class="was"><s><span class="amt">$997–1,250</span> <span class="per">/mo</span></s></span><span class="week">Sale price</span><span class="now"><span class="amt">$698–875</span> <span class="per">/mo</span></span></div>
     <ul>
      <li><span class="ck">✓</span><span data-edit="t1_li1">Monthly review of your profiles, page and posts</span></li>
-     <li><span class="ck">✓</span><span data-edit="t1_li2">A short to-do list, ranked</span></li>
      <li><span class="ck">✓</span><span data-edit="t1_li3">Clear, prioritized action steps</span></li>
      <li><span class="ck">✓</span><span data-edit="t1_li4">I handle the top items for you, or teach you how</span></li>
     </ul>
@@ -1084,22 +1059,12 @@ footer{position:relative}
  </div>
 </section>
 
-<!-- GUARANTEE -->
-<section class="promise2">
- <div class="wrap">
-  <div class="pbox reveal">
-   <span class="pbadge" data-edit="guar_badge">The promise</span>
-   <h2 data-edit="guar_h2">Every month I take work off your plate and show you <span class="gold-text">what changed</span>.</h2>
-  </div>
- </div>
-</section>
-
 <!-- WEBSITES & APPS -->
 <section id="websites">
  <div class="wrap">
   <div class="ws-copy">
    <span class="eyebrow reveal" data-edit="ws_eyebrow">Also built here</span>
-   <h2 class="reveal"><span data-edit="ws_h2a">Websites &amp; apps that</span> <span class="accent-text" data-edit="ws_h2hi">stop the scroll</span></h2>
+   <h2 class="reveal"><span data-edit="ws_h2a">Websites &amp; apps</span> <span class="accent-text" data-edit="ws_h2hi">people keep exploring</span></h2>
    <p class="reveal d1" data-edit="ws_p">Your website is often the first handshake. I design and build custom sites and apps that look great, load fast, and come with booking and contact forms built in. Design, build, hosting, and launch, all handled for you.</p>
    <ul class="ws-list reveal d2">
     <li><span data-edit="ws_li1">Custom design, never a template</span></li>
@@ -1180,7 +1145,7 @@ footer{position:relative}
    <div class="jf-copy">
     <span class="eyebrow" data-edit="jeff_eyebrow">Meet your advisor</span>
     <h2 data-edit="jeff_h2">Hi, I'm Jeff Randle.</h2>
-    <p data-edit="jeff_p_v7">I'm the founder of MacRandle Acres and a growth partner based in Salisbury, MD. I work with businesses to find what's quietly costing them growth, fix it, and show the results in plain numbers every month. You get a real person who knows your business, not a ticket queue.</p>
+    <p data-edit="jeff_p_v7">I'm the founder of MacRandle Acres and a growth partner based in Salisbury, MD. I work with businesses to find what's quietly costing them growth, fix it, and show the results in plain numbers.</p>
     <div class="hero-cta">
      <a class="btn btn-gold" href="/book?type=audit"><span data-edit="jeff_audit_v10">Book a free Growth Audit</span></a>
     </div>
