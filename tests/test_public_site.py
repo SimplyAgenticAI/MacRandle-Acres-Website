@@ -353,7 +353,7 @@ class PublicSiteTests(unittest.TestCase):
         """
         home = self.client.get("/").get_data(as_text=True)
         impact = home.split('id="impact"', 1)[1].split("</section>", 1)[0]
-        report = home.split('id="scorecard"', 1)[1].split("</section>", 1)[0]
+        self.assertNotIn('id="scorecard"', home)
         self.assertIn('data-edit="mz2_n">Post engagement', impact)
         self.assertIn('data-edit="mz2_s">Comments and shares, straight from Meta', impact)
         self.assertIn('data-edit="mz3_n">Impressions', impact)
@@ -373,31 +373,9 @@ class PublicSiteTests(unittest.TestCase):
             "Counted, never guessed",
         ):
             self.assertNotIn(gone, impact)
-        for label, number, width in (
-            ("People reached", "48200", "92%"),
-            ("Impressions", "91300", "96%"),
-            ("Link clicks", "1340", "70%"),
-            ("Post engagement (comments and shares)", "860", "48%"),
-            ("New followers gained", "112", "32%"),
-        ):
-            self.assertIn(label, report)
-            self.assertIn('data-to="%s"' % number, report)
-            self.assertIn("--w:%s" % width, report)
-        self.assertEqual(report.count('class="rp-bar"'), 5)
-        self.assertIn("More metrics, like booked appointments, get added as tracking grows.", report)
-        for gone in (
-            "Calls from ads",
-            "Conversations started",
-            "Warm leads nurtured",
-            "Appointments booked",
-            'data-edit="rl3"',
-            'data-edit="rl4"',
-            'data-edit="rl5"',
-            'data-edit="rl6"',
-        ):
-            self.assertNotIn(gone, report)
+        for gone in ("Calls from ads", "Conversations started", "Warm leads nurtured", "Appointments booked"):
+            self.assertNotIn(gone, home)
         self.assertNotIn("\u2014", impact)
-        self.assertNotIn("\u2014", report)
         self.assertIn('data-edit="hero_h1a">Remove Friction.', home)
         self.assertIn('data-edit="hero_h1b">Accelerate Growth.', home)
         self.assertIn("I'm not another vendor", home)
@@ -561,7 +539,6 @@ class PublicSiteTests(unittest.TestCase):
         for phrase in (
             "I help you get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
             "You tell me what's on your plate and I take it off.",
-            "Every month you get a short list of what I changed and what I'd do next.",
             "Profiles that pop",
             "Posts that get seen",
             "More real conversations",
@@ -582,8 +559,6 @@ class PublicSiteTests(unittest.TestCase):
             "If you run ads, I review them every month and shift budget toward what gets clicks, messages and calls.",
             "I help you set up booking links and reminders so people can book you easily.",
             "A short monthly plan: what we did, what worked, what's next.",
-            "Your posts, pages and groups are the work.",
-            "Example month",
             "Your real numbers, straight from Meta, yours to verify. The numbers shown here are an example.",
             "Monthly plans. Pick how much you want me to take on.",
             "Done for you, done with you, or I teach you how.",
@@ -894,7 +869,15 @@ class RealResultsTests(unittest.TestCase):
         html = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "index.html"), encoding="utf-8").read()
         sec = html.split('id="real-results"')[1].split("</section>")[0]
         self.assertIn("Real results", sec)
-        self.assertEqual(sec.count('class="impact-stat rr-stat"'), 6)
+        self.assertEqual(sec.count('class="impact-stat rr-stat"'), 3)
+        nums = re.findall(r'<div class="num">([^<]*)</div>', sec)
+        self.assertEqual(nums, ["Top 3", "39 of 39", "4"])
+        self.assertIn("on two Skool community leaderboards in under a month", sec)
+        self.assertIn('<div class="lbl">YouTube videos rebranded</div>', sec)
+        self.assertIn("platforms, TikTok, Facebook, Instagram and YouTube, carrying one short video", sec)
+        self.assertIn("These are samples. Your professional dashboard has the full picture.", sec)
+        for gone in ("113", "real estate listing video", "loaded into a CRM", "4 of 4"):
+            self.assertNotIn(gone, sec)
         for banned in ("97.27", "Cresskill", "New Jersey", "NJ", "\u2014"):
             self.assertNotIn(banned, sec)
 
@@ -904,3 +887,32 @@ class MobileNavPaddingTests(unittest.TestCase):
         html = open(os.path.join(os.path.dirname(__file__), '..', 'index.html'), encoding='utf-8').read()
         self.assertNotIn('padding:10px 0;flex-wrap:wrap', html)
         self.assertGreaterEqual(html.count('padding:10px 16px;flex-wrap:wrap'), 2)
+
+
+class HomeFourEditsTests(unittest.TestCase):
+    def setUp(self):
+        self.html = open(os.path.join(os.path.dirname(__file__), "..", "index.html"), encoding="utf-8").read()
+
+    def test_plate_line_sits_under_the_149_cta(self):
+        hero = self.html.split('id="top"', 1)[1].split("</header>", 1)[0]
+        promise = re.search(r'data-edit="hero_promise">([^<]*)</p>', hero).group(1)
+        self.assertNotIn("plate", promise)
+        self.assertEqual(self.html.count("You tell me what's on your plate and I take it off."), 1)
+        cta = hero.index("Get your first AI agent, $149")
+        plate = hero.index('class="hero-plate')
+        self.assertLess(cta, plate)
+        self.assertNotIn("<a ", hero[cta:plate].split("</div>", 1)[1])
+
+    def test_monthly_short_list_line_is_gone(self):
+        self.assertNotIn("short list of what I changed", self.html)
+        self.assertNotIn('data-edit="hero_guarantee"', self.html)
+        self.assertNotIn('data-edit="guar_p"', self.html)
+
+    def test_growth_scorecard_section_and_links_are_gone(self):
+        self.assertNotIn('id="scorecard"', self.html)
+        self.assertNotIn('href="#scorecard"', self.html)
+        self.assertNotIn(">Growth Scorecard<", self.html)
+        self.assertNotIn("Get your first Scorecard", self.html)
+        self.assertIn('href="#how-i-work"', self.html)
+        self.assertIn('id="how-i-work"', self.html)
+        self.assertIn("Free Growth Audit", self.html)
