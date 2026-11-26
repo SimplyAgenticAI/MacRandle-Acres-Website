@@ -149,6 +149,7 @@ def legacy_logo():
 THANK_YOU_HTML = """<!doctype html><html lang=en><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>Payment received | Lucid Marketing, by MacRandle Acres</title>
+<meta name="robots" content="noindex">
 <meta name="description" content="Your first AI agent setup is paid. Have a Grok Bot account ready before the call. Lucid Marketing, by MacRandle Acres.">
 <link rel="canonical" href="https://www.macrandleacres.com/thank-you">
 <meta property="og:title" content="Payment received | Lucid Marketing, by MacRandle Acres">
@@ -207,7 +208,7 @@ def page_not_found(_e):
 @app.route("/sitemap.xml")
 def sitemap_xml():
     urls = "".join("<url><loc>%s%s</loc></url>" % (CANONICAL_ORIGIN, u) for u in
-                   ("/", "/design", "/hub", "/starter-prompts", "/book", "/ai-employee/start", "/thank-you", "/privacy", "/terms"))
+                   ("/", "/design", "/hub", "/starter-prompts", "/book", "/ai-employee/start", "/privacy", "/terms"))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%s</urlset>' % urls)
     return Response(xml, mimetype="application/xml")
@@ -301,11 +302,17 @@ def tracking_head():
     return "".join(out)
 
 
+_ADMIN_BAR_RE = re.compile(r'[ \t]*<div id="adminBar"[^>]*>.*?</div>\n?', re.S)
+
+
 def render_page(page):
     cfg = PAGES[page]
     with open(os.path.join(BASE, cfg["html"]), encoding="utf-8") as f:
         html = f.read()
     is_admin = bool(session.get("admin"))
+    if not is_admin:
+        # Visitors never get the admin bar or its /admin links in the page source.
+        html = _ADMIN_BAR_RE.sub("", html, count=1)
     payload = json.dumps(load_content(page), ensure_ascii=False).replace("</", "<\\/")
     inject = ("<script>window.__ADMIN__=%s;window.__CONTENT__=%s;window.__PAGE__=%s;</script>"
               % ("true" if is_admin else "false", payload, json.dumps(page)))
@@ -3555,9 +3562,9 @@ footer .alice-call{display:inline-block;margin-top:16px;color:#a97f2a;font-weigh
 <div id="prog"></div>
 <div class="head">
   <span class="aur a1"></span><span class="aur a2"></span><span class="aur a3"></span>
-  <div class="mark"><img src="/logo-v5.jpg" alt="MacRandle Acres logo, Remove Friction. Accelerate Growth." onerror="this.parentNode.textContent='M'"></div>
+  <div class="mark"><picture><source srcset="/logo-v5-300.webp" type="image/webp"><img src="/logo-v5-300.jpg" alt="MacRandle Acres logo, Remove Friction. Accelerate Growth." onerror="this.closest('.mark').textContent='M'"></picture></div>
   <div class="eyebrow">Design &amp; Build</div>
-  <h1><span class="w" style="animation-delay:0.10s">Explore</span> <em><span class="w" style="animation-delay:0.18s">what&#39;s</span> <span class="w" style="animation-delay:0.26s">possible.</span></em></h1>
+  <h1><span class="w" style="animation-delay:0.10s">Custom</span> <span class="w" style="animation-delay:0.18s">websites</span> <span class="w" style="animation-delay:0.26s">and</span> <span class="w" style="animation-delay:0.34s">apps</span> <em><span class="w" style="animation-delay:0.42s">for</span> <span class="w" style="animation-delay:0.50s">growing</span> <span class="w" style="animation-delay:0.58s">businesses.</span></em></h1>
   <p>Custom-designed, beautifully animated, and built to turn visitors into clients. Tell me what you're dreaming up and I'll handle everything from first sketch to launch day.</p>
   <a class="hbtn" href="#pbody">Start my project &darr;</a>
   <div class="wins">
@@ -3773,7 +3780,7 @@ document.getElementById('pd_submit').onclick=function(){
 };
 (function(){
   var pr=document.getElementById('prog');
-  window.addEventListener('scroll',function(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;pr.style.width=(m>0?h.scrollTop/m*100:0)+'%';},{passive:true});
+  if(pr)window.addEventListener('scroll',function(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;pr.style.width=(m>0?h.scrollTop/m*100:0)+'%';},{passive:true});
   var els=[].slice.call(document.querySelectorAll('.rv'));
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
@@ -3785,7 +3792,7 @@ document.getElementById('pd_submit').onclick=function(){
   sites.sort(function(a,b){return (+a.getAttribute('data-order')||0)-(+b.getAttribute('data-order')||0);});
   function fit(){
     var w=vp.clientWidth, W=Math.max(760,w), s=w/W;
-    sites.forEach(function(st){var sz=st.firstElementChild, sc=sz.firstElementChild;
+    sites.forEach(function(st){var sz=st.querySelector('.sz'), sc=sz&&sz.querySelector('.sc'); if(!sz||!sc)return;
       sz.style.width=W+'px'; sz.style.transform='scale('+s+')';
       sc.style.setProperty('--d',Math.max(0,sc.scrollHeight-vp.clientHeight/s)+'px');});
   }
@@ -3795,7 +3802,7 @@ document.getElementById('pd_submit').onclick=function(){
     tabs.forEach(function(t,k){t.classList.remove('auto');t.classList.toggle('on',k===i);});
     if(auto){void tabs[i].offsetWidth; tabs[i].classList.add('auto');}
     url.textContent=sites[i].getAttribute('data-url');
-    var sc=sites[i].firstElementChild.firstElementChild; sc.style.animation='none'; void sc.offsetWidth; sc.style.animation='';
+    var sc=sites[i].querySelector('.sc'); if(sc){sc.style.animation='none'; void sc.offsetWidth; sc.style.animation='';}
   }
   tabs.forEach(function(t,k){t.onclick=function(){auto=false;show(k);};});
   setInterval(function(){if(auto&&!vp.matches(':hover'))show((cur+1)%sites.length);},12000);

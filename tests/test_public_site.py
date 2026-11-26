@@ -213,7 +213,6 @@ class PublicSiteTests(unittest.TestCase):
             ORIGIN + "/starter-prompts",
             ORIGIN + "/book",
             ORIGIN + "/ai-employee/start",
-            ORIGIN + "/thank-you",
             ORIGIN + "/privacy",
             ORIGIN + "/terms",
         ])
@@ -262,7 +261,10 @@ class PublicSiteTests(unittest.TestCase):
         visible = [re.sub(r"<[^>]+>", "", q).strip() for q in visible]
         schema_questions = [q["name"] for q in faq["mainEntity"]]
         self.assertEqual(schema_questions, visible)
-        self.assertEqual(len(schema_questions), 5)
+        self.assertEqual(len(schema_questions), 8)
+        self.assertIn("Which plan should I start with?", schema_questions)
+        self.assertIn("Do you only work with real estate agents?", schema_questions)
+        self.assertIn("Can I switch plans later?", schema_questions)
         joined = " ".join(q["acceptedAnswer"]["text"] for q in faq["mainEntity"])
         self.assertIn("$149 one-time", joined)
         self.assertIn(ORIGIN + "/book", joined)
@@ -509,7 +511,7 @@ class PublicSiteTests(unittest.TestCase):
             self.assertIn(anchor, struck.group(1))
             self.assertNotIn(sale, struck.group(1))
             self.assertIn(sale, block)
-            self.assertIn("Sale price", block)
+            self.assertIn("Black Friday sale price", block)
             self.assertNotIn("This week", block)
             self.assertEqual(block.count("/mo"), 2)
             self.assertNotIn("\u2014", block)
@@ -560,7 +562,7 @@ class PublicSiteTests(unittest.TestCase):
             "Your real numbers, straight from Meta, yours to verify.</div>",
             "Monthly plans. Pick how much you want me to take on.",
             "Done for you, done with you, or I teach you how.",
-            "Sale price",
+            "Black Friday sale price",
             "A full review of your profiles, page and posts",
             "I handle the top items for you, or teach you how",
             "Facebook and Instagram that stay active every week. I handle the posts, graphics and replies with you, so nothing goes quiet.",
@@ -630,7 +632,10 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn(">Fast<", design)
         self.assertIn('href="tel:+14433231268">(443) 323-1268</a>', terms)
         self.assertNotIn("443-389-0330", terms)
-        self.assertIn("growth partner in Salisbury, Maryland", llms)
+        self.assertIn("growth partner in Salisbury, MD", llms)
+        self.assertNotIn("Maryland", llms)
+        self.assertIn("Free Growth Audit: https://www.macrandleacres.com/book?type=audit\n", llms)
+        self.assertIn("Black Friday sale price $1,398 to $1,750 per month", llms)
         self.assertIn(
             "He helps businesses get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
             llms,
@@ -695,13 +700,13 @@ class PublicSiteTests(unittest.TestCase):
             "Look",
             "Plan",
             "Do it your way",
-            "Weekly check-in",
+            "Check in",
             "Done for you",
             "Done with you",
             "Learn with me",
         ])
         self.assertIn('data-edit="step3_p">I do it for you. We do it together.</p>', how_html)
-        self.assertIn("Each week we look at what got done and what's next.", how_html)
+        self.assertIn("We look at what got done and pick what's next.", how_html)
         self.assertNotIn("Monthly recap", how_html)
         self.assertNotIn("or I teach you how. You choose", how_html)
         self.assertIn("No two clients are the same.", how_html)
@@ -754,7 +759,7 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertNotIn("$149", final)
         self.assertNotIn("Grok Bot subscription", final)
         self.assertIn('class="btn btn-gold final-audit" href="/book?type=audit"><span data-edit="final_audit_v10">Book a free Growth Audit', final)
-        self.assertIn('data-edit="final_cta2">Email Jeff', home)
+        self.assertIn('data-edit="final_reply_note">Email Jeff and hear back within one business day.', home)
         wave = re.search(r"\.foot-wave\{[^}]*top:\s*-(\d+)px", css)
         margin = re.search(r"\.final-box\{[^}]*margin-bottom:\s*(\d+)px", css)
         desktop_pad = re.search(r"section\{position:relative;padding:(\d+)px 0\}", css)
@@ -821,7 +826,9 @@ class HomeLayoutTests(unittest.TestCase):
 
     def test_design_heading_is_a_full_sentence(self):
         design = self.client.get("/design").get_data(as_text=True)
-        self.assertIn('>Explore</span> <em><span class="w" style="animation-delay:0.18s">what&#39;s</span>', design)
+        self.assertIn('<h1><span class="w" style="animation-delay:0.10s">Custom</span> <span class="w" style="animation-delay:0.18s">websites</span>', design)
+        self.assertIn('>growing</span> <span class="w" style="animation-delay:0.58s">businesses.</span></em></h1>', design)
+        self.assertNotIn("what&#39;s</span> <span", design.split("<h1>")[1].split("</h1>")[0])
         self.assertNotIn("stop the scroll", design.split("<h1>")[1].split("</h1>")[0])
         self.assertNotIn('>Websites</span> <span class="w" style="animation-delay:0.18s">&amp;</span>', design)
         # The gold ending must paint on the animated words themselves, or it renders invisible.
@@ -853,7 +860,7 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertIn('data-edit="ws_li1">Custom design, never a template', section)
         self.assertIn('data-edit="ws_li2">Booking, forms &amp; lead capture built in', section)
         self.assertIn('data-edit="ws_li3">Mobile-first, fast, and SEO-ready', section)
-        self.assertIn('data-edit="ws_cta1">See the work', section)
+        self.assertIn('data-edit="ws_cta1_v2">See concept builds', section)
         self.assertIn('data-edit="ws_cta2">Start a project', section)
 
 
@@ -864,7 +871,7 @@ if __name__ == "__main__":
 class DesignWinsTests(unittest.TestCase):
     def setUp(self):
         import app
-        self.client = app.app.test_client()
+        self.client = site.app.test_client()
 
     def test_design_has_four_balanced_wins(self):
         design = self.client.get("/design").get_data(as_text=True)
@@ -885,7 +892,8 @@ class RealResultsTests(unittest.TestCase):
         self.assertIn("on two Skool community leaderboards in under a month", sec)
         self.assertIn('<div class="lbl">YouTube videos rebranded</div>', sec)
         self.assertIn("platforms, TikTok, Facebook, Instagram and YouTube, carrying one short video", sec)
-        self.assertIn("These are samples. Your professional dashboard has the full picture.", sec)
+        self.assertIn("These are samples from my own accounts.", sec)
+        self.assertNotIn("dashboard", sec)
         self.assertIn("Real numbers from my own accounts, each one read straight from the platform where it happened.", sec)
         self.assertNotIn("client work", sec)
         self.assertEqual(html.count("39 of 39"), 1)
@@ -954,3 +962,48 @@ class HomeFourEditsTests(unittest.TestCase):
         self.assertIn('href="#how-i-work"', self.html)
         self.assertIn('id="how-i-work"', self.html)
         self.assertIn("Free Growth Audit", self.html)
+
+
+class AuditFixesTests(unittest.TestCase):
+    def setUp(self):
+        self.client = site.app.test_client()
+
+    def test_admin_bar_only_rendered_for_admin(self):
+        for path in ("/", "/hub", "/starter-prompts"):
+            body = self.client.get(path).get_data(as_text=True)
+            self.assertNotIn('id="adminBar"', body, path)
+            self.assertNotIn('href="/admin/', body, path)
+        with self.client.session_transaction() as sess:
+            sess["admin"] = True
+        for path in ("/", "/hub", "/starter-prompts"):
+            body = self.client.get(path).get_data(as_text=True)
+            self.assertIn('id="adminBar"', body, path)
+
+    def test_design_showcase_guards_null_nodes(self):
+        design = self.client.get("/design").get_data(as_text=True)
+        self.assertNotIn("st.firstElementChild, sc=sz.firstElementChild", design)
+        self.assertIn("var sz=st.querySelector('.sz'), sc=sz&&sz.querySelector('.sc'); if(!sz||!sc)return;", design)
+        self.assertNotIn("sites[i].firstElementChild.firstElementChild", design)
+
+    def test_hub_links_and_single_grok_note(self):
+        hub = self.client.get("/hub").get_data(as_text=True)
+        self.assertIn('data-link="lk_saai_v6" href="https://simplyagenticai.com"', hub)
+        self.assertEqual(hub.count("Grok Bot subscription"), 1)
+        self.assertNotIn('alt=""', hub)
+
+    def test_home_audit_copy(self):
+        home = self.client.get("/").get_data(as_text=True)
+        self.assertEqual(home.count("Start with a free Growth Audit"), 3)
+        self.assertIn('<a href="#jeff"><span data-edit="jeff_cta2">More about me', home)
+        self.assertNotIn("professional dashboard", home)
+        self.assertNotIn("MacRandle Acres community", home)
+        self.assertNotIn("\u2014", home)
+
+    def test_small_logo_assets(self):
+        for name in ("logo-v5-300.webp", "logo-v5-300.jpg"):
+            r = self.client.get("/" + name)
+            self.assertEqual(r.status_code, 200, name)
+            self.assertLess(len(r.get_data()), 25000, name)
+        home = self.client.get("/").get_data(as_text=True)
+        self.assertNotIn('src="logo-v5.jpg"', home)
+        self.assertIn('og:image" content="https://www.macrandleacres.com/og-v5.jpg"', home)
