@@ -288,10 +288,6 @@ footer .alice-call:hover{color:var(--cream)}
 #offer-faq details[open] summary:after{content:'\\2013'}
 #offer-faq details p{color:var(--ink2);font-size:15.5px;line-height:1.6;padding:0 0 14px;margin:0}
 #offer-faq details a{color:var(--gold-d);font-weight:700}
-.advisor-near{display:flex;gap:22px;align-items:center;max-width:760px;margin:0 auto 34px;text-align:left}
-.advisor-near img{width:148px;height:148px;object-fit:cover;border-radius:50%;flex:none;box-shadow:var(--shadow-sm)}
-.advisor-near h2{font-size:clamp(26px,3vw,34px);margin:6px 0 8px}
-.advisor-near p{color:var(--ink2);font-size:16px}
 .quote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
 .qcard{background:#fff;border:1px solid var(--bd-soft);border-radius:14px;padding:16px 16px 14px;box-shadow:var(--shadow-sm)}
 .qcard p{font-size:15px;color:var(--ink);margin:0}
@@ -308,7 +304,7 @@ body.editing .qcard p,body.editing .qcard .q-by{min-height:1.4em}
 .free-step button{font:inherit;font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px;border:1px solid var(--bd);background:#fff;color:var(--green);cursor:pointer}
 .free-step .sub-note{min-height:1.2em;font-size:13.5px;margin:8px 0 0}
 .hp{position:absolute;left:-9999px;height:0;overflow:hidden}
-@media(max-width:700px){.advisor-near{flex-direction:column;text-align:center}.quote-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.quote-grid{grid-template-columns:1fr}}
 
 /* Reveal */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -997,14 +993,6 @@ footer{position:relative}
 <!-- PRICING -->
 <section id="pricing">
  <div class="wrap">
-  <div class="advisor-near reveal">
-   <img src="/jeff-randle.jpg" width="600" height="600" alt="Jeff Randle, founder of MacRandle Acres">
-   <div>
-    <span class="eyebrow" data-edit="advisor_eye_sb">Meet your advisor</span>
-    <h2 data-edit="advisor_h_sb">Jeff Randle</h2>
-    <p data-edit="advisor_note_v7">I help businesses remove friction and accelerate growth. That's Lucid Marketing, by MacRandle Acres.</p>
-   </div>
-  </div>
   <div id="quotes" hidden>
    <div class="quote-grid">
     <article class="qcard" hidden><p class="q-text" data-edit="quote1_sb"></p><span class="q-by" data-edit="quote1_by_sb"></span></article>

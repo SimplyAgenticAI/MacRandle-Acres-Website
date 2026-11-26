@@ -417,8 +417,7 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("Ada@Example.com", admin.get_data(as_text=True))
 
         home = self.client.get("/").get_data(as_text=True)
-        self.assertIn('alt="Jeff Randle, founder of MacRandle Acres"', home)
-        self.assertIn('src="/jeff-randle.jpg"', home)
+        self.assertNotIn("advisor-near", home)
         self.assertIn('id="quotes" hidden', home)
         self.assertIn("Helping businesses remove friction from growth.", home)
         self.assertNotIn("small business", home.lower())
