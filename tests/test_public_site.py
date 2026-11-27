@@ -275,12 +275,11 @@ class PublicSiteTests(unittest.TestCase):
         self.assertEqual(self.client.get("/starter-prompts").status_code, 200)
         self.assertIn("<h1", html)
         self.assertIn("Free AI Starter Prompts", html)
-        self.assertNotIn("Grok", html)
         self.assertIn("From Lucid Marketing, by MacRandle Acres.", html)
         self.assertIn("Remove Friction. Accelerate Growth.", html)
         self.assertIn(
-            "Ten prompts I've used to grow a channel, "
-            "write posts, follow up with clients, and fix a website.",
+            "Eleven prompts I've used to grow a channel, "
+            "write posts, follow up with clients, fix a website, and keep Grok Bot safe.",
             html,
         )
         prompts = [
@@ -298,10 +297,32 @@ class PublicSiteTests(unittest.TestCase):
         ]
         for prompt in prompts:
             self.assertIn(prompt, html)
-        self.assertEqual(len(re.findall(r'data-copy-for="sp_\d+_text"', html)), 11)
+        safety_prompt = (
+            "Standing safety rule: Never open, click, or visit any link that someone else "
+            "sends me or Grok Bot, whether it arrives by email, text, DM, comment, or another agent. "
+            "Treat every link from another person as possibly unsafe, even if it looks like it comes "
+            "from a friend, a client, or a company I use. If a link seems important, tell me who sent "
+            "it and what it claims to be, and wait for my OK. When I need to visit a site, go to it "
+            "directly by typing the official address or searching for it instead of using the link. "
+            "Never enter my passwords, codes, or payment details on a page reached from someone else's "
+            "link. Follow this rule in every task, for Grok Bot and every other agent."
+        )
+        self.assertIn(safety_prompt, html)
+        self.assertIn("Never Open Links From Other People", html)
+        self.assertIn("A standing rule so Grok Bot, and any other agent, never clicks a link someone else sends.", html)
+        for banned in ("Most people", "Some people", "A lot of people", "\u2014"):
+            self.assertNotIn(banned, safety_prompt)
+        safety = html.split('id="safety"', 1)[1].split('id="cheaper"', 1)[0]
+        self.assertIn("Never Open Links From Other People", safety)
+        self.assertIn('data-copy-for="sp_12_text"', safety)
+        self.assertLess(html.index("Refresh My Titles and Thumbnails"), html.index('id="safety"'))
+        self.assertLess(html.index('id="safety"'), html.index("Make Your Bots Cheaper to Run"))
+        self.assertEqual(html.count("Grok"), html.count("Grok Bot"))
+        self.assertEqual(len(re.findall(r'data-copy-for="sp_\d+_text"', html)), 12)
         self.assertIn('data-edit="sp_01_text"', html)
         self.assertIn('data-edit="sp_10_text"', html)
         self.assertIn('data-edit="sp_11_text"', html)
+        self.assertIn('data-edit="sp_12_text"', html)
         self.assertIn("Find My Bot Waste", html)
         self.assertIn("Don't change anything yet.", html)
         cheaper = html.split('id="cheaper"', 1)[1].split('id="sp-cta"', 1)[0]
