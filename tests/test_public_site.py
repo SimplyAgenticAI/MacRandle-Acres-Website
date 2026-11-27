@@ -532,7 +532,7 @@ class PublicSiteTests(unittest.TestCase):
             self.assertIn(anchor, struck.group(1))
             self.assertNotIn(sale, struck.group(1))
             self.assertIn(sale, block)
-            self.assertIn("Black Friday sale price", block)
+            self.assertIn("Black Friday sale price, through Dec 1", block)
             self.assertNotIn("This week", block)
             self.assertEqual(block.count("/mo"), 2)
             self.assertNotIn("\u2014", block)
@@ -583,7 +583,7 @@ class PublicSiteTests(unittest.TestCase):
             "Your real numbers, straight from Meta, yours to verify.</div>",
             "Monthly plans. Pick how much you want me to take on.",
             "Done for you, done with you, or I teach you how.",
-            "Black Friday sale price",
+            "Black Friday sale price, through Dec 1",
             "A full review of your profiles, page and posts",
             "I handle the top items for you, or teach you how",
             "Facebook and Instagram that stay active every week. I handle the posts, graphics and replies with you, so nothing goes quiet.",
@@ -656,7 +656,7 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn("growth partner in Salisbury, MD", llms)
         self.assertNotIn("Maryland", llms)
         self.assertIn("Free Growth Audit: https://www.macrandleacres.com/book?type=audit\n", llms)
-        self.assertIn("Black Friday sale price $1,398 to $1,750 per month", llms)
+        self.assertIn("Black Friday sale price, through Dec 1, $1,398 to $1,750 per month", llms)
         self.assertIn(
             "He helps businesses get seen, get conversations going, and turn them into customers on Facebook, Instagram and beyond.",
             llms,
