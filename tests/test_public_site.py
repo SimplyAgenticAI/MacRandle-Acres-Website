@@ -814,8 +814,10 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertIn('data-edit="hero_audit_v9">Book your free Growth Audit', primary)
         self.assertNotIn("hero_pay_note", hero)
         self.assertNotIn("buy.stripe.com", cta)
-        self.assertIn('href="#ai-employee"', cta)
-        self.assertIn("Get your first AI agent, $149", cta)
+        self.assertNotIn("#ai-employee", cta)
+        self.assertNotIn("$149", cta)
+        self.assertIn('href="#help"', cta)
+        self.assertIn("What I help with", cta)
         self.assertNotIn("ticket queue", home)
         offer = home.split('id="ai-employee"', 1)[1].split("</section>", 1)[0]
         self.assertIn('data-edit="pay_sub_v8"', offer)
@@ -830,8 +832,8 @@ class HomeLayoutTests(unittest.TestCase):
         self.assertEqual(home.count(short), 0)
         for key in ("re_pay_note_v9", "jeff_pay_note_v9", "final_pay_note_v9"):
             self.assertNotIn('data-edit="%s"' % key, home)
-        # The $149 offer lives only in the nav, the hero jump link and its own section.
-        self.assertEqual(home.count('href="https://buy.stripe.com'), 2)
+        # The $149 checkout button lives only in the AI agent offer section.
+        self.assertEqual(home.count('href="https://buy.stripe.com'), 1)
         for sec in ('id="real-estate"', 'id="jeff"'):
             block = home.split(sec, 1)[1].split("</section>", 1)[0]
             self.assertNotIn("buy.stripe.com", block)
@@ -960,12 +962,12 @@ class HomeFourEditsTests(unittest.TestCase):
     def setUp(self):
         self.html = open(os.path.join(os.path.dirname(__file__), "..", "index.html"), encoding="utf-8").read()
 
-    def test_plate_line_sits_under_the_149_cta(self):
+    def test_plate_line_sits_under_the_hero_cta(self):
         hero = self.html.split('id="top"', 1)[1].split("</header>", 1)[0]
         promise = re.search(r'data-edit="hero_promise">([^<]*)</p>', hero).group(1)
         self.assertNotIn("plate", promise)
         self.assertEqual(self.html.count("You tell me what's on your plate and I take it off."), 1)
-        cta = hero.index("Get your first AI agent, $149")
+        cta = hero.index("What I help with")
         plate = hero.index('class="hero-plate')
         self.assertLess(cta, plate)
         self.assertNotIn("<a ", hero[cta:plate].split("</div>", 1)[1])
