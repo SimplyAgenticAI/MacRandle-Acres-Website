@@ -425,7 +425,9 @@ class AiEmployeeTests(unittest.TestCase):
         self.assertIn("Not ready for a call? Join my free community on Skool.", home)
         self.assertIn("Most popular", home)
         nav = home.split("<nav", 1)[1].split("</nav>", 1)[0]
-        self.assertIn("Set up your AI agent, $149", nav)
+        self.assertNotIn("Set up your AI agent, $149", nav)
+        self.assertNotIn("buy.stripe.com", nav)
+        self.assertIn('href="#ai-employee">AI Employee', nav)
         self.assertIn('href="/book?type=audit"', nav)
         self.assertNotIn("Book a Growth Audit", nav)
         self.assertNotIn("Lucid Marketing call", nav)
